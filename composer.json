@@ -1,0 +1,31 @@
+{
+  "name": "fapost/foundation",
+  "description": "FAPost public contract layer for Solutions, Plugins and external integrations",
+  "type": "library",
+  "license": "proprietary",
+  "require": {
+    "php": "^8.4",
+    "illuminate/support": "^11.0 || ^12.0",
+    "spatie/laravel-data": "^4.0"
+  },
+  "require-dev": {
+    "phpunit/phpunit": "^11.0"
+  },
+  "autoload": {
+    "psr-4": {
+      "FAPost\\Foundation\\": "src/"
+    }
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "FAPost\\Foundation\\Tests\\": "tests/"
+    }
+  },
+  "extra": {
+    "laravel": {
+      "providers": []
+    }
+  },
+  "minimum-stability": "stable",
+  "prefer-stable": true
+}
