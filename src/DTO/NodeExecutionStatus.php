@@ -6,15 +6,18 @@ namespace FAPost\Foundation\DTO;
 
 enum NodeExecutionStatus: string
 {
-    /** Move to the next node (nextNodeId is required) */
-    case Transition = 'transition';
-
-    /** Wait for user input (input node) */
-    case Waiting = 'waiting';
-
-    /** Flow is completed */
+    /** Node finished; follow {@see NodeExecutionResult::$sourceHandle} through flow edges when set. */
     case Completed = 'completed';
 
-    /** Handler failed: session is marked failed and fallback is sent */
+    /** Waiting for user input (e.g. input node). */
+    case Waiting = 'waiting';
+
+    /** Execution paused for a delay; resumed externally. */
+    case Delayed = 'delayed';
+
+    /** Handler or engine error; session should be marked failed. */
     case Failed = 'failed';
+
+    /** Flow ended successfully (e.g. end node). */
+    case Finished = 'finished';
 }

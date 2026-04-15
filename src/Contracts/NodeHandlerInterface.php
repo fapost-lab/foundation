@@ -41,7 +41,7 @@ interface NodeHandlerInterface
     /**
      * Execute node.
      *
-     * @param  array<string, mixed>  $nodeConfig  Node config from flow definition JSON
+     * @param  array<string, mixed>  $nodeConfig  Node payload from flow definition JSON (id, type, version, config, …)
      * @param  array<string, mixed>  $state       Namespaced session state (read-only for handler)
      * @param  NodeExecutionContext  $context     Tenant, contact, and session metadata
      */

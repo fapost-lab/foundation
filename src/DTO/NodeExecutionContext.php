@@ -28,7 +28,9 @@ final readonly class NodeExecutionContext
 
         /** Platform/channel: telegram, whatsapp, ... */
         public string $platform,
-    )
-    {
+
+        /** Present on {@code resume()} for the first node execution in that run only. */
+        public ?IncomingMessage $incoming = null,
+    ) {
     }
 }

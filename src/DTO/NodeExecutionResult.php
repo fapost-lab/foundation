@@ -5,69 +5,92 @@ declare(strict_types=1);
 namespace FAPost\Foundation\DTO;
 
 /**
- * Node execution result.
+ * Node execution result returned by {@see \FAPost\Foundation\Contracts\NodeHandlerInterface::execute()}.
  *
- * A handler returns this object, and the engine decides what to do next:
- * move to another node, wait for input, complete the session, or fail it.
+ * On {@see NodeExecutionStatus::Completed}, the engine resolves the next node using flow edges:
+ * {@code source_node_id} + {@code transition} (source handle), unless there is no matching edge
+ * (flow ends).
  */
 final readonly class NodeExecutionResult
 {
+    /**
+     * @param  array<string, mixed>  $stateChanges  Namespaced flat keys, e.g. {@code flow.answer} => value
+     * @param  array<string, mixed>  $metadata
+     */
     public function __construct(
         public NodeExecutionStatus $status,
-
-        /**
-         * Next node ID for transition.
-         * null when status = waiting or completed.
-         */
-        public ?string $nextNodeId = null,
-
-        /**
-         * Patch for namespaced state. It will be merged by the engine.
-         * A handler writes only into its own namespace (flow.* or module.{name}.*).
-         *
-         * @var array<string, mixed>
-         */
-        public array $statePatch = [],
-
-        /**
-         * Error message when status = failed.
-         * Logged in flow_logs and not shown directly to the user.
-         */
+        public ?string $sourceHandle = null,
+        public array $stateChanges = [],
+        public array $metadata = [],
         public ?string $errorMessage = null,
-    )
-    {
+    ) {
     }
 
-    public static function transition(string $nextNodeId, array $statePatch = []): self
-    {
+    /**
+     * @param  array<string, mixed>  $stateChanges
+     * @param  array<string, mixed>  $metadata
+     */
+    public static function completed(
+        ?string $sourceHandle = 'default',
+        array $stateChanges = [],
+        array $metadata = [],
+    ): self {
         return new self(
-            status: NodeExecutionStatus::Transition,
-            nextNodeId: $nextNodeId,
-            statePatch: $statePatch,
+            status: NodeExecutionStatus::Completed,
+            sourceHandle: $sourceHandle,
+            stateChanges: $stateChanges,
+            metadata: $metadata,
         );
     }
 
-    public static function waiting(array $statePatch = []): self
+    /**
+     * @param  array<string, mixed>  $stateChanges
+     * @param  array<string, mixed>  $metadata
+     */
+    public static function waiting(array $stateChanges = [], array $metadata = []): self
     {
         return new self(
             status: NodeExecutionStatus::Waiting,
-            statePatch: $statePatch,
+            stateChanges: $stateChanges,
+            metadata: $metadata,
         );
     }
 
-    public static function completed(array $statePatch = []): self
+    /**
+     * @param  array<string, mixed>  $stateChanges
+     * @param  array<string, mixed>  $metadata
+     */
+    public static function delayed(array $stateChanges = [], array $metadata = []): self
     {
         return new self(
-            status: NodeExecutionStatus::Completed,
-            statePatch: $statePatch,
+            status: NodeExecutionStatus::Delayed,
+            stateChanges: $stateChanges,
+            metadata: $metadata,
         );
     }
 
-    public static function failed(string $errorMessage): self
+    /**
+     * @param  array<string, mixed>  $stateChanges
+     * @param  array<string, mixed>  $metadata
+     */
+    public static function finished(array $stateChanges = [], array $metadata = []): self
+    {
+        return new self(
+            status: NodeExecutionStatus::Finished,
+            stateChanges: $stateChanges,
+            metadata: $metadata,
+        );
+    }
+
+    /**
+     * @param  array<string, mixed>  $metadata
+     */
+    public static function failed(string $errorMessage, array $metadata = []): self
     {
         return new self(
             status: NodeExecutionStatus::Failed,
             errorMessage: $errorMessage,
+            metadata: $metadata,
         );
     }
 }
