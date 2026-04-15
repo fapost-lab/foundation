@@ -42,8 +42,7 @@ final readonly class StructuredRagResult
          * @var array<string, mixed>
          */
         public array $metadata = [],
-    )
-    {
+    ) {
     }
 
     public static function notFound(): self

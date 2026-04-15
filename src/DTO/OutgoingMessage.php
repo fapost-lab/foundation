@@ -26,7 +26,6 @@ final readonly class OutgoingMessage
          * @var array<string, mixed>
          */
         public array $payload = [],
-    )
-    {
+    ) {
     }
 }

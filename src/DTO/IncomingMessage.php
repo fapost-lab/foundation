@@ -41,7 +41,6 @@ final readonly class IncomingMessage
          * @var array<string, mixed>
          */
         public array $payload = [],
-    )
-    {
+    ) {
     }
 }

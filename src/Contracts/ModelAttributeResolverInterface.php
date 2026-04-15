@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace FAPost\Foundation\Contracts;
 
+use Closure;
 use Illuminate\Database\Eloquent\Model;
+use LogicException;
 
 /**
  * Read-only contract for resolving computed model attributes.
@@ -30,14 +32,14 @@ interface ModelAttributeResolverInterface
      *
      * @return mixed
      *
-     * @throws \LogicException If the attribute is not registered.
+     * @throws LogicException If the attribute is not registered.
      */
     public function resolve(string $modelClass, string $name, Model $model): mixed;
 
     /**
      * Return resolvers for computed attributes that should be included in array/json output (append=true).
      *
-     * @return array<string, \Closure(Model): mixed>
+     * @return array<string, Closure(Model): mixed>
      */
     public function serializable(string $modelClass): array;
 }

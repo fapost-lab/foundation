@@ -53,8 +53,7 @@ final readonly class SolutionManifest
          * @var string[]
          */
         public array $requiresCapabilities,
-    )
-    {
+    ) {
     }
 
     /**
@@ -70,7 +69,7 @@ final readonly class SolutionManifest
             throw new InvalidArgumentException('SolutionManifest: id cannot be empty');
         }
 
-        if (!Version::isValid($version)) {
+        if ( ! Version::isValid($version)) {
             throw new InvalidArgumentException("SolutionManifest: invalid version '{$version}'");
         }
 

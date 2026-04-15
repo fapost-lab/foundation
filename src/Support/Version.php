@@ -16,13 +16,17 @@ final readonly class Version
         public int $major,
         public int $minor,
         public int $patch,
-    )
+    ) {
+    }
+
+    public function __toString(): string
     {
+        return $this->toString();
     }
 
     public static function parse(string $version): self
     {
-        if (!self::isValid($version)) {
+        if ( ! self::isValid($version)) {
             throw new InvalidArgumentException("Invalid semver: '{$version}'");
         }
 
@@ -41,11 +45,6 @@ final readonly class Version
         return $this->toInt() > $other->toInt();
     }
 
-    private function toInt(): int
-    {
-        return $this->major * 1_000_000 + $this->minor * 1_000 + $this->patch;
-    }
-
     public function isGreaterThanOrEqual(self $other): bool
     {
         return $this->toInt() >= $other->toInt();
@@ -61,13 +60,13 @@ final readonly class Version
         return $this->toInt() === $other->toInt();
     }
 
-    public function __toString(): string
-    {
-        return $this->toString();
-    }
-
     public function toString(): string
     {
         return "{$this->major}.{$this->minor}.{$this->patch}";
+    }
+
+    private function toInt(): int
+    {
+        return $this->major * 1_000_000 + $this->minor * 1_000 + $this->patch;
     }
 }

@@ -26,7 +26,6 @@ final readonly class RagQueryContext
          * @var array<string, mixed>
          */
         public array $providerOptions = [],
-    )
-    {
+    ) {
     }
 }

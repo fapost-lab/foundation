@@ -41,14 +41,23 @@ use Illuminate\Support\ServiceProvider;
 abstract class AbstractSolutionServiceProvider extends ServiceProvider implements ActivatableInterface
 {
     /**
+     * Register all extensions through CoreRegistrar.
+     * Called in boot() after manifest validation.
+     */
+    abstract protected function registerExtensions(CoreRegistrarInterface $registrar): void;
+    /**
      * Does nothing by default. Override for custom activation logic.
      */
-    public function onActivate(): void { }
+    public function onActivate(): void
+    {
+    }
 
     /**
      * Does nothing by default. Override for graceful deactivation.
      */
-    public function onDeactivate(): void { }
+    public function onDeactivate(): void
+    {
+    }
 
     /**
      * register() should only register container bindings.
@@ -58,12 +67,6 @@ abstract class AbstractSolutionServiceProvider extends ServiceProvider implement
     {
         $this->registerBindings();
     }
-
-    /**
-     * Override for container bindings registration.
-     * Called in register().
-     */
-    protected function registerBindings(): void { }
 
     /**
      * boot() registers extensions through CoreRegistrar.
@@ -83,16 +86,20 @@ abstract class AbstractSolutionServiceProvider extends ServiceProvider implement
     }
 
     /**
-     * Register all extensions through CoreRegistrar.
-     * Called in boot() after manifest validation.
+     * Override for container bindings registration.
+     * Called in register().
      */
-    abstract protected function registerExtensions(CoreRegistrarInterface $registrar): void;
+    protected function registerBindings(): void
+    {
+    }
 
     /**
      * Override for additional boot actions (migrations, configs, routes).
      * Called after registerExtensions().
      */
-    protected function bootSolution(): void { }
+    protected function bootSolution(): void
+    {
+    }
 
     /**
      * Publish package config.

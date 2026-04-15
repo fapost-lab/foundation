@@ -43,17 +43,26 @@ use Illuminate\Support\ServiceProvider;
  */
 abstract class AbstractPluginServiceProvider extends ServiceProvider implements ActivatableInterface
 {
-    public function onActivate(): void { }
+    /**
+     * Register platform extensions through CoreRegistrar.
+     */
+    abstract protected function registerExtensions(CoreRegistrarInterface $registrar): void;
+    public function onActivate(): void
+    {
+    }
 
-    public function onDeactivate(): void { }
+    public function onDeactivate(): void
+    {
+    }
 
     public function register(): void
     {
         $this->registerBindings();
     }
 
-    protected function registerBindings(): void { }
-
+    /**
+     * @throws \Illuminate\Contracts\Container\BindingResolutionException
+     */
     public function boot(): void
     {
         $registrar = $this->app->make(CoreRegistrarInterface::class);
@@ -63,10 +72,11 @@ abstract class AbstractPluginServiceProvider extends ServiceProvider implements 
         $this->bootPlugin();
     }
 
-    /**
-     * Register platform extensions through CoreRegistrar.
-     */
-    abstract protected function registerExtensions(CoreRegistrarInterface $registrar): void;
+    protected function registerBindings(): void
+    {
+    }
 
-    protected function bootPlugin(): void { }
+    protected function bootPlugin(): void
+    {
+    }
 }

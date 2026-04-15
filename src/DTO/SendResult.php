@@ -23,8 +23,7 @@ final readonly class SendResult
 
         /** Platform HTTP response code */
         public ?int $httpStatus = null,
-    )
-    {
+    ) {
     }
 
     public static function ok(string $platformMessageId): self
