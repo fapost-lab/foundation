@@ -15,6 +15,7 @@ final readonly class NodeExecutionResult
 {
     /**
      * @param  array<string, mixed>  $stateChanges  Namespaced flat keys, e.g. {@code flow.answer} => value
+     * @param  array<string, mixed>  $logResolved  Snapshot values persisted to flow_logs.resolved
      * @param  array<int, array<string, mixed>>  $effects
      * @param  array<string, mixed>  $metadata
      */
@@ -22,6 +23,7 @@ final readonly class NodeExecutionResult
         public NodeExecutionStatus $status,
         public ?string $sourceHandle = null,
         public array $stateChanges = [],
+        public array $logResolved = [],
         public array $effects = [],
         public array $metadata = [],
         public ?string $errorMessage = null,
@@ -30,12 +32,14 @@ final readonly class NodeExecutionResult
 
     /**
      * @param  array<string, mixed>  $stateChanges
+     * @param  array<string, mixed>  $logResolved
      * @param  array<int, array<string, mixed>>  $effects
      * @param  array<string, mixed>  $metadata
      */
     public static function executed(
         ?string $sourceHandle = 'default',
         array $stateChanges = [],
+        array $logResolved = [],
         array $effects = [],
         array $metadata = [],
     ): self {
@@ -43,6 +47,7 @@ final readonly class NodeExecutionResult
             status: NodeExecutionStatus::Executed,
             sourceHandle: $sourceHandle,
             stateChanges: $stateChanges,
+            logResolved: $logResolved,
             effects: $effects,
             metadata: $metadata,
         );
