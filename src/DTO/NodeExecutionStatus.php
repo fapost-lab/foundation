@@ -7,7 +7,7 @@ namespace FAPost\Foundation\DTO;
 enum NodeExecutionStatus: string
 {
     /** Node finished; follow {@see NodeExecutionResult::$sourceHandle} through flow edges when set. */
-    case Completed = 'completed';
+    case Executed = 'executed';
 
     /** Waiting for user input (e.g. input node). */
     case Waiting = 'waiting';

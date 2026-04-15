@@ -111,24 +111,6 @@ abstract class AbstractSolutionServiceProvider extends ServiceProvider implement
     }
 
     /**
-     * Register package migrations path.
-     * Migrations are expected to run through platform:update, not direct migrate.
-     *
-     * @deprecated Use CoreRegistrar::registerMigrations() when CoreRegistrar migration orchestration is available.
-     *
-     * @param  string  $path  Absolute path to the migrations directory
-     */
-    protected function loadSolutionMigrations(string $path): void
-    {
-        trigger_error(
-            'loadSolutionMigrations() is deprecated. Use CoreRegistrar::registerMigrations() when migration orchestration is available.',
-            E_USER_DEPRECATED,
-        );
-
-        $this->declareSolutionMigrations($path);
-    }
-
-    /**
      * Declare package migrations path.
      *
      * @param  string  $path  Absolute path to the migrations directory
