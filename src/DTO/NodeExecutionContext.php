@@ -29,6 +29,9 @@ final readonly class NodeExecutionContext
         /** Platform/channel: telegram, whatsapp, ... */
         public string $platform,
 
+        /** Runtime resolved content language */
+        public string $resolvedLanguage = 'en',
+
         /** Present on {@code resume()} for the first node execution in that run only. */
         public ?IncomingMessage $incoming = null,
     ) {
