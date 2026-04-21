@@ -17,6 +17,7 @@ final readonly class WebhookRegistrationPayload
      * @param  array<string, mixed>  $config
      */
     public function __construct(
+        public string $channelId,
         public string $token,
         public string $secretToken,
         public string $webhookPublicHash,
