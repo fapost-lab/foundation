@@ -39,6 +39,23 @@ interface NodeHandlerInterface
     public function supportedVersions(): array;
 
     /**
+     * Human-readable node label for builder UI.
+     */
+    public function label(): string;
+
+    /**
+     * Builder group/category for this node.
+     */
+    public function category(): string;
+
+    /**
+     * Node configuration schema for builder-side validation and forms.
+     *
+     * @return array<string, mixed>
+     */
+    public function configSchema(): array;
+
+    /**
      * Execute node.
      *
      * @param  array<string, mixed>  $nodeConfig  Node payload from flow definition JSON (id, type, version, config, …)
