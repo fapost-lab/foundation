@@ -4,20 +4,18 @@ declare(strict_types=1);
 
 namespace FAPost\Foundation\Channel;
 
-use App\Domains\Assistant\Models\Channel;
-
 /**
  * Contract for provider-side webhook registration lifecycle.
  */
 interface WebhookRegistrarInterface
 {
     /**
-     * Create or refresh the external webhook for the given channel.
+     * Create or refresh the external webhook for the given channel payload.
      */
-    public function register(Channel $channel): void;
+    public function register(WebhookRegistrationPayload $payload): void;
 
     /**
-     * Remove the external webhook for the given channel.
+     * Remove the external webhook for the given channel payload.
      */
-    public function deregister(Channel $channel): void;
+    public function deregister(WebhookRegistrationPayload $payload): void;
 }
