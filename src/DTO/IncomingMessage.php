@@ -41,6 +41,17 @@ final readonly class IncomingMessage
          * @var array<string, mixed>
          */
         public array $payload = [],
+
+        /**
+         * Structured media attachments carried by the inbound message.
+         *
+         * Always an array — many channels (Telegram media groups, WhatsApp multi-attachment
+         * messages) can deliver several files in a single logical message. Single-media
+         * platforms produce a one-element list. Empty array means no attachments.
+         *
+         * @var array<int, IncomingMedia>
+         */
+        public array $media = [],
     ) {
     }
 }
