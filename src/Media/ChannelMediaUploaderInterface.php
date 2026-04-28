@@ -7,6 +7,7 @@ namespace FAPost\Foundation\Media;
 use FAPost\Foundation\Channel\ChannelInterface;
 use FAPost\Foundation\Media\DTO\UploadContext;
 use FAPost\Foundation\Media\DTO\UploadResult;
+use RuntimeException;
 
 /**
  * Channel-specific media upload adapter.
@@ -28,7 +29,7 @@ interface ChannelMediaUploaderInterface
      * because file_id is only minted as a side effect of a real send). Implementations
      * that do not need context should ignore it.
      *
-     * @throws \RuntimeException when the provider rejects the upload (use a typed
+     * @throws RuntimeException when the provider rejects the upload (use a typed
      *                           exception in concrete implementations).
      */
     public function upload(

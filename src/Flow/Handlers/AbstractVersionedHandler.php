@@ -18,12 +18,12 @@ abstract class AbstractVersionedHandler implements NodeHandlerInterface
 {
     public function type(): string
     {
-        if (! defined(static::class.'::TYPE')) {
-            throw new LogicException(static::class.' must define TYPE constant');
+        if (!defined(static::class . '::TYPE')) {
+            throw new LogicException(static::class . ' must define TYPE constant');
         }
 
         /** @var string $type */
-        $type = constant(static::class.'::TYPE');
+        $type = constant(static::class . '::TYPE');
 
         return $type;
     }

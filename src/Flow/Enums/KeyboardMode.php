@@ -7,5 +7,5 @@ namespace FAPost\Foundation\Flow\Enums;
 enum KeyboardMode: string
 {
     case Inline = 'inline';
-    case Reply = 'reply';
+    case Reply  = 'reply';
 }

@@ -24,7 +24,7 @@ enum MediaKind: string
      */
     public static function fromMimeType(string $mimeType): self
     {
-        $normalized = mb_strtolower(trim($mimeType));
+        $normalized = mb_strtolower(mb_trim($mimeType));
 
         return match (true) {
             '' === $normalized                     => self::Other,
