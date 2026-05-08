@@ -10,13 +10,17 @@ namespace FAPost\Foundation\DTO;
  * On {@see NodeExecutionStatus::Executed}, the engine resolves the next node using flow edges:
  * {@code source_node_id} + {@code transition} (source handle), unless there is no matching edge
  * (flow ends).
+ *
+ * Mutations outside the session JSON (Contact attributes, Contact.language, etc.) are performed
+ * directly by the handler via {@see \FAPost\Foundation\Flow\Contracts\ContactWriterInterface}
+ * passed through {@see NodeExecutionContext}. The legacy {@code effects[]} array was removed
+ * in Phase E; handlers must use the writer.
  */
 final readonly class NodeExecutionResult
 {
     /**
      * @param  array<string, mixed>  $stateChanges  Namespaced flat keys, e.g. {@code flow.answer} => value
-     * @param  array<string, mixed>  $logResolved  Snapshot values persisted to flow_logs.resolved
-     * @param  array<int, array<string, mixed>>  $effects
+     * @param  array<string, mixed>  $logResolved   Snapshot values persisted to flow_logs.resolved
      * @param  array<string, mixed>  $metadata
      */
     public function __construct(
@@ -24,7 +28,6 @@ final readonly class NodeExecutionResult
         public ?string $sourceHandle = null,
         public array $stateChanges = [],
         public array $logResolved = [],
-        public array $effects = [],
         public array $metadata = [],
         public ?string $errorMessage = null,
     ) {
@@ -33,14 +36,12 @@ final readonly class NodeExecutionResult
     /**
      * @param  array<string, mixed>  $stateChanges
      * @param  array<string, mixed>  $logResolved
-     * @param  array<int, array<string, mixed>>  $effects
      * @param  array<string, mixed>  $metadata
      */
     public static function executed(
         ?string $sourceHandle = 'default',
         array $stateChanges = [],
         array $logResolved = [],
-        array $effects = [],
         array $metadata = [],
     ): self {
         return new self(
@@ -48,7 +49,6 @@ final readonly class NodeExecutionResult
             sourceHandle: $sourceHandle,
             stateChanges: $stateChanges,
             logResolved: $logResolved,
-            effects: $effects,
             metadata: $metadata,
         );
     }
