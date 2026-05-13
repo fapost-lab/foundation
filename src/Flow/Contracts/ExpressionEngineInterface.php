@@ -51,7 +51,7 @@ interface ExpressionEngineInterface
      * Implementations document their own behaviour for unknown paths —
      * {@code TemplateEngine} substitutes empty string, others may throw.
      *
-     * @throws \FAPost\Foundation\Flow\Contracts\ExpressionEvaluationException
+     * @throws ExpressionEvaluationException
      */
     public function evaluate(string $source, ExpressionContext $context): mixed;
 
@@ -60,7 +60,7 @@ interface ExpressionEngineInterface
      * Does not execute side effects; only checks parsability and any static
      * reference rules supported by the engine.
      *
-     * @throws \FAPost\Foundation\Flow\Contracts\ExpressionSyntaxException
+     * @throws ExpressionSyntaxException
      */
     public function validate(string $source): void;
 

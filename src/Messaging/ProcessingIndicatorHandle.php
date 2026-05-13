@@ -19,5 +19,7 @@ final readonly class ProcessingIndicatorHandle
         public string $chatId,
         /** @var array<string, mixed> */
         public array $providerData = [],
-    ) {}
+    )
+    {
+    }
 }

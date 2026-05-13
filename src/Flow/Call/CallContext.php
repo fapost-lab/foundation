@@ -21,5 +21,7 @@ final readonly class CallContext
         public string $sessionId,
         public string $nodeId,
         public string $idempotencyKey,
-    ) {}
+    )
+    {
+    }
 }

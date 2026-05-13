@@ -15,7 +15,7 @@ use RuntimeException;
  * flow_definition stored an engine id that has since been removed without proper
  * migration).
  */
-class ExpressionEngineNotFoundException extends RuntimeException
+final class ExpressionEngineNotFoundException extends RuntimeException
 {
     public static function forId(string $id): self
     {

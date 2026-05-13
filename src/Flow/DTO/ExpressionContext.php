@@ -22,7 +22,9 @@ final readonly class ExpressionContext
         public string $contactId,
         public string $sessionId,
         public ScopedStateReaderInterface $stateReader,
-    ) {}
+    )
+    {
+    }
 
     /**
      * Convenience accessor — read a path from the underlying state reader.

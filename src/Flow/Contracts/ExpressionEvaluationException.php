@@ -14,4 +14,6 @@ use RuntimeException;
  * Callers (the flow engine) catch this and fail the session — handlers
  * are not expected to recover from expression failures.
  */
-class ExpressionEvaluationException extends RuntimeException {}
+final class ExpressionEvaluationException extends RuntimeException
+{
+}

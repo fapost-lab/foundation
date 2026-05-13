@@ -20,5 +20,7 @@ final readonly class CallRequest
         public array $parameters = [],
         /** @var array<string, mixed> Transport-specific options (timeout, headers, success_when, …) */
         public array $options = [],
-    ) {}
+    )
+    {
+    }
 }

@@ -13,4 +13,6 @@ use RuntimeException;
  * Caller (flow validator) collects these into the validation result and
  * returns 422 to the client on publish, or warning on draft save.
  */
-class ExpressionSyntaxException extends RuntimeException {}
+final class ExpressionSyntaxException extends RuntimeException
+{
+}

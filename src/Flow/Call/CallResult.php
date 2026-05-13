@@ -24,7 +24,9 @@ final readonly class CallResult
         public ?string $errorCode = null,
         /** @var array<string, mixed> */
         public array $metadata = [],
-    ) {}
+    )
+    {
+    }
 
     public static function ok(mixed $payload = null, array $metadata = []): self
     {
