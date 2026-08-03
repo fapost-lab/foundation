@@ -2,7 +2,7 @@
   "name": "fapost/foundation",
   "description": "FAPost public contract layer for Solutions, Plugins and external integrations",
   "type": "library",
-  "license": "proprietary",
+  "license": "Apache-2.0",
   "require": {
     "php": "^8.4",
     "illuminate/support": "^11.0 || ^12.0",
