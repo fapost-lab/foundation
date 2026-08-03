@@ -11,7 +11,7 @@ only package a Solution or Plugin is allowed to depend on to integrate with the 
 - **Contracts, not logic.** Everything here is an interface, a DTO, an enum, or a small value
   object. No business logic, no persistence, no framework wiring.
 - If a contract is needed by an external Solution/Plugin, it belongs here. A pure, reusable
-  primitive with no Core coupling belongs in [`fapost/support`](../fapost-support). Domain-specific
+  primitive with no Core coupling belongs in [`fapost/support`](https://github.com/fapost-lab/support). Domain-specific
   code stays in Core.
 
 ## Requirements
