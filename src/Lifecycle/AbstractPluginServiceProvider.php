@@ -37,7 +37,7 @@ use Illuminate\Support\ServiceProvider;
  *
  *       protected function registerExtensions(CoreRegistrarInterface $registrar): void
  *       {
- *           $registrar->registerChannelAdapter(ViberChannelAdapter::class);
+ *           $registrar->registerNodeHandler(ViberNodeHandler::class);
  *       }
  *   }
  */
