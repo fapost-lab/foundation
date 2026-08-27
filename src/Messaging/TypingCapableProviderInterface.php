@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace FAPost\Foundation\Messaging;
+namespace Fapost\Foundation\Messaging;
 
 /**
  * Optional capability for outbound providers that can show a "typing"-style

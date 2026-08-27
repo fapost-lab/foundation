@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace FAPost\Foundation\Contracts;
+namespace Fapost\Foundation\Contracts;
 
 use Closure;
 use Illuminate\Database\Eloquent\Model;

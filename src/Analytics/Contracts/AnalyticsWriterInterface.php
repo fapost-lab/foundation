@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace FAPost\Foundation\Analytics\Contracts;
+namespace Fapost\Foundation\Analytics\Contracts;
 
-use FAPost\Foundation\Analytics\DTO\AnalyticsEvent;
+use Fapost\Foundation\Analytics\DTO\AnalyticsEvent;
 
 interface AnalyticsWriterInterface
 {

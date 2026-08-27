@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace FAPost\Foundation\Messaging;
+namespace Fapost\Foundation\Messaging;
 
 /**
  * Contract implemented by concrete transport senders.

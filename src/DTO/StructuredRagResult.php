@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace FAPost\Foundation\DTO;
+namespace Fapost\Foundation\DTO;
 
 /**
  * Deterministic RAG query result.

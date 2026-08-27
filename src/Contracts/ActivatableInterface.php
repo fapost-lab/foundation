@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace FAPost\Foundation\Contracts;
+namespace Fapost\Foundation\Contracts;
 
 /**
  * Contract for any platform extension (Solution, Plugin)
@@ -26,7 +26,7 @@ interface ActivatableInterface
     /**
      * Returns SolutionManifest with full dependency description.
      */
-    public function getManifest(): \FAPost\Foundation\Manifest\SolutionManifest;
+    public function getManifest(): \Fapost\Foundation\Manifest\SolutionManifest;
 
     /**
      * Called after successful activation and boot validation.

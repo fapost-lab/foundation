@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace FAPost\Foundation\Flow\Contracts;
+namespace Fapost\Foundation\Flow\Contracts;
 
 /**
  * Read-only access to namespaced session/contact/module state during node execution.
@@ -18,7 +18,7 @@ namespace FAPost\Foundation\Flow\Contracts;
  * Implementations return {@code null} for unknown paths or when intermediate
  * segments are not objects. They never throw on missing paths.
  *
- * Handlers receive an instance via {@see \FAPost\Foundation\DTO\NodeExecutionContext}.
+ * Handlers receive an instance via {@see \Fapost\Foundation\DTO\NodeExecutionContext}.
  */
 interface ScopedStateReaderInterface
 {

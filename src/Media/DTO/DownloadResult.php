@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace FAPost\Foundation\Media\DTO;
+namespace Fapost\Foundation\Media\DTO;
 
 use Carbon\CarbonImmutable;
 use Psr\Http\Message\StreamInterface;

@@ -1,6 +1,6 @@
-# FAPost Foundation
+# FaPost Foundation
 
-`fapost/foundation` is the **public contract layer** of the FAPost platform. It holds the
+`fapost/foundation` is the **public contract layer** of the FaPost platform. It holds the
 interfaces, DTOs, enums and value objects that Core, Solutions and Plugins agree on. It is the
 only package a Solution or Plugin is allowed to depend on to integrate with the platform.
 
@@ -23,7 +23,7 @@ only package a Solution or Plugin is allowed to depend on to integrate with the 
 ## Namespace
 
 ```
-FAPost\Foundation\   →  src/
+Fapost\Foundation\   →  src/
 ```
 
 ## What's inside

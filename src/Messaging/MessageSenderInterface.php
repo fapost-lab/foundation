@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace FAPost\Foundation\Messaging;
+namespace Fapost\Foundation\Messaging;
 
 /**
  * Generic outbound messaging entry point used by queue jobs and orchestration.

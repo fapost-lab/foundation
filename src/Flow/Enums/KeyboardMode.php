@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace FAPost\Foundation\Flow\Enums;
+namespace Fapost\Foundation\Flow\Enums;
 
 enum KeyboardMode: string
 {

@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace FAPost\Foundation\Channel\Ingress;
+namespace Fapost\Foundation\Channel\Ingress;
 
 /**
  * Executes an {@see IngressSpec} against an inbound request.

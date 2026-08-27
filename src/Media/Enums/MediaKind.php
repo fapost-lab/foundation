@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace FAPost\Foundation\Media\Enums;
+namespace Fapost\Foundation\Media\Enums;
 
 /**
  * Coarse classification of a media file used by send_message and input nodes.

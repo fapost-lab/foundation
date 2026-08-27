@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace FAPost\Foundation\Manifest;
+namespace Fapost\Foundation\Manifest;
 
-use FAPost\Foundation\Support\Version;
+use Fapost\Foundation\Support\Version;
 use InvalidArgumentException;
 
 /**

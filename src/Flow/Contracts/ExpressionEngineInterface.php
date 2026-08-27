@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace FAPost\Foundation\Flow\Contracts;
+namespace Fapost\Foundation\Flow\Contracts;
 
-use FAPost\Foundation\Flow\DTO\ExpressionContext;
+use Fapost\Foundation\Flow\DTO\ExpressionContext;
 
 /**
  * Pluggable expression evaluation strategy for flow nodes.

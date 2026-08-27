@@ -2,17 +2,17 @@
 
 declare(strict_types=1);
 
-namespace FAPost\Foundation\DTO;
+namespace Fapost\Foundation\DTO;
 
 /**
- * Node execution result returned by {@see \FAPost\Foundation\Contracts\NodeHandlerInterface::execute()}.
+ * Node execution result returned by {@see \Fapost\Foundation\Contracts\NodeHandlerInterface::execute()}.
  *
  * On {@see NodeExecutionStatus::Executed}, the engine resolves the next node using flow edges:
  * {@code source_node_id} + {@code transition} (source handle), unless there is no matching edge
  * (flow ends).
  *
  * Mutations outside the session JSON (Contact attributes, Contact.language, etc.) are performed
- * directly by the handler via {@see \FAPost\Foundation\Flow\Contracts\ContactWriterInterface}
+ * directly by the handler via {@see \Fapost\Foundation\Flow\Contracts\ContactWriterInterface}
  * passed through {@see NodeExecutionContext}. The legacy {@code effects[]} array was removed
  * in Phase E; handlers must use the writer.
  */

@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace FAPost\Foundation\Analytics\DTO;
+namespace Fapost\Foundation\Analytics\DTO;
 
 use DateTimeImmutable;
-use FAPost\Foundation\Analytics\Enums\AnalyticsEventType;
+use Fapost\Foundation\Analytics\Enums\AnalyticsEventType;
 
 final readonly class AnalyticsEvent
 {

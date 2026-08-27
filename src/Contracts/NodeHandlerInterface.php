@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace FAPost\Foundation\Contracts;
+namespace Fapost\Foundation\Contracts;
 
-use FAPost\Foundation\DTO\NodeExecutionContext;
-use FAPost\Foundation\DTO\NodeExecutionResult;
+use Fapost\Foundation\DTO\NodeExecutionContext;
+use Fapost\Foundation\DTO\NodeExecutionResult;
 
 /**
  * Flow engine node handler contract.

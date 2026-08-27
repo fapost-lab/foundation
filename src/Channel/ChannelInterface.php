@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace FAPost\Foundation\Channel;
+namespace Fapost\Foundation\Channel;
 
 /**
  * Minimal channel identity exposed across the extension boundary.

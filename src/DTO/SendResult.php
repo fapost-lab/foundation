@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace FAPost\Foundation\DTO;
+namespace Fapost\Foundation\DTO;
 
 /**
  * Result of sending a message through a ChannelAdapter.

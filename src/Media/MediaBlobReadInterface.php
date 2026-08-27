@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace FAPost\Foundation\Media;
+namespace Fapost\Foundation\Media;
 
 use Psr\Http\Message\StreamInterface;
 

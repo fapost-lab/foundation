@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace FAPost\Foundation\Flow\DTO;
+namespace Fapost\Foundation\Flow\DTO;
 
-use FAPost\Foundation\Flow\Contracts\ScopedStateReaderInterface;
+use Fapost\Foundation\Flow\Contracts\ScopedStateReaderInterface;
 
 /**
- * Runtime context passed to {@see \FAPost\Foundation\Flow\Contracts\ExpressionEngineInterface::evaluate()}.
+ * Runtime context passed to {@see \Fapost\Foundation\Flow\Contracts\ExpressionEngineInterface::evaluate()}.
  *
  * Carries the identifiers and the reader needed for an engine to resolve
  * placeholders or evaluate expressions against current session/contact/module

@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace FAPost\Foundation\Flow\History;
+namespace Fapost\Foundation\Flow\History;
 
 /**
  * Vocabulary of structured history events written into flow_session_history.

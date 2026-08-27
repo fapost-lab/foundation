@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace FAPost\Foundation\DTO;
+namespace Fapost\Foundation\DTO;
 
-use FAPost\Foundation\Media\Enums\MediaKind;
+use Fapost\Foundation\Media\Enums\MediaKind;
 
 /**
  * Structured media payload extracted from an incoming channel message.

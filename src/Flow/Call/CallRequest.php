@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace FAPost\Foundation\Flow\Call;
+namespace Fapost\Foundation\Flow\Call;
 
 /**
  * Resolved request payload handed to a {@see CallTransportInterface}.

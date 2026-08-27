@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace FAPost\Foundation\Contracts;
+namespace Fapost\Foundation\Contracts;
 
 use Closure;
-use FAPost\Foundation\Manifest\SolutionManifest;
+use Fapost\Foundation\Manifest\SolutionManifest;
 
 /**
  * Single registration entry point for platform extensions.

@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace FAPost\Foundation\Channel;
+namespace Fapost\Foundation\Channel;
 
 /**
  * Transport snapshot passed to channel webhook registrars.

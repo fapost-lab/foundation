@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace FAPost\Foundation\Media;
+namespace Fapost\Foundation\Media;
 
-use FAPost\Foundation\Channel\ChannelInterface;
-use FAPost\Foundation\Media\DTO\DownloadResult;
+use Fapost\Foundation\Channel\ChannelInterface;
+use Fapost\Foundation\Media\DTO\DownloadResult;
 
 /**
  * Channel-specific media download adapter used by input nodes that ingest user files.

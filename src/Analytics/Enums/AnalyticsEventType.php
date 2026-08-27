@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace FAPost\Foundation\Analytics\Enums;
+namespace Fapost\Foundation\Analytics\Enums;
 
 enum AnalyticsEventType: string
 {

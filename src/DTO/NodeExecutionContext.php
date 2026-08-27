@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace FAPost\Foundation\DTO;
+namespace Fapost\Foundation\DTO;
 
-use FAPost\Foundation\Flow\Contracts\ContactWriterInterface;
-use FAPost\Foundation\Flow\Contracts\ExpressionEngineInterface;
-use FAPost\Foundation\Flow\Contracts\ScopedStateReaderInterface;
+use Fapost\Foundation\Flow\Contracts\ContactWriterInterface;
+use Fapost\Foundation\Flow\Contracts\ExpressionEngineInterface;
+use Fapost\Foundation\Flow\Contracts\ScopedStateReaderInterface;
 
 /**
  * Node execution context passed by the engine to each handler.

@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace FAPost\Foundation\Messaging;
+namespace Fapost\Foundation\Messaging;
 
 use Spatie\LaravelData\Data;
 

@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace FAPost\Foundation\Flow\Contracts;
+namespace Fapost\Foundation\Flow\Contracts;
 
 use RuntimeException;
 

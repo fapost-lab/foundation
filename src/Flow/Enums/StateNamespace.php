@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace FAPost\Foundation\Flow\Enums;
+namespace Fapost\Foundation\Flow\Enums;
 
 /**
  * Canonical top-level namespaces of {@code flow_sessions.state}.

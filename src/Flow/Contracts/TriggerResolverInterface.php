@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace FAPost\Foundation\Flow\Contracts;
+namespace Fapost\Foundation\Flow\Contracts;
 
-use FAPost\Foundation\Flow\DTO\ResolvedTrigger;
-use FAPost\Foundation\Flow\DTO\TriggerContext;
+use Fapost\Foundation\Flow\DTO\ResolvedTrigger;
+use Fapost\Foundation\Flow\DTO\TriggerContext;
 
 interface TriggerResolverInterface
 {

@@ -1,6 +1,6 @@
 {
   "name": "fapost/foundation",
-  "description": "FAPost public contract layer for Solutions, Plugins and external integrations",
+  "description": "FaPost public contract layer for Solutions, Plugins and external integrations",
   "type": "library",
   "license": "Apache-2.0",
   "require": {
@@ -14,12 +14,12 @@
   },
   "autoload": {
     "psr-4": {
-      "FAPost\\Foundation\\": "src/"
+      "Fapost\\Foundation\\": "src/"
     }
   },
   "autoload-dev": {
     "psr-4": {
-      "FAPost\\Foundation\\Tests\\": "tests/"
+      "Fapost\\Foundation\\Tests\\": "tests/"
     }
   },
   "extra": {

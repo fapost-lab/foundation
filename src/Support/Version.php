@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace FAPost\Foundation\Support;
+namespace Fapost\Foundation\Support;
 
 use InvalidArgumentException;
 

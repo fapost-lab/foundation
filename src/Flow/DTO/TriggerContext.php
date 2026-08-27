@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace FAPost\Foundation\Flow\DTO;
+namespace Fapost\Foundation\Flow\DTO;
 
 final readonly class TriggerContext
 {

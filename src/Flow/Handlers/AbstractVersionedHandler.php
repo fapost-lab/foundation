@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace FAPost\Foundation\Flow\Handlers;
+namespace Fapost\Foundation\Flow\Handlers;
 
-use FAPost\Foundation\Contracts\NodeHandlerInterface;
+use Fapost\Foundation\Contracts\NodeHandlerInterface;
 use LogicException;
 
 /**

@@ -2,15 +2,15 @@
 
 declare(strict_types=1);
 
-namespace FAPost\Foundation\Action;
+namespace Fapost\Foundation\Action;
 
-use FAPost\Foundation\Flow\Call\CallContext;
+use Fapost\Foundation\Flow\Call\CallContext;
 
 /**
  * Contract for in-process action handlers dispatched via the call node's
  * {@code handler} transport.
  *
- * Distinct from {@see \FAPost\Foundation\Contracts\NodeHandlerInterface}
+ * Distinct from {@see \Fapost\Foundation\Contracts\NodeHandlerInterface}
  * (which executes nodes inside the flow graph). Action handlers are invoked
  * synchronously by {@code call} nodes targeting them; they receive resolved
  * parameters and return a result placed into {@code call.payload} for

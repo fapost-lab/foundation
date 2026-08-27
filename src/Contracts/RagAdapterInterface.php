@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace FAPost\Foundation\Contracts;
+namespace Fapost\Foundation\Contracts;
 
-use FAPost\Foundation\DTO\RagQueryContext;
-use FAPost\Foundation\DTO\StructuredRagResult;
+use Fapost\Foundation\DTO\RagQueryContext;
+use Fapost\Foundation\DTO\StructuredRagResult;
 
 /**
  * Single contract between the flow engine and a RAG provider.

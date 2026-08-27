@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace FAPost\Foundation\Media;
+namespace Fapost\Foundation\Media;
 
-use FAPost\Foundation\Channel\ChannelInterface;
-use FAPost\Foundation\Media\DTO\UploadContext;
-use FAPost\Foundation\Media\DTO\UploadResult;
+use Fapost\Foundation\Channel\ChannelInterface;
+use Fapost\Foundation\Media\DTO\UploadContext;
+use Fapost\Foundation\Media\DTO\UploadResult;
 use RuntimeException;
 
 /**

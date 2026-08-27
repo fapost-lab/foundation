@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace FAPost\Foundation\Lifecycle;
+namespace Fapost\Foundation\Lifecycle;
 
-use FAPost\Foundation\Contracts\ActivatableInterface;
-use FAPost\Foundation\Contracts\CoreRegistrarInterface;
+use Fapost\Foundation\Contracts\ActivatableInterface;
+use Fapost\Foundation\Contracts\CoreRegistrarInterface;
 use Illuminate\Support\ServiceProvider;
 
 /**
