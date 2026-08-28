@@ -1,0 +1,21 @@
+# Dependabot opens pull requests for outdated dependencies. Alerts alone only
+# tell you a problem exists; this is what proposes the fix.
+
+version: 2
+updates:
+  - package-ecosystem: composer
+    directory: /
+    schedule:
+      interval: weekly
+      day: monday
+    open-pull-requests-limit: 5
+    groups:
+      # One pull request for the routine bumps rather than five. Anything that
+      # is not a patch still arrives on its own, where it can be read properly.
+      patch-updates:
+        update-types: ["patch"]
+
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: monthly
