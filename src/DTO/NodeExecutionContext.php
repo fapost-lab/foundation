@@ -57,6 +57,9 @@ final readonly class NodeExecutionContext
 
         /** Engine resolved from the running flow_definition's expression_engine snapshot. */
         public ?ExpressionEngineInterface $expressionEngine = null,
+
+        /** True when the engine runs this node because the resume time of its {@see NodeExecutionResult::delayed()} arrived. */
+        public bool $resumedAfterDelay = false,
     ) {
     }
 }

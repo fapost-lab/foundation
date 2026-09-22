@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Fapost\Foundation\DTO;
 
+use DateTimeInterface;
+
 /**
  * Node execution result returned by {@see \Fapost\Foundation\Contracts\NodeHandlerInterface::execute()}.
  *
@@ -22,6 +24,7 @@ final readonly class NodeExecutionResult
      * @param  array<string, mixed>  $stateChanges  Namespaced flat keys, e.g. {@code flow.answer} => value
      * @param  array<string, mixed>  $logResolved   Snapshot values persisted to flow_logs.resolved
      * @param  array<string, mixed>  $metadata
+     * @param  DateTimeInterface|null  $resumeAt  For {@see NodeExecutionStatus::Delayed}: when the engine runs the node again
      */
     public function __construct(
         public NodeExecutionStatus $status,
@@ -30,6 +33,7 @@ final readonly class NodeExecutionResult
         public array $logResolved = [],
         public array $metadata = [],
         public ?string $errorMessage = null,
+        public ?DateTimeInterface $resumeAt = null,
     ) {
     }
 
@@ -67,15 +71,27 @@ final readonly class NodeExecutionResult
     }
 
     /**
+     * Pause the node and continue it later.
+     *
+     * With {@code $resumeAt} the session waits on `paused`: messages from the
+     * contact meanwhile are answered as busy, and at {@code $resumeAt} (or with the
+     * first message after it) the engine runs this node again with
+     * {@see NodeExecutionContext::$resumedAfterDelay} set. Without it the node
+     * waits like {@see waiting()}: the contact's next message runs it again.
+     *
      * @param  array<string, mixed>  $stateChanges
      * @param  array<string, mixed>  $metadata
      */
-    public static function delayed(array $stateChanges = [], array $metadata = []): self
-    {
+    public static function delayed(
+        array $stateChanges = [],
+        array $metadata = [],
+        ?DateTimeInterface $resumeAt = null,
+    ): self {
         return new self(
             status: NodeExecutionStatus::Delayed,
             stateChanges: $stateChanges,
             metadata: $metadata,
+            resumeAt: $resumeAt,
         );
     }
 
