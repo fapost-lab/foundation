@@ -1,0 +1,28 @@
+# Runs the contract tests. This package is what Solutions and Plugins build
+# against, so a change to a DTO or a named constructor is checked here, not only
+# by the Core suite that consumes it.
+
+name: Tests
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  phpunit:
+    name: PHPUnit
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: "8.4"
+          coverage: none
+      - name: Install dependencies
+        run: composer install --no-interaction --no-progress --prefer-dist
+      - name: Tests
+        run: vendor/bin/phpunit
