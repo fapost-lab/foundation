@@ -10,8 +10,9 @@ use LogicException;
 /**
  * The limits a platform can enforce. Implemented by Core.
  *
- * Core, and later Solutions, register their limit keys while the application boots; the registry
- * is closed afterwards. Operator packages read it, for example to build a plan form.
+ * Core, and later Solutions, register their limit keys from a service provider's `boot()` (the
+ * registry is bound by Core's provider, which may register after a package's `register()`); the
+ * registry is closed once the application has booted. Operator packages read it, for example to build a plan form.
  */
 interface LimitRegistryInterface
 {

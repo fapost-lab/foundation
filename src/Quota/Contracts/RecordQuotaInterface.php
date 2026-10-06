@@ -26,6 +26,13 @@ interface RecordQuotaInterface
     public function canCreate(string $key, int $current): bool;
 
     /**
+     * The current tenant's limit for a key, for hints such as "3 of 5"; null means no limit.
+     *
+     * @throws LogicException when the key is not registered
+     */
+    public function limit(string $key): ?int;
+
+    /**
      * @throws RecordLimitReachedException when one more record would exceed the limit
      * @throws LogicException when the key is not registered
      */
