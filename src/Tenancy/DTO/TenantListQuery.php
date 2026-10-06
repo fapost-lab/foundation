@@ -15,12 +15,15 @@ final readonly class TenantListQuery
 {
     public const int MAX_PER_PAGE = 100;
 
+    /** The most ids `onlyIds` or `exceptIds` may carry; a longer list is a sign the filter belongs elsewhere. */
+    public const int MAX_IDS = 1000;
+
     /**
      * @param  string|null  $search  a substring of the slug, matched case-insensitively
-     * @param  list<string>|null  $onlyIds  only these tenants; null means no restriction
-     * @param  list<string>|null  $exceptIds  never these tenants
+     * @param  list<string>|null  $onlyIds  only these tenants; null means no restriction, an empty list matches nothing
+     * @param  list<string>|null  $exceptIds  never these tenants; ids that name no tenant are ignored
      *
-     * @throws InvalidArgumentException when the page or page size is out of range
+     * @throws InvalidArgumentException when the page or page size is out of range, or an id list is too long or not strings
      */
     public function __construct(
         public ?string $search = null,
@@ -38,6 +41,29 @@ final readonly class TenantListQuery
 
         if ($perPage < 1 || $perPage > self::MAX_PER_PAGE) {
             throw new InvalidArgumentException(sprintf('The page size must be between 1 and %d.', self::MAX_PER_PAGE));
+        }
+
+        self::assertIds('onlyIds', $onlyIds);
+        self::assertIds('exceptIds', $exceptIds);
+    }
+
+    /**
+     * @param  array<mixed>|null  $ids
+     */
+    private static function assertIds(string $name, ?array $ids): void
+    {
+        if (null === $ids) {
+            return;
+        }
+
+        if (count($ids) > self::MAX_IDS) {
+            throw new InvalidArgumentException(sprintf('%s may carry at most %d ids.', $name, self::MAX_IDS));
+        }
+
+        foreach ($ids as $id) {
+            if (! is_string($id)) {
+                throw new InvalidArgumentException(sprintf('%s must be a list of strings.', $name));
+            }
         }
     }
 }

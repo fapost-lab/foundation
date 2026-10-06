@@ -50,6 +50,20 @@ final class TenantDirectoryDtoTest extends TestCase
         new TenantListQuery(page: $page, perPage: $perPage);
     }
 
+    public function test_a_query_refuses_too_many_ids(): void
+    {
+        $this->expectException(InvalidArgumentException::class);
+
+        new TenantListQuery(exceptIds: array_map(strval(...), range(1, TenantListQuery::MAX_IDS + 1)));
+    }
+
+    public function test_a_query_refuses_ids_that_are_not_strings(): void
+    {
+        $this->expectException(InvalidArgumentException::class);
+
+        new TenantListQuery(onlyIds: [1]); // @phpstan-ignore argument.type
+    }
+
     public function test_a_summary_and_a_list_carry_their_values(): void
     {
         $createdAt = new DateTimeImmutable('2026-10-06T12:00:00Z');
@@ -61,7 +75,7 @@ final class TenantDirectoryDtoTest extends TestCase
         $this->assertSame(TenantStatus::Active, $summary->status);
         $this->assertSame($createdAt, $summary->createdAt);
         $this->assertSame('https://acme.example.test/', $summary->url);
-        $this->assertSame('https://acme.example.test/admin/login', $summary->adminLoginUrl);
+        $this->assertSame('https://acme.example.test/admin/login', $summary->loginUrl);
         $this->assertSame([$summary], $list->items);
         $this->assertSame(41, $list->total);
         $this->assertSame(2, $list->page);

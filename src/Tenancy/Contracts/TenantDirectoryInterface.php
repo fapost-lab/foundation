@@ -12,7 +12,8 @@ use Fapost\Foundation\Tenancy\DTO\TenantSummary;
  * Read-only view of the tenants a platform hosts: what an operator needs to find and open one.
  *
  * Implemented by Core; extension and operator packages only call it. It exposes no schema,
- * configuration or write operation.
+ * configuration or write operation. Ids are tenant ULIDs in their lowercase RFC 4122 form; an id in
+ * any other form names no tenant (`find` returns null, `findMany` leaves it out).
  */
 interface TenantDirectoryInterface
 {
