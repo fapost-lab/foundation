@@ -36,6 +36,7 @@ Fapost\Foundation\   →  src/
 | Channels | `Channel\*` | Channel adapters and webhook registration |
 | Media | `Media\*` | Channel media upload/download contracts and DTOs |
 | Tenancy | `Tenancy\*` | Tenant provisioning (`Contracts\TenantProvisionerInterface`) and a read-only tenant directory (`Contracts\TenantDirectoryInterface`), with their `DTO`, `Enums` and `Exceptions`; implemented by Core |
+| Quota | `Quota\*` | Limit registry (`Contracts\LimitRegistryInterface`, implemented by Core and filled by Core and Solutions at boot), per-tenant limits (`Contracts\TenantLimitsInterface`, implemented by an operator package; Core allows everything by default) and the record check Core and Solutions call before creating a counted record (`Contracts\RecordQuotaInterface`, implemented by Core; `Exceptions\RecordLimitReachedException`), with `DTO\LimitDefinition` and `Enums\LimitKind` |
 | RAG | `Contracts\RagAdapterInterface`, `DTO\*Rag*` | Retrieval-augmented generation adapters |
 | Analytics | `Analytics\*` | Analytics event DTO, writer contract, event types |
 | Inbound/outbound DTOs | `DTO\*` | Incoming/outgoing messages, media, webhook payloads, execution results |
