@@ -35,7 +35,7 @@ Fapost\Foundation\   →  src/
 | Messaging | `Messaging\*` | Outbound message senders, delivery results, typing/processing indicators |
 | Channels | `Channel\*` | Channel adapters and webhook registration |
 | Media | `Media\*` | Channel media upload/download contracts and DTOs |
-| Tenancy | `Tenancy\*` | Tenant provisioning contract (`Contracts\TenantProvisionerInterface`, `DTO`, `Enums`, `Exceptions`), implemented by Core |
+| Tenancy | `Tenancy\*` | Tenant provisioning (`Contracts\TenantProvisionerInterface`) and a read-only tenant directory (`Contracts\TenantDirectoryInterface`), with their `DTO`, `Enums` and `Exceptions`; implemented by Core |
 | RAG | `Contracts\RagAdapterInterface`, `DTO\*Rag*` | Retrieval-augmented generation adapters |
 | Analytics | `Analytics\*` | Analytics event DTO, writer contract, event types |
 | Inbound/outbound DTOs | `DTO\*` | Incoming/outgoing messages, media, webhook payloads, execution results |
