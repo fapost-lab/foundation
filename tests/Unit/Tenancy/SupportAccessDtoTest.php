@@ -7,6 +7,7 @@ namespace Fapost\Foundation\Tests\Unit\Tenancy;
 use DateTimeImmutable;
 use Fapost\Foundation\Tenancy\DTO\SupportAccessGrant;
 use Fapost\Foundation\Tenancy\DTO\SupportAccessRequest;
+use Fapost\Foundation\Tenancy\Enums\SupportAccessFailure;
 use Fapost\Foundation\Tenancy\Exceptions\SupportAccessUnavailableException;
 use InvalidArgumentException;
 use PHPUnit\Framework\TestCase;
@@ -34,12 +35,23 @@ final class SupportAccessDtoTest extends TestCase
     {
         $grant = new SupportAccessGrant('https://acme.example.test/support/enter', 'secret-token', new DateTimeImmutable('2026-10-07T12:00:00Z'));
 
-        $this->assertSame('secret-token', $grant->token);
+        $this->assertSame('secret-token', $grant->token());
         $this->assertStringNotContainsString('secret-token', print_r($grant, true));
+        $this->assertStringNotContainsString('secret-token', (string) json_encode($grant));
     }
 
     public function test_the_exception_names_its_reason(): void
     {
         $this->assertSame('Support access is not enabled on this platform.', SupportAccessUnavailableException::disabled()->getMessage());
+        $this->assertSame(SupportAccessFailure::Disabled, SupportAccessUnavailableException::disabled()->reason);
+        $this->assertSame(SupportAccessFailure::TenantNotFound, SupportAccessUnavailableException::tenantNotFound('x')->reason);
+        $this->assertSame(SupportAccessFailure::TenantNotActive, SupportAccessUnavailableException::tenantNotActive('x')->reason);
+    }
+
+    public function test_a_request_refuses_a_malformed_email(): void
+    {
+        $this->expectException(InvalidArgumentException::class);
+
+        new SupportAccessRequest('019e081a-1c4e-2618-2a46-275dda69f357', 'operator:1', 'Olga', 'not-an-email');
     }
 }

@@ -17,7 +17,7 @@ final readonly class SupportAccessRequest
      * @param  string  $operatorName  shown to the tenant in its support access log and banner
      * @param  string  $operatorEmail  shown to the tenant in its support access log
      *
-     * @throws InvalidArgumentException when a field is empty
+     * @throws InvalidArgumentException when a field is empty or the email is not an address
      */
     public function __construct(
         public string $tenantId,
@@ -29,6 +29,10 @@ final readonly class SupportAccessRequest
             if ('' === trim($value)) {
                 throw new InvalidArgumentException(sprintf('Support access needs a non-empty %s.', $field));
             }
+        }
+
+        if (false === filter_var($operatorEmail, FILTER_VALIDATE_EMAIL)) {
+            throw new InvalidArgumentException('Support access needs the operator\'s email address.');
         }
     }
 }
