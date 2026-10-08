@@ -28,7 +28,6 @@ interface TenantDirectoryInterface
      * Unknown ids are absent from the result.
      *
      * @param  list<string>  $ids
-     *
      * @return array<string, TenantSummary> keyed by tenant id
      */
     public function findMany(array $ids): array;

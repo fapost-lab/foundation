@@ -9,7 +9,7 @@ namespace Fapost\Foundation\Tenancy\Enums;
  */
 enum SupportAccessFailure: string
 {
-    case Disabled        = 'disabled';
-    case TenantNotFound  = 'tenant_not_found';
+    case Disabled = 'disabled';
+    case TenantNotFound = 'tenant_not_found';
     case TenantNotActive = 'tenant_not_active';
 }
