@@ -24,5 +24,7 @@ jobs:
           coverage: none
       - name: Install dependencies
         run: composer install --no-interaction --no-progress --prefer-dist
+      - name: Code style
+        run: vendor/bin/pint --test
       - name: Tests
         run: vendor/bin/phpunit

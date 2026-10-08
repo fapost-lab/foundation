@@ -31,12 +31,12 @@ final readonly class IngressSpecExecutor
     public function verify(IngressSpec $spec, SignedRequest $request, string $secret): bool
     {
         return match ($spec->scheme) {
-            SignatureScheme::None                                  => true,
-            SignatureScheme::HeaderEquals                          => hash_equals(
+            SignatureScheme::None         => true,
+            SignatureScheme::HeaderEquals => hash_equals(
                 $secret,
                 $request->header((string)$spec->parameter),
             ),
-            SignatureScheme::QueryParam                            => hash_equals(
+            SignatureScheme::QueryParam => hash_equals(
                 $secret,
                 $request->queryParam((string)$spec->parameter),
             ),
@@ -54,7 +54,7 @@ final readonly class IngressSpecExecutor
     {
         return preg_replace_callback(
             '/\{([^}]+)\}/',
-            fn(array $matches): string => $this->resolvePlaceholder($matches[1], $request, $channelId),
+            fn (array $matches): string => $this->resolvePlaceholder($matches[1], $request, $channelId),
             $spec->idempotencyTemplate,
         );
     }

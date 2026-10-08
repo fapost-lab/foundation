@@ -12,18 +12,18 @@ namespace Fapost\Foundation\Tenancy\Enums;
  */
 enum ProvisioningFailure: string
 {
-    case SlugInvalid = 'slug_invalid';
-    case SlugReserved = 'slug_reserved';
-    case SlugTaken = 'slug_taken';
-    case AdminCredentialsMissing = 'admin_credentials_missing';
+    case SlugInvalid              = 'slug_invalid';
+    case SlugReserved             = 'slug_reserved';
+    case SlugTaken                = 'slug_taken';
+    case AdminCredentialsMissing  = 'admin_credentials_missing';
     case AdminPasswordHashInvalid = 'admin_password_hash_invalid';
-    case Failed = 'failed';
+    case Failed                   = 'failed';
 
     /**
      * Whether the cause is the caller's input rather than a platform failure.
      */
     public function isInputError(): bool
     {
-        return $this !== self::Failed;
+        return self::Failed !== $this;
     }
 }

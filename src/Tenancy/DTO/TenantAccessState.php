@@ -14,7 +14,8 @@ final readonly class TenantAccessState
     public function __construct(
         public AccessMode $mode,
         public ?AccessNotice $notice = null,
-    ) {}
+    ) {
+    }
 
     public static function active(): self
     {
@@ -23,6 +24,6 @@ final readonly class TenantAccessState
 
     public function isStopped(): bool
     {
-        return $this->mode === AccessMode::Stopped;
+        return AccessMode::Stopped === $this->mode;
     }
 }

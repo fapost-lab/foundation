@@ -23,15 +23,15 @@ final readonly class AccessNotice
         public ?string $actionLabel = null,
         public ?string $actionUrl = null,
     ) {
-        if (trim($title) === '') {
+        if ('' === mb_trim($title)) {
             throw new InvalidArgumentException('An access notice needs a title.');
         }
 
-        if (($actionLabel === null) !== ($actionUrl === null)) {
+        if ((null === $actionLabel) !== (null === $actionUrl)) {
             throw new InvalidArgumentException('An access notice action needs both a label and a URL.');
         }
 
-        if ($actionUrl !== null && preg_match('#^https?://#i', $actionUrl) !== 1) {
+        if (null !== $actionUrl && 1 !== preg_match('#^https?://#i', $actionUrl)) {
             throw new InvalidArgumentException('An access notice action URL must be http or https.');
         }
     }

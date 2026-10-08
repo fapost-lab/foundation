@@ -22,8 +22,7 @@ final readonly class ExpressionContext
         public string $contactId,
         public string $sessionId,
         public ScopedStateReaderInterface $stateReader,
-    )
-    {
+    ) {
     }
 
     /**

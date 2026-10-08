@@ -9,6 +9,6 @@ namespace Fapost\Foundation\Tenancy\Enums;
  */
 enum TenantSort: string
 {
-    case Slug = 'slug';
+    case Slug      = 'slug';
     case CreatedAt = 'created_at';
 }

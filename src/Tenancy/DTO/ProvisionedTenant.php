@@ -17,5 +17,6 @@ final readonly class ProvisionedTenant
         public string $slug,
         /** Absolute URL of the admin panel login on the tenant's host. Built by Core. */
         public string $loginUrl,
-    ) {}
+    ) {
+    }
 }

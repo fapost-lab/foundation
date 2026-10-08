@@ -13,6 +13,18 @@ use PHPUnit\Framework\TestCase;
 
 final class TenantAccessStateTest extends TestCase
 {
+    /**
+     * @return array<string, array{string, ?string, ?string}>
+     */
+    public static function invalidNotices(): array
+    {
+        return [
+            'empty title'       => [' ', null, null],
+            'label without url' => ['Ended', 'Extend', null],
+            'url without label' => ['Ended', null, 'https://example.test'],
+            'javascript url'    => ['Ended', 'Extend', 'javascript:alert(1)'],
+        ];
+    }
     public function test_the_active_state_has_no_notice(): void
     {
         $state = TenantAccessState::active();
@@ -25,23 +37,10 @@ final class TenantAccessStateTest extends TestCase
     public function test_a_stopped_state_carries_its_notice(): void
     {
         $notice = new AccessNotice('Your trial has ended', 'Extend to keep your bot answering.', 'Extend', 'https://example.test/billing');
-        $state = new TenantAccessState(AccessMode::Stopped, $notice);
+        $state  = new TenantAccessState(AccessMode::Stopped, $notice);
 
         $this->assertTrue($state->isStopped());
         $this->assertSame('Extend', $state->notice?->actionLabel);
-    }
-
-    /**
-     * @return array<string, array{string, ?string, ?string}>
-     */
-    public static function invalidNotices(): array
-    {
-        return [
-            'empty title' => [' ', null, null],
-            'label without url' => ['Ended', 'Extend', null],
-            'url without label' => ['Ended', null, 'https://example.test'],
-            'javascript url' => ['Ended', 'Extend', 'javascript:alert(1)'],
-        ];
     }
 
     #[DataProvider('invalidNotices')]
