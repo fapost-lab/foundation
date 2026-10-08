@@ -14,6 +14,9 @@ enum AccessMode: string
     /** Everything runs. */
     case Active = 'active';
 
-    /** Inbound is not processed, scheduled work waits, and the panel takes no changes. Data is kept. */
+    /**
+     * Inbound is not processed and scheduled work waits; the platform refuses changes where it can
+     * (how far that reaches is the platform's to say). Data is kept.
+     */
     case Stopped = 'stopped';
 }
