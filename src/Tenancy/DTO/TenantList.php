@@ -18,5 +18,6 @@ final readonly class TenantList
         public int $total,
         public int $page,
         public int $perPage,
-    ) {}
+    ) {
+    }
 }

@@ -74,7 +74,7 @@ abstract class AbstractSolutionServiceProvider extends ServiceProvider implement
      */
     public function boot(): void
     {
-        if ( ! $this->app->bound(CoreRegistrarInterface::class)) {
+        if (! $this->app->bound(CoreRegistrarInterface::class)) {
             return;
         }
 

@@ -16,9 +16,20 @@ use PHPUnit\Framework\TestCase;
 
 final class TenantDirectoryDtoTest extends TestCase
 {
+    /**
+     * @return array<string, array{int, int}>
+     */
+    public static function invalidPages(): array
+    {
+        return [
+            'page zero'       => [0, 25],
+            'page size zero'  => [1, 0],
+            'page size above' => [1, TenantListQuery::MAX_PER_PAGE + 1],
+        ];
+    }
     public function test_a_query_defaults_to_the_first_page_by_slug(): void
     {
-        $query = new TenantListQuery;
+        $query = new TenantListQuery();
 
         $this->assertNull($query->search);
         $this->assertNull($query->status);
@@ -28,18 +39,6 @@ final class TenantDirectoryDtoTest extends TestCase
         $this->assertFalse($query->descending);
         $this->assertSame(1, $query->page);
         $this->assertSame(25, $query->perPage);
-    }
-
-    /**
-     * @return array<string, array{int, int}>
-     */
-    public static function invalidPages(): array
-    {
-        return [
-            'page zero' => [0, 25],
-            'page size zero' => [1, 0],
-            'page size above' => [1, TenantListQuery::MAX_PER_PAGE + 1],
-        ];
     }
 
     #[DataProvider('invalidPages')]
@@ -67,8 +66,8 @@ final class TenantDirectoryDtoTest extends TestCase
     public function test_a_summary_and_a_list_carry_their_values(): void
     {
         $createdAt = new DateTimeImmutable('2026-10-06T12:00:00Z');
-        $summary = new TenantSummary('01JABCDEF', 'acme', TenantStatus::Active, $createdAt, 'https://acme.example.test/', 'https://acme.example.test/admin/login');
-        $list = new TenantList([$summary], 41, 2, 20);
+        $summary   = new TenantSummary('01JABCDEF', 'acme', TenantStatus::Active, $createdAt, 'https://acme.example.test/', 'https://acme.example.test/admin/login');
+        $list      = new TenantList([$summary], 41, 2, 20);
 
         $this->assertSame('01JABCDEF', $summary->id);
         $this->assertSame('acme', $summary->slug);

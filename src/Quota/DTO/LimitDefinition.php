@@ -31,7 +31,7 @@ final readonly class LimitDefinition
             throw new InvalidArgumentException(sprintf('Limit key "%s" must be snake_case.', $key));
         }
 
-        if ('' === trim($label) || '' === trim($unit)) {
+        if ('' === mb_trim($label) || '' === mb_trim($unit)) {
             throw new InvalidArgumentException(sprintf('Limit "%s" needs a label and a unit.', $key));
         }
     }

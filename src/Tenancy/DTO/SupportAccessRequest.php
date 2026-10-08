@@ -27,12 +27,12 @@ final readonly class SupportAccessRequest
         public string $operatorEmail,
     ) {
         foreach (['tenantId' => $tenantId, 'operatorRef' => $operatorRef, 'operatorName' => $operatorName, 'operatorEmail' => $operatorEmail] as $field => $value) {
-            if (trim($value) === '') {
+            if ('' === mb_trim($value)) {
                 throw new InvalidArgumentException(sprintf('Support access needs a non-empty %s.', $field));
             }
         }
 
-        if (filter_var($operatorEmail, FILTER_VALIDATE_EMAIL) === false) {
+        if (false === filter_var($operatorEmail, FILTER_VALIDATE_EMAIL)) {
             throw new InvalidArgumentException('Support access needs the operator\'s email address.');
         }
     }

@@ -23,11 +23,7 @@ final readonly class SupportAccessGrant implements JsonSerializable
         private string $token,
         /** UTC; the token is refused after this moment. */
         public DateTimeImmutable $expiresAt,
-    ) {}
-
-    public function token(): string
-    {
-        return $this->token;
+    ) {
     }
 
     /**
@@ -36,6 +32,11 @@ final readonly class SupportAccessGrant implements JsonSerializable
     public function __debugInfo(): array
     {
         return $this->redacted();
+    }
+
+    public function token(): string
+    {
+        return $this->token;
     }
 
     /**

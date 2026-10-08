@@ -18,5 +18,6 @@ final readonly class ProvisionTenant
         public string $adminName,
         /** A hash produced by the application's hasher (Hash::make); never a plain password. */
         public string $adminPasswordHash,
-    ) {}
+    ) {
+    }
 }

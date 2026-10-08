@@ -12,7 +12,7 @@ namespace Fapost\Foundation\Tenancy\Enums;
  */
 enum TenantStatus: string
 {
-    case Active = 'active';
-    case Inactive = 'inactive';
+    case Active    = 'active';
+    case Inactive  = 'inactive';
     case Suspended = 'suspended';
 }

@@ -26,7 +26,7 @@ final readonly class Version
 
     public static function parse(string $version): self
     {
-        if ( ! self::isValid($version)) {
+        if (! self::isValid($version)) {
             throw new InvalidArgumentException("Invalid semver: '{$version}'");
         }
 
