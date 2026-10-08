@@ -5,10 +5,11 @@ declare(strict_types=1);
 namespace Fapost\Foundation\Tenancy\DTO;
 
 use DateTimeImmutable;
+use Fapost\Foundation\Tenancy\Contracts\TenantDirectoryInterface;
 use Fapost\Foundation\Tenancy\Enums\TenantStatus;
 
 /**
- * A tenant as a {@see \Fapost\Foundation\Tenancy\Contracts\TenantDirectoryInterface} returns it.
+ * A tenant as a {@see TenantDirectoryInterface} returns it.
  */
 final readonly class TenantSummary
 {
@@ -27,6 +28,5 @@ final readonly class TenantSummary
         public string $url,
         /** Absolute URL of the admin panel login on the tenant's host, as in ProvisionedTenant. Built by Core. */
         public string $loginUrl,
-    ) {
-    }
+    ) {}
 }

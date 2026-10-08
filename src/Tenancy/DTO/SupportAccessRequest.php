@@ -4,10 +4,11 @@ declare(strict_types=1);
 
 namespace Fapost\Foundation\Tenancy\DTO;
 
+use Fapost\Foundation\Tenancy\Contracts\SupportAccessInterface;
 use InvalidArgumentException;
 
 /**
- * Who asks to enter which tenant, as a {@see \Fapost\Foundation\Tenancy\Contracts\SupportAccessInterface} receives it.
+ * Who asks to enter which tenant, as a {@see SupportAccessInterface} receives it.
  */
 final readonly class SupportAccessRequest
 {
@@ -26,12 +27,12 @@ final readonly class SupportAccessRequest
         public string $operatorEmail,
     ) {
         foreach (['tenantId' => $tenantId, 'operatorRef' => $operatorRef, 'operatorName' => $operatorName, 'operatorEmail' => $operatorEmail] as $field => $value) {
-            if ('' === trim($value)) {
+            if (trim($value) === '') {
                 throw new InvalidArgumentException(sprintf('Support access needs a non-empty %s.', $field));
             }
         }
 
-        if (false === filter_var($operatorEmail, FILTER_VALIDATE_EMAIL)) {
+        if (filter_var($operatorEmail, FILTER_VALIDATE_EMAIL) === false) {
             throw new InvalidArgumentException('Support access needs the operator\'s email address.');
         }
     }

@@ -18,12 +18,12 @@ final class TenantProvisioningFailedExceptionTest extends TestCase
     public static function failures(): array
     {
         return [
-            'invalid'  => [TenantProvisioningFailedException::slugInvalid('A b'), ProvisioningFailure::SlugInvalid],
+            'invalid' => [TenantProvisioningFailedException::slugInvalid('A b'), ProvisioningFailure::SlugInvalid],
             'reserved' => [TenantProvisioningFailedException::slugReserved('admin'), ProvisioningFailure::SlugReserved],
-            'taken'    => [TenantProvisioningFailedException::slugTaken('acme'), ProvisioningFailure::SlugTaken],
-            'creds'    => [TenantProvisioningFailedException::adminCredentialsMissing(), ProvisioningFailure::AdminCredentialsMissing],
-            'hash'     => [TenantProvisioningFailedException::adminPasswordHashInvalid(), ProvisioningFailure::AdminPasswordHashInvalid],
-            'failed'   => [TenantProvisioningFailedException::failed('acme'), ProvisioningFailure::Failed],
+            'taken' => [TenantProvisioningFailedException::slugTaken('acme'), ProvisioningFailure::SlugTaken],
+            'creds' => [TenantProvisioningFailedException::adminCredentialsMissing(), ProvisioningFailure::AdminCredentialsMissing],
+            'hash' => [TenantProvisioningFailedException::adminPasswordHashInvalid(), ProvisioningFailure::AdminPasswordHashInvalid],
+            'failed' => [TenantProvisioningFailedException::failed('acme'), ProvisioningFailure::Failed],
         ];
     }
 

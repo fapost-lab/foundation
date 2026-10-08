@@ -52,7 +52,7 @@ final readonly class TenantListQuery
      */
     private static function assertIds(string $name, ?array $ids): void
     {
-        if (null === $ids) {
+        if ($ids === null) {
             return;
         }
 

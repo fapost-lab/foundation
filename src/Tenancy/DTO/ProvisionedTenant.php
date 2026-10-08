@@ -4,8 +4,10 @@ declare(strict_types=1);
 
 namespace Fapost\Foundation\Tenancy\DTO;
 
+use Fapost\Foundation\Tenancy\Contracts\TenantProvisionerInterface;
+
 /**
- * A tenant created by a {@see \Fapost\Foundation\Tenancy\Contracts\TenantProvisionerInterface}.
+ * A tenant created by a {@see TenantProvisionerInterface}.
  */
 final readonly class ProvisionedTenant
 {
@@ -15,6 +17,5 @@ final readonly class ProvisionedTenant
         public string $slug,
         /** Absolute URL of the admin panel login on the tenant's host. Built by Core. */
         public string $loginUrl,
-    ) {
-    }
+    ) {}
 }
