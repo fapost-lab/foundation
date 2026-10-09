@@ -13,7 +13,7 @@ use InvalidArgumentException;
  */
 final readonly class UsageUnit
 {
-    public const MAX_UNIT_KEY_LENGTH = 191;
+    public const int MAX_UNIT_KEY_LENGTH = 191;
 
     /**
      * @param  string  $tenantId  tenant ULID in its lowercase RFC 4122 form
