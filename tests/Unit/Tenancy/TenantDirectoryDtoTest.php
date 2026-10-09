@@ -83,6 +83,6 @@ final class TenantDirectoryDtoTest extends TestCase
 
     public function test_the_status_values_match_the_platform_record(): void
     {
-        $this->assertSame(['active', 'inactive', 'suspended'], array_map(static fn (TenantStatus $s): string => $s->value, TenantStatus::cases()));
+        $this->assertSame(['pending', 'active', 'inactive', 'suspended'], array_map(static fn (TenantStatus $s): string => $s->value, TenantStatus::cases()));
     }
 }

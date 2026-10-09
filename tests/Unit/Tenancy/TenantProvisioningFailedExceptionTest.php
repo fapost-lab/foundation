@@ -6,6 +6,9 @@ namespace Fapost\Foundation\Tests\Unit\Tenancy;
 
 use Fapost\Foundation\Tenancy\Enums\ProvisioningFailure;
 use Fapost\Foundation\Tenancy\Exceptions\TenantProvisioningFailedException;
+
+use function in_array;
+
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use RuntimeException;
@@ -24,6 +27,10 @@ final class TenantProvisioningFailedExceptionTest extends TestCase
             'creds'    => [TenantProvisioningFailedException::adminCredentialsMissing(), ProvisioningFailure::AdminCredentialsMissing],
             'hash'     => [TenantProvisioningFailedException::adminPasswordHashInvalid(), ProvisioningFailure::AdminPasswordHashInvalid],
             'failed'   => [TenantProvisioningFailedException::failed('acme'), ProvisioningFailure::Failed],
+            'missing'  => [TenantProvisioningFailedException::tenantNotFound('01JABC'), ProvisioningFailure::TenantNotFound],
+            'pending'  => [TenantProvisioningFailedException::tenantNotPending('01JABC'), ProvisioningFailure::TenantNotPending],
+            'conflict' => [TenantProvisioningFailedException::conflict('01JABC'), ProvisioningFailure::Conflict],
+            'busy'     => [TenantProvisioningFailedException::inProgress('01JABC'), ProvisioningFailure::InProgress],
         ];
     }
 
@@ -42,9 +49,31 @@ final class TenantProvisioningFailedExceptionTest extends TestCase
         $this->assertSame($previous, TenantProvisioningFailedException::failed('acme', $previous)->getPrevious());
     }
 
-    public function test_only_failed_is_not_an_input_error(): void
+    public function test_only_platform_failures_are_not_input_errors(): void
     {
         $this->assertTrue(ProvisioningFailure::AdminPasswordHashInvalid->isInputError());
+        $this->assertTrue(ProvisioningFailure::TenantNotFound->isInputError());
+        $this->assertTrue(ProvisioningFailure::TenantNotPending->isInputError());
         $this->assertFalse(ProvisioningFailure::Failed->isInputError());
+        $this->assertFalse(ProvisioningFailure::InProgress->isInputError());
+        $this->assertFalse(ProvisioningFailure::Conflict->isInputError());
+    }
+
+    public function test_only_failed_and_in_progress_are_retryable(): void
+    {
+        foreach (ProvisioningFailure::cases() as $case) {
+            $expected = in_array($case, [ProvisioningFailure::Failed, ProvisioningFailure::InProgress], true);
+
+            $this->assertSame($expected, $case->isRetryable(), $case->value);
+        }
+    }
+
+    public function test_the_tenant_id_is_optional_and_set_for_failed_and_in_progress(): void
+    {
+        $this->assertNull(TenantProvisioningFailedException::failed('acme')->tenantId);
+        $this->assertNull(TenantProvisioningFailedException::slugTaken('acme')->tenantId);
+        $this->assertSame('01JABC', TenantProvisioningFailedException::failed('acme', null, '01JABC')->tenantId);
+        $this->assertSame('01JABC', TenantProvisioningFailedException::inProgress('01JABC')->tenantId);
+        $this->assertSame('01JABC', TenantProvisioningFailedException::conflict('01JABC')->tenantId);
     }
 }

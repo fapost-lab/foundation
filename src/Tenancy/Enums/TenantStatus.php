@@ -12,6 +12,8 @@ namespace Fapost\Foundation\Tenancy\Enums;
  */
 enum TenantStatus: string
 {
+    /** Holds a slug (and a schema name) but is not ready: no schema yet, or provisioning unfinished. Serves no traffic. */
+    case Pending   = 'pending';
     case Active    = 'active';
     case Inactive  = 'inactive';
     case Suspended = 'suspended';
