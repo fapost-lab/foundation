@@ -11,6 +11,9 @@ interface MessageSenderInterface
 {
     /**
      * Send one prepared outbound message through its resolved channel integration.
+     *
+     * @throws \Fapost\Foundation\Quota\Exceptions\VolumeLimitReachedException when the tenant's outbound volume
+     *         is used up for the period; nothing was sent and the caller must not retry
      */
     public function send(OutboundMessage $message): DeliveryResult;
 }
