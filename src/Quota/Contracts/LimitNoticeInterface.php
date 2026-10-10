@@ -10,7 +10,7 @@ use Fapost\Foundation\Quota\Enums\LimitNoticeReason;
 /**
  * Supplies the commercial "what to do next" wording of the notification Core sends a tenant's
  * admins when a limit refuses work or a record limit has just been filled (see
- * {@see \Fapost\Foundation\Quota\Enums\LimitNoticeReason}). Implemented by an operator package; Core's default returns
+ * {@see LimitNoticeReason}). Implemented by an operator package; Core's default returns
  * null, and Core then writes its own text.
  *
  * Core owns the facts of the refusal (the limit's name, "used of limit", what was refused) and
