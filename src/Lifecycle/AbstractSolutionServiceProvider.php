@@ -14,23 +14,14 @@ use Illuminate\Support\ServiceProvider;
  * A Solution is an external composer package with niche functionality
  * (HR, Recruitment, etc.). It never lives in app/Solutions/.
  *
- * Example usage in fapost/solution-hr:
+ * The Solution's identity is not declared here but in its composer.json
+ * (`type: fapost-solution` and the `extra.fapost` block, see
+ * {@see \Fapost\Foundation\Solution\Manifest\ManifestSchema}); Core boots the provider named there.
+ *
+ * Example usage in a Solution package:
  *
  *   class HrSolutionServiceProvider extends AbstractSolutionServiceProvider
  *   {
- *       public function getId(): string { return 'hr'; }
- *       public function getVersion(): string { return '1.0.0'; }
- *
- *       public function getManifest(): SolutionManifest
- *       {
- *           return SolutionManifest::make(
- *               id: $this->getId(),
- *               version: $this->getVersion(),
- *               requiresPlatform: '>=1.0.0 <2.0.0',
- *               requiresCapabilities: ['flow.node_registry', 'flow.data_accessor'],
- *           );
- *       }
- *
  *       protected function registerExtensions(CoreRegistrarInterface $registrar): void
  *       {
  *           $registrar->registerNodeHandler(SyncEmployeeHandler::class);
@@ -42,7 +33,7 @@ abstract class AbstractSolutionServiceProvider extends ServiceProvider implement
 {
     /**
      * Register all extensions through CoreRegistrar.
-     * Called in boot() after manifest validation.
+     * Called in boot().
      */
     abstract protected function registerExtensions(CoreRegistrarInterface $registrar): void;
     /**
@@ -80,7 +71,6 @@ abstract class AbstractSolutionServiceProvider extends ServiceProvider implement
 
         $registrar = $this->app->make(CoreRegistrarInterface::class);
 
-        $registrar->registerManifest($this->getManifest());
         $this->registerExtensions($registrar);
         $this->bootSolution();
     }
