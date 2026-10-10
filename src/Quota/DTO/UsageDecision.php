@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Fapost\Foundation\Quota\DTO;
 
+use DateTimeImmutable;
 use InvalidArgumentException;
 
 /**
@@ -15,12 +16,16 @@ final readonly class UsageDecision
      * @param  int|null  $limit  the limit for the period; null means no limit
      * @param  int|null  $used  units counted in the period after this call; null when unknown
      * @param  string|null  $message  the operator's text for people, in English; Core may show it
+     * @param  DateTimeImmutable|null  $periodEndsAt  when the period this decision belongs to ends, on a refusal only;
+     *                                                  Core sends one notification per limit and period, and uses the
+     *                                                  calendar month (UTC) when the operator does not say
      */
     private function __construct(
         public bool $allowed,
         public ?int $limit,
         public ?int $used,
         public ?string $message,
+        public ?DateTimeImmutable $periodEndsAt = null,
     ) {
     }
 
@@ -39,12 +44,12 @@ final readonly class UsageDecision
     /**
      * @throws InvalidArgumentException when the limit or the used count is negative
      */
-    public static function refused(int $limit, int $used, ?string $message = null): self
+    public static function refused(int $limit, int $used, ?string $message = null, ?DateTimeImmutable $periodEndsAt = null): self
     {
         if ($limit < 0 || $used < 0) {
             throw new InvalidArgumentException('The limit and the used count cannot be negative.');
         }
 
-        return new self(false, $limit, $used, $message);
+        return new self(false, $limit, $used, $message, $periodEndsAt);
     }
 }
