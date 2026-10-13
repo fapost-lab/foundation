@@ -30,7 +30,7 @@ Fapost\Foundation\   →  src/
 
 | Area | Namespace | Purpose |
 |------|-----------|---------|
-| Extension lifecycle | `Contracts`, `Lifecycle`, `Manifest`, `Support` | Register and validate Solutions/Plugins against the platform |
+| Extension lifecycle | `Contracts`, `Lifecycle`, `Solution\*`, `Support` | Register Solutions/Plugins against the platform; the Solution manifest (`Solution\Manifest\*`: `ManifestParser`, `SolutionManifest`, `ManifestSchema`) and the read-only catalog of installed Solutions (`Solution\Contracts\InstalledSolutionCatalogInterface`, implemented by Core; `Solution\DTO\InstalledSolutionInfo`) |
 | Flow engine | `Flow\*`, `Contracts\NodeHandlerInterface`, `Contracts\DataAccessorInterface` | Node handlers, expression engine, triggers, contact writes, scoped state |
 | Messaging | `Messaging\*` | Outbound message senders, delivery results, typing/processing indicators |
 | Channels | `Channel\*` | Channel adapters and webhook registration |
@@ -59,20 +59,66 @@ protected function registerExtensions(CoreRegistrarInterface $registrar): void
 - **Plugin** — extends platform capabilities without domain logic (a new channel adapter, a new
   RAG provider). Extend `Lifecycle\AbstractPluginServiceProvider`.
 
-Both declare a `Manifest\SolutionManifest` used for boot-time validation, capability compatibility
-checks and degraded-state detection:
+### Solution manifest
 
-```php
-public function getManifest(): SolutionManifest
+A Solution declares itself in its own `composer.json`, as data, so it can be checked without running
+the package: `"type": "fapost-solution"` plus an `extra.fapost` block.
+
+```json
 {
-    return SolutionManifest::make(
-        id: 'hr',
-        version: '2.1.0',
-        requiresPlatform: '>=1.4.0 <2.0.0',
-        requiresCapabilities: ['flow.node_registry', 'flow.data_accessor'],
-    );
+  "name": "acme/fapost-feedback",
+  "type": "fapost-solution",
+  "require": { "fapost/foundation": "^0.13" },
+  "extra": {
+    "fapost": {
+      "schema": 1,
+      "id": "feedback",
+      "name": "Feedback",
+      "description": "Collect and route customer feedback from flows.",
+      "provider": "Acme\\Feedback\\FeedbackServiceProvider",
+      "actions": ["feedback.submit", "feedback.score"]
+    }
+  }
 }
 ```
+
+| Field | Required | Rule |
+|-------|----------|------|
+| `type` | yes | `fapost-solution` (`fapost-plugin` is reserved) |
+| `extra.fapost.schema` | yes | integer; `1` is the only supported number |
+| `extra.fapost.id` | yes | `^[a-z][a-z0-9_]{1,31}$`; not `core`, `platform`, `fapost`, `app`, `system`, `flow`, `module`, `rag`. **Never changes**: a new id is a different Solution |
+| `extra.fapost.name` | yes | one line, 1 to 60 characters, English |
+| `extra.fapost.description` | no | up to 280 characters |
+| `extra.fapost.provider` | yes | class name of a provider extending `Lifecycle\AbstractSolutionServiceProvider`; Core boots it |
+| `extra.laravel.providers` | forbidden | any entry is a violation (an empty list is fine): Laravel's package discovery would boot a Solution's provider whether or not its manifest holds up |
+| `extra.fapost.actions` | no | unique action ids, each starting with `<id>.` |
+| `extra.fapost.x-*` | no | ignored; for the author's own tooling |
+| `require.fapost/foundation` | yes | the Foundation range the Solution needs; Composer enforces it at install time |
+| `require.fapost/core` | forbidden | extensions depend on contracts, never on Core |
+
+The version is the package version Composer already knows; it is not repeated in the manifest.
+
+`Solution\Manifest\ManifestParser` checks a decoded `composer.json` and returns every violation, not
+the first, as `<package>: <field>: <message>` lines. It is pure (no file access, no class loading),
+so an extension's CI can run it without Core:
+
+```php
+$result = (new ManifestParser())->parse(json_decode(file_get_contents('composer.json'), true));
+
+$result->isValid();   // bool
+$result->lines();     // ["acme/fapost-feedback: extra.fapost.id: required", ...]
+$result->manifest;    // ?SolutionManifest
+```
+
+`SolutionManifest::fromComposer()` does the same and throws `InvalidManifestException` instead.
+`ManifestSchema::describe()` returns the rules above as data.
+
+**Evolution.** Unknown fields are an error (except `x-*`), so a Solution written for a newer
+Foundation never installs silently without part of its behaviour. A new optional field is additive:
+same `schema`, a minor Foundation release, and the Solution that uses it requires that Foundation
+version, which Composer enforces. A breaking change (meaning, removal, a new required field) is a new
+`schema` number; Foundation reads schema N and N-1 within one major version, N-1 as deprecated, and
+refuses anything else.
 
 ### Flow node handlers
 

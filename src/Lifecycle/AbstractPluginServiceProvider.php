@@ -22,19 +22,6 @@ use Illuminate\Support\ServiceProvider;
  *
  *   class ViberPluginServiceProvider extends AbstractPluginServiceProvider
  *   {
- *       public function getId(): string { return 'viber'; }
- *       public function getVersion(): string { return '1.0.0'; }
- *
- *       public function getManifest(): SolutionManifest
- *       {
- *           return SolutionManifest::make(
- *               id: $this->getId(),
- *               version: $this->getVersion(),
- *               requiresPlatform: '>=1.0.0 <2.0.0',
- *               requiresCapabilities: ['messaging.channel_adapter'],
- *           );
- *       }
- *
  *       protected function registerExtensions(CoreRegistrarInterface $registrar): void
  *       {
  *           $registrar->registerNodeHandler(ViberNodeHandler::class);
@@ -67,7 +54,6 @@ abstract class AbstractPluginServiceProvider extends ServiceProvider implements 
     {
         $registrar = $this->app->make(CoreRegistrarInterface::class);
 
-        $registrar->registerManifest($this->getManifest());
         $this->registerExtensions($registrar);
         $this->bootPlugin();
     }

@@ -8,26 +8,11 @@ namespace Fapost\Foundation\Contracts;
  * Contract for any platform extension (Solution, Plugin)
  * that can be activated/deactivated.
  *
- * Boot-time validation: extension must not start when capabilities are incompatible.
+ * Identity (id, name, version constraint, declared actions) is not part of this contract: it is
+ * data in the package's composer.json, see {@see \Fapost\Foundation\Solution\Manifest\ManifestSchema}.
  */
 interface ActivatableInterface
 {
-    /**
-     * Unique extension identifier.
-     * Used in platform:update, manifest validation, and registry.
-     */
-    public function getId(): string;
-
-    /**
-     * Extension semantic version (for example "1.2.3").
-     */
-    public function getVersion(): string;
-
-    /**
-     * Returns SolutionManifest with full dependency description.
-     */
-    public function getManifest(): \Fapost\Foundation\Manifest\SolutionManifest;
-
     /**
      * Called after successful activation and boot validation.
      */

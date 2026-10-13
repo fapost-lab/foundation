@@ -8,10 +8,11 @@ namespace Fapost\Foundation\Flow\Call;
  * Per-call context surface available to transports.
  *
  * String IDs only (consistent with NodeExecutionContext) — transports never
- * touch domain models directly. {@see $idempotencyKey} is the
- * {@code session_id:node_id:attempt_number} composite from the engine; HTTP
- * transports forward it as the `Idempotency-Key` header. In V1 attempt_number
- * is statically 1 — full Redis SET NX dedup is V1.x.
+ * touch domain models directly. {@see $idempotencyKey} is the engine's
+ * execution key, a ':' and the node id. The execution key is new on each pass
+ * through a node (a loop gives each pass its own key) and the same when a queue
+ * retry runs the pass again, so a retry repeats the key and a loop pass does
+ * not. HTTP transports forward it as the `Idempotency-Key` header.
  */
 final readonly class CallContext
 {
