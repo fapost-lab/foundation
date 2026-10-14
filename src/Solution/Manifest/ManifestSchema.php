@@ -63,7 +63,10 @@ final class ManifestSchema
      *
      * @var list<string>
      */
-    public const array FIELDS = ['schema', 'id', 'name', 'description', 'provider', 'actions'];
+    public const array FIELDS = ['schema', 'id', 'name', 'description', 'provider', 'actions', 'ui'];
+
+    /** Extension of the console UI description `extra.fapost.ui` points to. */
+    public const string UI_EXTENSION = '.json';
 
     /**
      * Machine-readable description of schema 1, keyed by field path.
@@ -80,6 +83,7 @@ final class ManifestSchema
             'extra.fapost.description'                     => ['required' => false, 'rule' => 'up to ' . self::DESCRIPTION_MAX_LENGTH . ' characters'],
             'extra.fapost.provider'                        => ['required' => true, 'rule' => 'class name of a service provider extending Fapost\Foundation\Lifecycle\AbstractSolutionServiceProvider'],
             'extra.fapost.actions'                         => ['required' => false, 'rule' => 'list of unique action ids, each prefixed "<id>."; default []'],
+            'extra.fapost.ui'                              => ['required' => false, 'rule' => 'path of the console UI description (fapost-ui.json) relative to the package root: "/"-separated non-empty segments of letters, digits, ".", "_" and "-", none starting with ".", ending with "' . self::UI_EXTENSION . '"; since foundation 0.15; experimental'],
             'extra.fapost.' . self::EXTENSION_PREFIX . '*' => ['required' => false, 'rule' => 'ignored; for the author\'s own tooling'],
             'extra.laravel.providers'                      => ['required' => false, 'rule' => 'must be absent or empty: Core boots the provider'],
             'require.' . self::FOUNDATION_PACKAGE          => ['required' => true, 'rule' => 'a constraint; checked by Composer'],

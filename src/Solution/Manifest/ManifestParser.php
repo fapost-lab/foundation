@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Fapost\Foundation\Solution\Manifest;
 
+use Fapost\Foundation\Support\PackagePath;
+
 /**
  * Checks a decoded `composer.json` against the Solution manifest schema.
  *
@@ -62,6 +64,7 @@ final class ManifestParser
         $description = $this->checkDescription($block, $violations);
         $provider    = $this->checkProvider($block, $violations);
         $actions     = $this->checkActions($block, $id, $violations);
+        $ui          = $this->checkUi($block, $violations);
 
         foreach (array_keys($block) as $key) {
             if (!in_array($key, ManifestSchema::FIELDS, true) && !str_starts_with((string) $key, ManifestSchema::EXTENSION_PREFIX)) {
@@ -84,7 +87,7 @@ final class ManifestParser
 
         return new ManifestParseResult(
             $package,
-            new SolutionManifest($package, $schema, $id, $name, $description, $provider, $actions, $constraint),
+            new SolutionManifest($package, $schema, $id, $name, $description, $provider, $actions, $constraint, $ui),
             [],
         );
     }
@@ -343,5 +346,32 @@ final class ManifestParser
         }
 
         return $valid;
+    }
+
+    /**
+     * The console UI description is a file inside the package: see {@see PackagePath::isRelativeFile()}.
+     *
+     * @param  array<string, mixed>  $block
+     * @param  list<ManifestViolation>  $violations
+     */
+    private function checkUi(array $block, array &$violations): ?string
+    {
+        if (!array_key_exists('ui', $block)) {
+            return null;
+        }
+
+        $ui = $block['ui'];
+
+        if (!PackagePath::isRelativeFile($ui, ManifestSchema::UI_EXTENSION)) {
+            $violations[] = new ManifestViolation(
+                'extra.fapost.ui',
+                sprintf('must be a path relative to the package root of segments made of letters, digits, ".", "_" and "-", no segment starting with ".", ending with "%s"', ManifestSchema::UI_EXTENSION),
+            );
+
+            return null;
+        }
+
+        /** @var string $ui */
+        return $ui;
     }
 }

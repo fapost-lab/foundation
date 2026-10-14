@@ -19,6 +19,8 @@ final readonly class SolutionManifest
      * @param  string  $provider  class name of the Solution's service provider
      * @param  list<string>  $actions  action ids the Solution registers, each prefixed "<id>."
      * @param  string  $foundationConstraint  the package's `require` for fapost/foundation, as written
+     * @param  string|null  $ui  path of the console UI description (`fapost-ui.json`) relative to the package root,
+     *                           or null when the Solution adds no console UI; since foundation 0.15, experimental
      */
     public function __construct(
         public string $package,
@@ -29,6 +31,7 @@ final readonly class SolutionManifest
         public string $provider,
         public array $actions,
         public string $foundationConstraint,
+        public ?string $ui = null,
     ) {
     }
 

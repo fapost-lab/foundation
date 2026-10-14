@@ -31,6 +31,7 @@ Fapost\Foundation\   →  src/
 | Area | Namespace | Purpose |
 |------|-----------|---------|
 | Extension lifecycle | `Contracts`, `Lifecycle`, `Solution\*`, `Support` | Register Solutions/Plugins against the platform; the Solution manifest (`Solution\Manifest\*`: `ManifestParser`, `SolutionManifest`, `ManifestSchema`) and the read-only catalog of installed Solutions (`Solution\Contracts\InstalledSolutionCatalogInterface`, implemented by Core; `Solution\DTO\InstalledSolutionInfo`) |
+| Console UI (experimental) | `Console\*` | What a Solution adds to the console: its own application, context actions, shell elements, dashboard widgets, settings tabs and table columns (`Console\Contracts\ConsoleExtensionsInterface`, implemented by Core; `Console\Contracts\ColumnValuesInterface`, implemented by a Solution), with their `DTO`, `Enums`, name formats (`ConsoleNames`) and the `fapost-ui.json` reader (`Console\Bundle\*`) |
 | Flow engine | `Flow\*`, `Contracts\NodeHandlerInterface`, `Contracts\DataAccessorInterface` | Node handlers, expression engine, triggers, contact writes, scoped state |
 | Messaging | `Messaging\*` | Outbound message senders, delivery results, typing/processing indicators |
 | Channels | `Channel\*` | Channel adapters and webhook registration |
@@ -92,6 +93,7 @@ the package: `"type": "fapost-solution"` plus an `extra.fapost` block.
 | `extra.fapost.provider` | yes | class name of a provider extending `Lifecycle\AbstractSolutionServiceProvider`; Core boots it |
 | `extra.laravel.providers` | forbidden | any entry is a violation (an empty list is fine): Laravel's package discovery would boot a Solution's provider whether or not its manifest holds up |
 | `extra.fapost.actions` | no | unique action ids, each starting with `<id>.` |
+| `extra.fapost.ui` | no | path of the Solution's `fapost-ui.json` relative to the package root: `/`-separated segments of letters, digits, `.`, `_`, `-`, none starting with `.`, ending with `.json`; since foundation 0.15, experimental (see [Console UI](#console-ui-experimental)) |
 | `extra.fapost.x-*` | no | ignored; for the author's own tooling |
 | `require.fapost/foundation` | yes | the Foundation range the Solution needs; Composer enforces it at install time |
 | `require.fapost/core` | forbidden | extensions depend on contracts, never on Core |
@@ -119,6 +121,108 @@ same `schema`, a minor Foundation release, and the Solution that uses it require
 version, which Composer enforces. A breaking change (meaning, removal, a new required field) is a new
 `schema` number; Foundation reads schema N and N-1 within one major version, N-1 as deprecated, and
 refuses anything else.
+
+### Console UI (experimental)
+
+> **Experimental since 0.15.** Every type under `Console\` is marked `@experimental`: it may change in a
+> minor release, with a changelog entry. Build on it knowing that.
+
+A Solution adds UI to the console in two halves: declarations in PHP, made from its provider's `boot()`,
+and a built bundle of Vue pages and components described by `fapost-ui.json`.
+
+**Declarations.** Resolve `Console\Contracts\ConsoleExtensionsInterface` in `boot()` (override it and call
+`parent::boot()`). Core binds every declaration to the Solution whose provider is booting and closes the
+registry once the application has booted; a call outside that window, a name outside the Solution's
+namespace, a duplicate key or a second application throws `Console\Exceptions\InvalidConsoleDeclarationException`.
+
+```php
+public function boot(): void
+{
+    parent::boot();
+
+    $console = $this->app->make(ConsoleExtensionsInterface::class);
+
+    $console->application(new ConsoleApplication(
+        label: 'feedback::console.app',
+        icon: 'message-circle',
+        entryRoute: 'solutions.feedback.index',
+        menu: [new MenuItem('feedback::console.menu.reviews', 'solutions.feedback.reviews')],
+    ));
+    $console->contextAction(ContextAction::dialog(ConsoleTarget::ContactView, 'rate', 'feedback::actions.rate', 'feedback::Dialogs/Rate'));
+    $console->dashboardWidget(new DashboardWidget(DashboardTarget::Console, 'score', 'feedback::Widgets/Score', WidgetSize::Double));
+    $console->tableColumn(new TableColumn(TableTarget::Contacts, 'score', 'feedback::columns.score', CellType::Number, ScoreValues::class));
+    $console->routes(function (Router $router): void {
+        $router->get('/', [ReviewController::class, 'index'])->name('index');
+    });
+}
+```
+
+| Point | DTO | Targets (value sent to the client) |
+|-------|-----|------------------------------------|
+| Own application in the app rail | `ConsoleApplication`, `MenuItem` | — (at most one; its id is the Solution id) |
+| Context action | `ContextAction::link()` / `::dialog()` | `ConsoleTarget`: `contact.view`, `contact.row`, `conversation.view` |
+| Shell element | `ShellElement` | `ShellSlot`: `floating`, `header` |
+| Dashboard widget | `DashboardWidget` (`WidgetSize`: `single`, `double`, `full`) | `DashboardTarget`: `console`, `admin` |
+| Settings tab | `SettingsTab` | `SettingsTarget`: `assistant`, `tenant` |
+| Table column | `TableColumn` (`CellType`, `Tone` for status cells) | `TableTarget`: `contacts`, `conversations` |
+
+`routes()` registers tenant-wide routes under `apps/<id>/`, `assistantRoutes()` per-assistant ones under
+`assistant/{tenant}/apps/<id>/`; Core adds the domain, the prefix, the name prefix `solutions.<id>.` and the
+`solution` middleware group. Use controllers, not closures, so the routes can be cached. A link action's route
+takes a `record` parameter. A table column's values come from a `Console\Contracts\ColumnValuesInterface`
+class, called once per table page with the row ids and a `Console\DTO\ColumnContext`.
+
+The DTOs check the format of what they are given and throw `InvalidArgumentException`:
+
+| Name | Format (`ConsoleNames`) | Example |
+|------|-------------------------|---------|
+| key | `KEY_PATTERN` `^[a-z][a-z0-9_]{0,31}$` | `score` |
+| label, menu group | `LABEL_PATTERN`: a translation key in the Solution's namespace | `feedback::console.app` |
+| icon | `ICON_PATTERN`: a lucide name in kebab case | `message-circle` |
+| route | `ROUTE_PATTERN`: `solutions.<id>.<name>`, non-empty dot-separated segments | `solutions.feedback.index` |
+| component | `COMPONENT_PATTERN`: `<id>::<Path>`, PascalCase segments joined by `/` | `feedback::Widgets/Score` |
+
+`ConsoleNames::solutionOf('feedback::Widgets/Score')` returns `feedback`. That the `<id>` in a label, route
+or component is the declaring Solution's own is checked by Core.
+
+**`fapost-ui.json`.** The built bundle sits in the package (usually `dist/`), and the manifest points to its
+description with `extra.fapost.ui`. Paths are relative to the directory of `fapost-ui.json`.
+
+```json
+{
+  "schema": 1,
+  "solution": "feedback",
+  "kit": "^0.1",
+  "vue": "^3.5",
+  "inertia": "^3.0",
+  "pages": { "Reviews/Index": "pages/reviews-index.js" },
+  "components": { "Widgets/Score": "components/score.js", "Dialogs/Rate": "components/rate.js" },
+  "css": ["assets/feedback.css"]
+}
+```
+
+| Field | Required | Rule |
+|-------|----------|------|
+| `schema` | yes | integer; `1` is the only supported number |
+| `solution` | yes | the manifest's `id` |
+| `kit`, `vue`, `inertia` | yes | non-empty version constraints the bundle was built against; Core checks them against its own |
+| `pages`, `components` | no | objects `Path => file`; `Path` is the part of a component name after `<id>::`; files end with `.js`; together at least one entry; a Path is listed once, under `pages` or under `components` |
+| `css` | no | list of files ending with `.css` |
+| `x-*` | no | ignored |
+
+Files are relative paths of `/`-separated segments made of letters, digits, `.`, `_` and `-` (no empty segment and none starting with `.`, so no `.`, `..` or hidden file). Unknown fields are an error, as in
+the manifest. `Console\Bundle\UiBundleParser` is pure like `ManifestParser`: it takes the decoded array and the
+Solution id and returns every violation at once; whether the listed files exist is checked by Core.
+
+```php
+$result = (new UiBundleParser())->parse(json_decode(file_get_contents('dist/fapost-ui.json'), true), 'feedback');
+
+$result->isValid();   // bool
+$result->lines();     // ["feedback: fapost-ui.json: pages.Index: must be a path relative ...", ...]
+$result->bundle;      // ?UiBundle
+```
+
+`UiBundleSchema::describe()` returns the rules above as data.
 
 ### Flow node handlers
 
