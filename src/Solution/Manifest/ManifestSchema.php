@@ -83,7 +83,7 @@ final class ManifestSchema
             'extra.fapost.description'                     => ['required' => false, 'rule' => 'up to ' . self::DESCRIPTION_MAX_LENGTH . ' characters'],
             'extra.fapost.provider'                        => ['required' => true, 'rule' => 'class name of a service provider extending Fapost\Foundation\Lifecycle\AbstractSolutionServiceProvider'],
             'extra.fapost.actions'                         => ['required' => false, 'rule' => 'list of unique action ids, each prefixed "<id>."; default []'],
-            'extra.fapost.ui'                              => ['required' => false, 'rule' => 'path of the console UI description (fapost-ui.json) relative to the package root, without ".." segments, ending with "' . self::UI_EXTENSION . '"; since foundation 0.14; experimental'],
+            'extra.fapost.ui'                              => ['required' => false, 'rule' => 'path of the console UI description (fapost-ui.json) relative to the package root, without ".." segments, ending with "' . self::UI_EXTENSION . '"; since foundation 0.15; experimental'],
             'extra.fapost.' . self::EXTENSION_PREFIX . '*' => ['required' => false, 'rule' => 'ignored; for the author\'s own tooling'],
             'extra.laravel.providers'                      => ['required' => false, 'rule' => 'must be absent or empty: Core boots the provider'],
             'require.' . self::FOUNDATION_PACKAGE          => ['required' => true, 'rule' => 'a constraint; checked by Composer'],

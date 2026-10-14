@@ -4,7 +4,7 @@ Notable changes to `fapost/foundation`. Versions follow [Semantic Versioning](ht
 major version is `0`, a minor release may break what is marked `@experimental`, and says so here. Releases
 before 0.14.0 are described by their tags on GitHub.
 
-## 0.14.0 — unreleased
+## 0.15.0 — unreleased
 
 ### Added
 
@@ -24,3 +24,9 @@ before 0.14.0 are described by their tags on GitHub.
 - Solution manifest: optional `extra.fapost.ui`, the path of the Solution's `fapost-ui.json` inside the package
   (experimental). `SolutionManifest` takes it as a new last constructor parameter `?string $ui = null`, so
   existing calls keep working.
+
+## 0.14.0
+
+### Changed
+
+- Solution manifest: `solution` and `solutions` are reserved ids (`ManifestSchema::RESERVED_IDS`).
