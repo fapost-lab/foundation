@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Fapost\Foundation\Console\Bundle;
 
 use Fapost\Foundation\Console\ConsoleNames;
+use Fapost\Foundation\Support\PackagePath;
 
 /**
  * Checks a decoded `fapost-ui.json` against {@see UiBundleSchema}.
@@ -51,6 +52,14 @@ final class UiBundleParser
             $violations[] = new UiBundleViolation('pages', 'pages and components together must list at least one entry');
         }
 
+        // A page and a component share one "<id>::<Path>" namespace, so a Path names exactly one file.
+        foreach (array_keys(array_intersect_key($pages ?? [], $components ?? [])) as $path) {
+            $violations[] = new UiBundleViolation(
+                'components.' . $path,
+                sprintf('"%s" is also listed under pages; a Path names one page or one component', $path),
+            );
+        }
+
         foreach (array_keys($decoded) as $key) {
             if (!in_array($key, UiBundleSchema::FIELDS, true) && !str_starts_with((string) $key, UiBundleSchema::EXTENSION_PREFIX)) {
                 $violations[] = new UiBundleViolation(
@@ -77,7 +86,7 @@ final class UiBundleParser
 
     private static function fileRule(string $extension): string
     {
-        return sprintf('must be a path relative to the directory of fapost-ui.json, without ".." segments, ending with "%s"', $extension);
+        return sprintf('must be a path relative to the directory of fapost-ui.json of segments made of letters, digits, ".", "_" and "-", without "." or ".." segments, ending with "%s"', $extension);
     }
 
     /**
@@ -194,7 +203,7 @@ final class UiBundleParser
                 continue;
             }
 
-            if (!$this->isRelativeFile($file, UiBundleSchema::SCRIPT_EXTENSION)) {
+            if (!PackagePath::isRelativeFile($file, UiBundleSchema::SCRIPT_EXTENSION)) {
                 $violations[] = new UiBundleViolation($field . '.' . $path, self::fileRule(UiBundleSchema::SCRIPT_EXTENSION));
 
                 continue;
@@ -229,7 +238,7 @@ final class UiBundleParser
         $valid = [];
 
         foreach ($css as $index => $file) {
-            if (!$this->isRelativeFile($file, UiBundleSchema::STYLE_EXTENSION)) {
+            if (!PackagePath::isRelativeFile($file, UiBundleSchema::STYLE_EXTENSION)) {
                 $violations[] = new UiBundleViolation(sprintf('css[%d]', $index), self::fileRule(UiBundleSchema::STYLE_EXTENSION));
 
                 continue;
@@ -240,27 +249,5 @@ final class UiBundleParser
         }
 
         return $valid;
-    }
-
-    /**
-     * A path inside the bundle's directory: no leading "/", no empty, "." or ".." segment, no backslash or ":".
-     */
-    private function isRelativeFile(mixed $file, string $extension): bool
-    {
-        if (!is_string($file) || !str_ends_with($file, $extension) || mb_strlen($file) === mb_strlen($extension)) {
-            return false;
-        }
-
-        if (1 === preg_match('/[\\\\:\s]/', $file)) {
-            return false;
-        }
-
-        foreach (explode('/', $file) as $segment) {
-            if ('' === $segment || '.' === $segment || '..' === $segment) {
-                return false;
-            }
-        }
-
-        return true;
     }
 }

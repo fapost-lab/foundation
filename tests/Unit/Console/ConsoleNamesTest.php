@@ -15,6 +15,7 @@ use Fapost\Foundation\Console\Enums\TableTarget;
 use Fapost\Foundation\Console\Enums\Tone;
 use Fapost\Foundation\Console\Enums\WidgetSize;
 use Fapost\Foundation\Console\Exceptions\InvalidConsoleDeclarationException;
+use Fapost\Foundation\Solution\Manifest\ManifestSchema;
 use LogicException;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
@@ -61,7 +62,21 @@ final class ConsoleNamesTest extends TestCase
         $this->assertSame(1, preg_match(ConsoleNames::ROUTE_PATTERN, 'solutions.feedback.index'));
         $this->assertSame(0, preg_match(ConsoleNames::ROUTE_PATTERN, 'feedback.index'));
         $this->assertSame(0, preg_match(ConsoleNames::ROUTE_PATTERN, 'solutions.feedback.'));
+        $this->assertSame(0, preg_match(ConsoleNames::ROUTE_PATTERN, 'solutions.feedback..x'));
+        $this->assertSame(0, preg_match(ConsoleNames::ROUTE_PATTERN, 'solutions.feedback.x.'));
+        $this->assertSame(1, preg_match(ConsoleNames::ROUTE_PATTERN, 'solutions.feedback.reviews.show'));
         $this->assertStringStartsWith('^' . mb_substr(ConsoleNames::ROUTE_PREFIX, 0, -1), mb_substr(ConsoleNames::ROUTE_PATTERN, 1));
+    }
+
+    public function test_the_name_patterns_use_the_manifest_id_rule(): void
+    {
+        $idRule = mb_substr(ManifestSchema::idPattern(), 1, -1);
+
+        $this->assertSame('/^' . $idRule . '$/D', ManifestSchema::ID_PATTERN);
+
+        foreach ([ConsoleNames::COMPONENT_PATTERN, ConsoleNames::LABEL_PATTERN, ConsoleNames::ROUTE_PATTERN] as $pattern) {
+            $this->assertStringContainsString($idRule, $pattern);
+        }
     }
 
     public function test_the_enum_values_are_what_the_client_and_the_documentation_use(): void

@@ -53,7 +53,7 @@ final class UiBundleSchema
     public static function describe(): array
     {
         $path = '^[A-Z][A-Za-z0-9]*(/[A-Z][A-Za-z0-9]*)*$';
-        $file = 'a path relative to the directory of fapost-ui.json, without ".." segments';
+        $file = 'a path relative to the directory of fapost-ui.json: "/"-separated segments of letters, digits, ".", "_" and "-", none of them "." or ".."';
 
         return [
             'schema'                     => ['required' => true, 'rule' => 'integer; supported: ' . implode(', ', self::SUPPORTED)],
@@ -62,7 +62,7 @@ final class UiBundleSchema
             'vue'                        => ['required' => true, 'rule' => 'non-empty version constraint of Vue; Core checks it'],
             'inertia'                    => ['required' => true, 'rule' => 'non-empty version constraint of Inertia; Core checks it'],
             'pages'                      => ['required' => false, 'rule' => 'object: Path matching ' . $path . ' => ' . $file . ', ending with "' . self::SCRIPT_EXTENSION . '"; default {}'],
-            'components'                 => ['required' => false, 'rule' => 'object: Path matching ' . $path . ' => ' . $file . ', ending with "' . self::SCRIPT_EXTENSION . '"; default {}; pages and components together hold at least one entry'],
+            'components'                 => ['required' => false, 'rule' => 'object: Path matching ' . $path . ' => ' . $file . ', ending with "' . self::SCRIPT_EXTENSION . '"; default {}; pages and components together hold at least one entry, and no Path is in both'],
             'css'                        => ['required' => false, 'rule' => 'list of ' . $file . ', each ending with "' . self::STYLE_EXTENSION . '"; default []'],
             self::EXTENSION_PREFIX . '*' => ['required' => false, 'rule' => 'ignored; for the author\'s own tooling'],
         ];

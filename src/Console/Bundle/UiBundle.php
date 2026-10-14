@@ -7,6 +7,9 @@ namespace Fapost\Foundation\Console\Bundle;
 /**
  * The built console UI of a Solution, as declared by its `fapost-ui.json`. Read with {@see UiBundleParser}.
  *
+ * The constructor checks nothing: only an instance returned by {@see UiBundleParser::parse()} is guaranteed to
+ * follow the rules of {@see UiBundleSchema}. Code that builds one by hand owns those rules itself.
+ *
  * @experimental
  */
 final readonly class UiBundle

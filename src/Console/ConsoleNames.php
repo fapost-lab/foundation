@@ -32,8 +32,8 @@ final class ConsoleNames
     /** Route names of a Solution start with this prefix followed by "<id>.". */
     public const string ROUTE_PREFIX = 'solutions.';
 
-    /** A route name of a Solution: "solutions.<id>.<name>", such as "solutions.feedback.index". */
-    public const string ROUTE_PATTERN = '/^solutions\.[a-z][a-z0-9_]{1,31}\.[A-Za-z0-9_.\-]*[A-Za-z0-9_]$/D';
+    /** A route name of a Solution: "solutions.<id>.<name>", dot-separated non-empty segments, such as "solutions.feedback.reviews.show". */
+    public const string ROUTE_PATTERN = '/^solutions\.[a-z][a-z0-9_]{1,31}(\.[A-Za-z0-9_-]+)+$/D';
 
     /**
      * The Solution id a component name belongs to.

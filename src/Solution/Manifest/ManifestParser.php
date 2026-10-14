@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Fapost\Foundation\Solution\Manifest;
 
+use Fapost\Foundation\Support\PackagePath;
+
 /**
  * Checks a decoded `composer.json` against the Solution manifest schema.
  *
@@ -347,7 +349,7 @@ final class ManifestParser
     }
 
     /**
-     * The console UI description is a file inside the package: a relative path without "..", ending with ".json".
+     * The console UI description is a file inside the package: see {@see PackagePath::isRelativeFile()}.
      *
      * @param  array<string, mixed>  $block
      * @param  list<ManifestViolation>  $violations
@@ -358,24 +360,12 @@ final class ManifestParser
             return null;
         }
 
-        $ui    = $block['ui'];
-        $valid = is_string($ui)
-            && str_ends_with($ui, ManifestSchema::UI_EXTENSION)
-            && mb_strlen($ui) > mb_strlen(ManifestSchema::UI_EXTENSION)
-            && 1 !== preg_match('/[\\\\:\s]/', $ui);
+        $ui = $block['ui'];
 
-        if ($valid) {
-            foreach (explode('/', $ui) as $segment) {
-                if ('' === $segment || '.' === $segment || '..' === $segment) {
-                    $valid = false;
-                }
-            }
-        }
-
-        if (!$valid) {
+        if (!PackagePath::isRelativeFile($ui, ManifestSchema::UI_EXTENSION)) {
             $violations[] = new ManifestViolation(
                 'extra.fapost.ui',
-                sprintf('must be a path relative to the package root, without ".." segments, ending with "%s"', ManifestSchema::UI_EXTENSION),
+                sprintf('must be a path relative to the package root of segments made of letters, digits, ".", "_" and "-", without "." or ".." segments, ending with "%s"', ManifestSchema::UI_EXTENSION),
             );
 
             return null;

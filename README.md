@@ -93,7 +93,7 @@ the package: `"type": "fapost-solution"` plus an `extra.fapost` block.
 | `extra.fapost.provider` | yes | class name of a provider extending `Lifecycle\AbstractSolutionServiceProvider`; Core boots it |
 | `extra.laravel.providers` | forbidden | any entry is a violation (an empty list is fine): Laravel's package discovery would boot a Solution's provider whether or not its manifest holds up |
 | `extra.fapost.actions` | no | unique action ids, each starting with `<id>.` |
-| `extra.fapost.ui` | no | path of the Solution's `fapost-ui.json` relative to the package root, without `..`, ending with `.json`; since foundation 0.14, experimental (see [Console UI](#console-ui-experimental)) |
+| `extra.fapost.ui` | no | path of the Solution's `fapost-ui.json` relative to the package root: `/`-separated segments of letters, digits, `.`, `_`, `-`, no `.` or `..` segment, ending with `.json`; since foundation 0.15, experimental (see [Console UI](#console-ui-experimental)) |
 | `extra.fapost.x-*` | no | ignored; for the author's own tooling |
 | `require.fapost/foundation` | yes | the Foundation range the Solution needs; Composer enforces it at install time |
 | `require.fapost/core` | forbidden | extensions depend on contracts, never on Core |
@@ -124,7 +124,7 @@ refuses anything else.
 
 ### Console UI (experimental)
 
-> **Experimental since 0.14.** Every type under `Console\` is marked `@experimental`: it may change in a
+> **Experimental since 0.15.** Every type under `Console\` is marked `@experimental`: it may change in a
 > minor release, with a changelog entry. Build on it knowing that.
 
 A Solution adds UI to the console in two halves: declarations in PHP, made from its provider's `boot()`,
@@ -179,7 +179,7 @@ The DTOs check the format of what they are given and throw `InvalidArgumentExcep
 | key | `KEY_PATTERN` `^[a-z][a-z0-9_]{0,31}$` | `score` |
 | label, menu group | `LABEL_PATTERN`: a translation key in the Solution's namespace | `feedback::console.app` |
 | icon | `ICON_PATTERN`: a lucide name in kebab case | `message-circle` |
-| route | `ROUTE_PATTERN`: `solutions.<id>.<name>` | `solutions.feedback.index` |
+| route | `ROUTE_PATTERN`: `solutions.<id>.<name>`, non-empty dot-separated segments | `solutions.feedback.index` |
 | component | `COMPONENT_PATTERN`: `<id>::<Path>`, PascalCase segments joined by `/` | `feedback::Widgets/Score` |
 
 `ConsoleNames::solutionOf('feedback::Widgets/Score')` returns `feedback`. That the `<id>` in a label, route
@@ -206,11 +206,11 @@ description with `extra.fapost.ui`. Paths are relative to the directory of `fapo
 | `schema` | yes | integer; `1` is the only supported number |
 | `solution` | yes | the manifest's `id` |
 | `kit`, `vue`, `inertia` | yes | non-empty version constraints the bundle was built against; Core checks them against its own |
-| `pages`, `components` | no | objects `Path => file`; `Path` is the part of a component name after `<id>::`; files end with `.js`; together at least one entry |
+| `pages`, `components` | no | objects `Path => file`; `Path` is the part of a component name after `<id>::`; files end with `.js`; together at least one entry; a Path is listed once, under `pages` or under `components` |
 | `css` | no | list of files ending with `.css` |
 | `x-*` | no | ignored |
 
-Files are relative, without `..`, `.` or empty segments, backslashes or `:`. Unknown fields are an error, as in
+Files are relative paths of `/`-separated segments made of letters, digits, `.`, `_` and `-` (no `.` or `..` segment, no empty one). Unknown fields are an error, as in
 the manifest. `Console\Bundle\UiBundleParser` is pure like `ManifestParser`: it takes the decoded array and the
 Solution id and returns every violation at once; whether the listed files exist is checked by Core.
 
