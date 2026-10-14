@@ -43,7 +43,7 @@ final class ManifestSchema
      *
      * @var list<string>
      */
-    public const array RESERVED_IDS = ['core', 'platform', 'fapost', 'app', 'system', 'flow', 'module', 'rag'];
+    public const array RESERVED_IDS = ['core', 'platform', 'fapost', 'app', 'system', 'flow', 'module', 'rag', 'solution', 'solutions'];
 
     public const int NAME_MAX_LENGTH = 60;
 
