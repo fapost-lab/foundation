@@ -87,7 +87,7 @@ the package: `"type": "fapost-solution"` plus an `extra.fapost` block.
 |-------|----------|------|
 | `type` | yes | `fapost-solution` (`fapost-plugin` is reserved) |
 | `extra.fapost.schema` | yes | integer; `1` is the only supported number |
-| `extra.fapost.id` | yes | `^[a-z][a-z0-9_]{1,31}$`; not `core`, `platform`, `fapost`, `app`, `system`, `flow`, `module`, `rag`, `solution`, `solutions`. **Never changes**: a new id is a different Solution |
+| `extra.fapost.id` | yes | `^[a-z][a-z0-9_]{1,31}$`; not `core`, `platform`, `fapost`, `app`, `system`, `flow`, `module`, `rag`, `solution`, `solutions`, `console`, `admin`. **Never changes**: a new id is a different Solution |
 | `extra.fapost.name` | yes | one line, 1 to 60 characters, English |
 | `extra.fapost.description` | no | up to 280 characters |
 | `extra.fapost.provider` | yes | class name of a provider extending `Lifecycle\AbstractSolutionServiceProvider`; Core boots it |

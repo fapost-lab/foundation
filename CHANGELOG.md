@@ -4,7 +4,16 @@ Notable changes to `fapost/foundation`. Versions follow [Semantic Versioning](ht
 major version is `0`, a minor release may break what is marked `@experimental`, and says so here. Releases
 before 0.14.0 are described by their tags on GitHub.
 
-## 0.15.0 — unreleased
+## Unreleased
+
+### Changed
+
+- Solution manifest: `console` and `admin` are reserved ids (`ManifestSchema::RESERVED_IDS`). They are the keys of
+  Core's own applications in the console rail, and Core already refuses a Solution application under either key.
+  This narrows what the manifest accepts, so it ships in a minor release: a Solution with either id is refused.
+
+## 0.15.0
+
 
 ### Added
 

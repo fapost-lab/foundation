@@ -39,11 +39,12 @@ final class ManifestSchema
     public const string ID_PATTERN = '/^[a-z][a-z0-9_]{1,31}$/D';
 
     /**
-     * Ids no Solution may take: they name the platform itself or a built-in area.
+     * Ids no Solution may take: they name the platform itself, a built-in area, or one of Core's own
+     * applications in the console rail (`console`, `admin`).
      *
      * @var list<string>
      */
-    public const array RESERVED_IDS = ['core', 'platform', 'fapost', 'app', 'system', 'flow', 'module', 'rag', 'solution', 'solutions'];
+    public const array RESERVED_IDS = ['core', 'platform', 'fapost', 'app', 'system', 'flow', 'module', 'rag', 'solution', 'solutions', 'console', 'admin'];
 
     public const int NAME_MAX_LENGTH = 60;
 
