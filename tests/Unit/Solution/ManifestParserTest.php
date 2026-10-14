@@ -188,6 +188,19 @@ final class ManifestParserTest extends TestCase
         $this->assertSame([], self::lines(self::composer(['id' => 'flows', 'actions' => ['flows.a']])));
     }
 
+    public function test_solution_and_solutions_are_reserved_ids(): void
+    {
+        foreach (['solution', 'solutions'] as $id) {
+            $this->assertContains($id, ManifestSchema::RESERVED_IDS);
+            $this->assertSame(
+                ['acme/fapost-feedback: extra.fapost.id: "' . $id . '" is reserved (reserved: ' . implode(', ', ManifestSchema::RESERVED_IDS) . ')'],
+                self::lines(self::composer(['id' => $id, 'actions' => []])),
+            );
+        }
+
+        $this->assertStringContainsString('solutions', ManifestSchema::describe()['extra.fapost.id']['rule']);
+    }
+
     public function test_the_schema_description_covers_every_field_the_parser_accepts(): void
     {
         $described = array_keys(ManifestSchema::describe());
