@@ -68,7 +68,7 @@ final class ManifestParserTest extends TestCase
                 self::composer([], ['extra' => ['laravel' => ['providers' => ['\\Acme\\Feedback\\FeedbackServiceProvider']]]]),
                 'extra.laravel.providers: a Solution\'s provider is booted by Core',
             ],
-            'ui absolute'               => [self::composer(['ui' => '/dist/fapost-ui.json']), 'extra.fapost.ui: must be a path relative to the package root of segments made of letters, digits, ".", "_" and "-", without "." or ".." segments, ending with ".json"'],
+            'ui absolute'               => [self::composer(['ui' => '/dist/fapost-ui.json']), 'extra.fapost.ui: must be a path relative to the package root of segments made of letters, digits, ".", "_" and "-", no segment starting with ".", ending with ".json"'],
             'ui outside the package'    => [self::composer(['ui' => '../other/fapost-ui.json']), 'extra.fapost.ui: must be a path relative'],
             'ui escaping from a subdir' => [self::composer(['ui' => 'dist/../../fapost-ui.json']), 'extra.fapost.ui: must be a path relative'],
             'ui not json'               => [self::composer(['ui' => 'dist/fapost-ui.js']), 'extra.fapost.ui: must be a path relative'],

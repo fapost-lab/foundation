@@ -86,7 +86,7 @@ final class UiBundleParser
 
     private static function fileRule(string $extension): string
     {
-        return sprintf('must be a path relative to the directory of fapost-ui.json of segments made of letters, digits, ".", "_" and "-", without "." or ".." segments, ending with "%s"', $extension);
+        return sprintf('must be a path relative to the directory of fapost-ui.json of segments made of letters, digits, ".", "_" and "-", no segment starting with ".", ending with "%s"', $extension);
     }
 
     /**

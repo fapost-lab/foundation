@@ -12,11 +12,11 @@ namespace Fapost\Foundation\Support;
  */
 final class PackagePath
 {
-    /** One path segment: letters, digits, ".", "_" and "-". */
-    public const string SEGMENT_PATTERN = '/^[A-Za-z0-9._-]+$/D';
+    /** One path segment: letters, digits, ".", "_" and "-", not starting with "." (so no ".", ".." or hidden file). */
+    public const string SEGMENT_PATTERN = '/^[A-Za-z0-9_-][A-Za-z0-9._-]*$/D';
 
     /**
-     * A relative path inside the package: "/"-separated segments from the allow-list, none of them "." or "..",
+     * A relative path inside the package: "/"-separated segments from the allow-list, none starting with ".",
      * ending with $extension and longer than it.
      */
     public static function isRelativeFile(mixed $path, string $extension): bool
@@ -26,7 +26,7 @@ final class PackagePath
         }
 
         foreach (explode('/', $path) as $segment) {
-            if ('.' === $segment || '..' === $segment || 1 !== preg_match(self::SEGMENT_PATTERN, $segment)) {
+            if (1 !== preg_match(self::SEGMENT_PATTERN, $segment)) {
                 return false;
             }
         }

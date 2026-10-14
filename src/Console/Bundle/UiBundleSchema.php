@@ -53,7 +53,7 @@ final class UiBundleSchema
     public static function describe(): array
     {
         $path = '^[A-Z][A-Za-z0-9]*(/[A-Z][A-Za-z0-9]*)*$';
-        $file = 'a path relative to the directory of fapost-ui.json: "/"-separated segments of letters, digits, ".", "_" and "-", none of them "." or ".."';
+        $file = 'a path relative to the directory of fapost-ui.json: "/"-separated segments of letters, digits, ".", "_" and "-", none starting with "."';
 
         return [
             'schema'                     => ['required' => true, 'rule' => 'integer; supported: ' . implode(', ', self::SUPPORTED)],

@@ -365,7 +365,7 @@ final class ManifestParser
         if (!PackagePath::isRelativeFile($ui, ManifestSchema::UI_EXTENSION)) {
             $violations[] = new ManifestViolation(
                 'extra.fapost.ui',
-                sprintf('must be a path relative to the package root of segments made of letters, digits, ".", "_" and "-", without "." or ".." segments, ending with "%s"', ManifestSchema::UI_EXTENSION),
+                sprintf('must be a path relative to the package root of segments made of letters, digits, ".", "_" and "-", no segment starting with ".", ending with "%s"', ManifestSchema::UI_EXTENSION),
             );
 
             return null;

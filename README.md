@@ -93,7 +93,7 @@ the package: `"type": "fapost-solution"` plus an `extra.fapost` block.
 | `extra.fapost.provider` | yes | class name of a provider extending `Lifecycle\AbstractSolutionServiceProvider`; Core boots it |
 | `extra.laravel.providers` | forbidden | any entry is a violation (an empty list is fine): Laravel's package discovery would boot a Solution's provider whether or not its manifest holds up |
 | `extra.fapost.actions` | no | unique action ids, each starting with `<id>.` |
-| `extra.fapost.ui` | no | path of the Solution's `fapost-ui.json` relative to the package root: `/`-separated segments of letters, digits, `.`, `_`, `-`, no `.` or `..` segment, ending with `.json`; since foundation 0.15, experimental (see [Console UI](#console-ui-experimental)) |
+| `extra.fapost.ui` | no | path of the Solution's `fapost-ui.json` relative to the package root: `/`-separated segments of letters, digits, `.`, `_`, `-`, none starting with `.`, ending with `.json`; since foundation 0.15, experimental (see [Console UI](#console-ui-experimental)) |
 | `extra.fapost.x-*` | no | ignored; for the author's own tooling |
 | `require.fapost/foundation` | yes | the Foundation range the Solution needs; Composer enforces it at install time |
 | `require.fapost/core` | forbidden | extensions depend on contracts, never on Core |
@@ -210,7 +210,7 @@ description with `extra.fapost.ui`. Paths are relative to the directory of `fapo
 | `css` | no | list of files ending with `.css` |
 | `x-*` | no | ignored |
 
-Files are relative paths of `/`-separated segments made of letters, digits, `.`, `_` and `-` (no `.` or `..` segment, no empty one). Unknown fields are an error, as in
+Files are relative paths of `/`-separated segments made of letters, digits, `.`, `_` and `-` (no empty segment and none starting with `.`, so no `.`, `..` or hidden file). Unknown fields are an error, as in
 the manifest. `Console\Bundle\UiBundleParser` is pure like `ManifestParser`: it takes the decoded array and the
 Solution id and returns every violation at once; whether the listed files exist is checked by Core.
 
