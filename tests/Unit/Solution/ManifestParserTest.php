@@ -49,7 +49,7 @@ final class ManifestParserTest extends TestCase
             'action duplicated'                     => [self::composer(['actions' => ['feedback.a', 'feedback.a']]), 'extra.fapost.actions[1]: "feedback.a" is listed twice'],
             'action not a string'                   => [self::composer(['actions' => [1]]), 'extra.fapost.actions[0]: must be a string'],
             'actions not a list'                    => [self::composer(['actions' => ['a' => 'feedback.a']]), 'extra.fapost.actions: must be a list'],
-            'unknown field'                         => [self::composer(['migrations' => 'database']), 'acme/fapost-feedback: extra.fapost.migrations: unknown field (schema 1 allows: schema, id, name, description, provider, actions); a newer fapost/foundation may be required'],
+            'unknown field'                         => [self::composer(['migrations' => 'database']), 'acme/fapost-feedback: extra.fapost.migrations: unknown field (schema 1 allows: schema, id, name, description, provider, actions, ui); a newer fapost/foundation may be required'],
             'schema missing'                        => [self::without('schema'), 'extra.fapost.schema: required'],
             'schema not an integer'                 => [self::composer(['schema' => '1']), 'extra.fapost.schema: must be an integer'],
             'schema unsupported'                    => [self::composer(['schema' => 2]), 'extra.fapost.schema: 2 is not supported by this fapost/foundation (supports: 1)'],
@@ -68,7 +68,14 @@ final class ManifestParserTest extends TestCase
                 self::composer([], ['extra' => ['laravel' => ['providers' => ['\\Acme\\Feedback\\FeedbackServiceProvider']]]]),
                 'extra.laravel.providers: a Solution\'s provider is booted by Core',
             ],
-            'no fapost block' => [['name' => 'acme/x', 'type' => 'fapost-solution', 'require' => ['fapost/foundation' => '^0.13']], 'acme/x: extra.fapost: required'],
+            'ui absolute'               => [self::composer(['ui' => '/dist/fapost-ui.json']), 'extra.fapost.ui: must be a path relative to the package root, without ".." segments, ending with ".json"'],
+            'ui outside the package'    => [self::composer(['ui' => '../other/fapost-ui.json']), 'extra.fapost.ui: must be a path relative'],
+            'ui escaping from a subdir' => [self::composer(['ui' => 'dist/../../fapost-ui.json']), 'extra.fapost.ui: must be a path relative'],
+            'ui not json'               => [self::composer(['ui' => 'dist/fapost-ui.js']), 'extra.fapost.ui: must be a path relative'],
+            'ui only an extension'      => [self::composer(['ui' => '.json']), 'extra.fapost.ui: must be a path relative'],
+            'ui with backslash'         => [self::composer(['ui' => 'dist\\fapost-ui.json']), 'extra.fapost.ui: must be a path relative'],
+            'ui not a string'           => [self::composer(['ui' => ['dist/fapost-ui.json']]), 'extra.fapost.ui: must be a path relative'],
+            'no fapost block'           => [['name' => 'acme/x', 'type' => 'fapost-solution', 'require' => ['fapost/foundation' => '^0.13']], 'acme/x: extra.fapost: required'],
         ];
     }
 
@@ -100,6 +107,22 @@ final class ManifestParserTest extends TestCase
 
         $this->assertNull($manifest->description);
         $this->assertSame([], $manifest->actions);
+        $this->assertNull($manifest->ui);
+    }
+
+    public function test_a_console_ui_description_is_read_from_the_manifest(): void
+    {
+        $manifest = SolutionManifest::fromComposer(self::composer(['ui' => 'dist/fapost-ui.json']));
+
+        $this->assertSame('dist/fapost-ui.json', $manifest->ui);
+        $this->assertSame('fapost-ui.json', SolutionManifest::fromComposer(self::composer(['ui' => 'fapost-ui.json']))->ui);
+    }
+
+    public function test_a_manifest_built_without_ui_keeps_the_previous_constructor(): void
+    {
+        $manifest = new SolutionManifest('acme/x', 1, 'feedback', 'Feedback', null, 'Acme\\P', [], '^0.13');
+
+        $this->assertNull($manifest->ui);
     }
 
     public function test_an_empty_laravel_providers_list_is_allowed(): void

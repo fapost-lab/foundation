@@ -62,6 +62,7 @@ final class ManifestParser
         $description = $this->checkDescription($block, $violations);
         $provider    = $this->checkProvider($block, $violations);
         $actions     = $this->checkActions($block, $id, $violations);
+        $ui          = $this->checkUi($block, $violations);
 
         foreach (array_keys($block) as $key) {
             if (!in_array($key, ManifestSchema::FIELDS, true) && !str_starts_with((string) $key, ManifestSchema::EXTENSION_PREFIX)) {
@@ -84,7 +85,7 @@ final class ManifestParser
 
         return new ManifestParseResult(
             $package,
-            new SolutionManifest($package, $schema, $id, $name, $description, $provider, $actions, $constraint),
+            new SolutionManifest($package, $schema, $id, $name, $description, $provider, $actions, $constraint, $ui),
             [],
         );
     }
@@ -343,5 +344,44 @@ final class ManifestParser
         }
 
         return $valid;
+    }
+
+    /**
+     * The console UI description is a file inside the package: a relative path without "..", ending with ".json".
+     *
+     * @param  array<string, mixed>  $block
+     * @param  list<ManifestViolation>  $violations
+     */
+    private function checkUi(array $block, array &$violations): ?string
+    {
+        if (!array_key_exists('ui', $block)) {
+            return null;
+        }
+
+        $ui    = $block['ui'];
+        $valid = is_string($ui)
+            && str_ends_with($ui, ManifestSchema::UI_EXTENSION)
+            && mb_strlen($ui) > mb_strlen(ManifestSchema::UI_EXTENSION)
+            && 1 !== preg_match('/[\\\\:\s]/', $ui);
+
+        if ($valid) {
+            foreach (explode('/', $ui) as $segment) {
+                if ('' === $segment || '.' === $segment || '..' === $segment) {
+                    $valid = false;
+                }
+            }
+        }
+
+        if (!$valid) {
+            $violations[] = new ManifestViolation(
+                'extra.fapost.ui',
+                sprintf('must be a path relative to the package root, without ".." segments, ending with "%s"', ManifestSchema::UI_EXTENSION),
+            );
+
+            return null;
+        }
+
+        /** @var string $ui */
+        return $ui;
     }
 }
