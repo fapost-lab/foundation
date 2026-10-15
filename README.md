@@ -50,10 +50,15 @@ through `CoreRegistrarInterface`, whose implementation lives in Core:
 ```php
 protected function registerExtensions(CoreRegistrarInterface $registrar): void
 {
-    $registrar->registerNodeHandler(SyncEmployeeHandler::class);
-    $registrar->registerDataAccessor('hr', HrDataAccessor::class);
+    $registrar->registerActionHandler(CreateAssessmentAction::class);
 }
 ```
+
+Core calls `registerExtensionsWith($registrar)` on a Solution's provider once per process, after every
+provider's `register()` and before any `boot()`, handing it a registrar of its own: Core checks what a
+Solution registers against the Solution's manifest (`extra.fapost.actions`). A Solution registers
+**action handlers** (`registerActionHandler`, by class), not node types; `registerNodeHandler` is for
+Plugins. The provider's `boot()` only runs `bootSolution()`.
 
 - **Solution** — an external composer package with niche domain logic (HR, Recruitment).
   Extend `Lifecycle\AbstractSolutionServiceProvider`.

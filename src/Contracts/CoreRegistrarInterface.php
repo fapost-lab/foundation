@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Fapost\Foundation\Contracts;
 
 use Closure;
+use Fapost\Foundation\Action\ActionHandlerInterface;
 
 /**
  * Single registration entry point for platform extensions.
@@ -16,6 +17,21 @@ use Closure;
  */
 interface CoreRegistrarInterface
 {
+    /**
+     * Register an action handler for the call node's {@code handler} transport.
+     *
+     * By class, not by instance: Core builds the handler on each call, in the scope of the
+     * running job, so its constructor may depend on scoped services. Core also builds one
+     * throwaway instance at registration to read {@see ActionHandlerInterface::id()}, so the
+     * constructor must be cheap and must not touch tenant data.
+     *
+     * A registrar created for a Solution accepts only action ids that the Solution declares in
+     * `extra.fapost.actions`, and fails registration for any other id or a duplicate.
+     *
+     * @param  class-string<ActionHandlerInterface>  $handlerClass
+     */
+    public function registerActionHandler(string $handlerClass): void;
+
     /**
      * Register a NodeHandler for the flow engine.
      *
