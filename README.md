@@ -172,7 +172,7 @@ public function boot(): void
 | Table column | `TableColumn` (`CellType`, `Tone` for status cells) | `TableTarget`: `contacts`, `conversations` |
 
 `routes()` registers tenant-wide routes under `apps/<id>/`, `assistantRoutes()` per-assistant ones under
-`assistant/{tenant}/apps/<id>/`; Core adds the domain, the prefix, the name prefix `solutions.<id>.` and the
+`assistant/{assistant}/apps/<id>/` (the parameter `assistant` is the assistant's key); Core adds the domain, the prefix, the name prefix `solutions.<id>.` and the
 `solution` middleware group. Use controllers, not closures, so the routes can be cached. A link action's route
 takes a `record` parameter. A table column's values come from a `Console\Contracts\ColumnValuesInterface`
 class, called once per table page with the row ids and a `Console\DTO\ColumnContext`.
