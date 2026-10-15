@@ -16,4 +16,10 @@ enum LimitNoticeReason: string
 
     /** A Records limit has just been filled: the last place was taken and nothing was refused yet. */
     case Reached = 'reached';
+
+    /**
+     * A per-period limit is close to being used up: the operator's meter flagged an allowed decision
+     * ({@see \Fapost\Foundation\Quota\DTO\UsageDecision::$approaching}). Nothing was refused.
+     */
+    case Approaching = 'approaching';
 }

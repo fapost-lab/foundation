@@ -17,14 +17,21 @@ use Fapost\Foundation\Quota\DTO\UsageUnit;
  *
  * Implementation (operator package)
  * - MAY: read and write its own tables; cache "already counted this period" per tenant; overshoot
- *   the limit by at most the number of parallel workers.
+ *   the limit by at most the number of parallel workers; return {@see UsageDecision::approaching()}
+ *   for the unit that brings the period's use to the operator's warning threshold, to have Core
+ *   warn the tenant's admins.
  * - MUST: be idempotent by (tenant, key, unitKey, period containing occurredAt) so a retried unit
  *   is counted once; never record a refused unit; answer allowed for a key it has no limit for;
- *   derive the period itself from occurredAt; stay cheap, a cache hit or one indexed write.
- * - MUST NOT: throw to refuse, a refusal is a result; call Core's classes or write Core's tables
- *   or a tenant schema; dispatch jobs, send mail or call external services on the calling path;
- *   keep any tenant's data in object properties between calls (workers are long-lived and serve
- *   many tenants).
+ *   derive the period itself from occurredAt; stay cheap, a cache hit or one indexed write; when
+ *   it flags a decision with {@see UsageDecision::approaching()}, flag at most once per tenant, key
+ *   and period and pass periodEndsAt with the flag. Core also sends at most one warning per limit
+ *   and period, but a meter that flags every unit above its threshold makes every such unit pay for
+ *   a cache write.
+ * - MUST NOT: flag a refused unit or an already counted one (a retry) as approaching; notify the
+ *   tenant's admins itself (Core owns the recipients and their language); throw to refuse, a
+ *   refusal is a result; call Core's classes or write Core's tables or a tenant schema; dispatch
+ *   jobs, send mail or call external services on the calling path; keep any tenant's data in
+ *   object properties between calls (workers are long-lived and serve many tenants).
  *
  * Caller (Core, later Solutions)
  * - MUST: call before the work is done; pass a unitKey and an occurredAt that are the same on

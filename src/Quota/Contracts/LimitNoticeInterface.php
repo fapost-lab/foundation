@@ -9,16 +9,20 @@ use Fapost\Foundation\Quota\Enums\LimitNoticeReason;
 
 /**
  * Supplies the commercial "what to do next" wording of the notification Core sends a tenant's
- * admins when a limit refuses work or a record limit has just been filled (see
+ * admins when a limit refuses work, a record limit has just been filled or a per-period limit is
+ * close to being used up (see
  * {@see LimitNoticeReason}). Implemented by an operator package; Core's default returns
  * null, and Core then writes its own text.
  *
  * Core owns the facts of the refusal (the limit's name, "used of limit", what was refused) and
  * the delivery (recipients, channels, language, de-duplication to one notice per limit and
  * period). The notice is sent when work is refused ({@see LimitNoticeReason::Refused}) and, for a
- * Records limit, when a saved record fills it ({@see LimitNoticeReason::Reached}), so the wording
- * can differ: "upgrade to create more" against "you can no longer create". The operator owns only the part that replaces "contact the platform administrator":
- * an upgrade offer, a plan name, a button.
+ * Records limit, when a saved record fills it ({@see LimitNoticeReason::Reached}) and, when the
+ * operator's meter asks for it, before a per-period limit is used up
+ * ({@see LimitNoticeReason::Approaching}), so the wording can differ: "upgrade to create more"
+ * against "you can no longer create" against "move to a larger plan before it runs out". The
+ * operator owns only the part that replaces "contact the platform administrator": an upgrade
+ * offer, a plan name, a button.
  *
  * Implementation (operator package)
  * - MAY: read its own tables (plan, subscription); answer in the requested locale, or in English
@@ -42,8 +46,8 @@ use Fapost\Foundation\Quota\Enums\LimitNoticeReason;
 interface LimitNoticeInterface
 {
     /**
-     * The wording for a tenant whose limit refused work or was just filled, as $reason says, in the
-     * locale of the recipients.
+     * The wording for a tenant whose limit refused work, was just filled or is close to being used
+     * up, as $reason says, in the locale of the recipients.
      *
      * Null when the operator has nothing to add (for this reason or at all); Core then writes its own text.
      */
