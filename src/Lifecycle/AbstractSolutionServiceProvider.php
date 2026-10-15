@@ -24,8 +24,7 @@ use Illuminate\Support\ServiceProvider;
  *   {
  *       protected function registerExtensions(CoreRegistrarInterface $registrar): void
  *       {
- *           $registrar->registerNodeHandler(SyncEmployeeHandler::class);
- *           $registrar->registerDataAccessor('hr', HrDataAccessor::class);
+ *           $registrar->registerActionHandler(CreateAssessmentAction::class);
  *       }
  *   }
  */
@@ -33,9 +32,23 @@ abstract class AbstractSolutionServiceProvider extends ServiceProvider implement
 {
     /**
      * Register all extensions through CoreRegistrar.
-     * Called in boot().
+     * Called by Core through {@see registerExtensionsWith()}.
      */
     abstract protected function registerExtensions(CoreRegistrarInterface $registrar): void;
+
+    /**
+     * Entry point for Core: hands this Solution its own registrar.
+     *
+     * Core calls it once per process, after every provider's register() has run and before any
+     * boot(), so extensions are registered before bootSolution() and before Core's registries
+     * freeze. The registrar is created per Solution so Core can check what it registers against
+     * the Solution's manifest; the provider never pulls one from the container.
+     */
+    final public function registerExtensionsWith(CoreRegistrarInterface $registrar): void
+    {
+        $this->registerExtensions($registrar);
+    }
+
     /**
      * Does nothing by default. Override for custom activation logic.
      */
@@ -60,18 +73,11 @@ abstract class AbstractSolutionServiceProvider extends ServiceProvider implement
     }
 
     /**
-     * boot() registers extensions through CoreRegistrar.
-     * Called after all service providers are registered.
+     * boot() runs bootSolution(). Extensions are not registered here: Core has already called
+     * {@see registerExtensionsWith()} before the first boot().
      */
     public function boot(): void
     {
-        if (! $this->app->bound(CoreRegistrarInterface::class)) {
-            return;
-        }
-
-        $registrar = $this->app->make(CoreRegistrarInterface::class);
-
-        $this->registerExtensions($registrar);
         $this->bootSolution();
     }
 
@@ -85,7 +91,7 @@ abstract class AbstractSolutionServiceProvider extends ServiceProvider implement
 
     /**
      * Override for additional boot actions (migrations, configs, routes).
-     * Called after registerExtensions().
+     * Called after registerExtensionsWith() has run.
      */
     protected function bootSolution(): void
     {

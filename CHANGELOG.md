@@ -12,6 +12,23 @@ before 0.14.0 are described by their tags on GitHub.
   Core's own applications in the console rail, and Core already refuses a Solution application under either key.
   This narrows what the manifest accepts, so it ships in a minor release: a Solution with either id is refused.
 
+## 0.17.0
+
+### Added
+
+- `Contracts\CoreRegistrarInterface::registerActionHandler(class-string<ActionHandlerInterface>)`: a Solution
+  registers an action handler by class. Core builds the handler on each call and reads `id()` from one throwaway
+  instance at registration.
+- `Lifecycle\AbstractSolutionServiceProvider::registerExtensionsWith(CoreRegistrarInterface $registrar)` (final):
+  the entry point Core calls, once per process and with a registrar of its own per Solution.
+
+### Changed
+
+- **BREAKING:** `AbstractSolutionServiceProvider::boot()` no longer pulls a `CoreRegistrarInterface` from the
+  container and no longer calls `registerExtensions()`; it only runs `bootSolution()`. Core calls
+  `registerExtensionsWith()` before any `boot()`. A Solution that relied on `boot()` to register extensions needs
+  nothing but to run under a Core that implements this.
+
 ## 0.15.0
 
 
