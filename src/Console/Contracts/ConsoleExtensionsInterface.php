@@ -83,8 +83,8 @@ interface ConsoleExtensionsInterface
     public function routes(Closure $routes): void;
 
     /**
-     * Per-assistant routes: `assistant/{tenant}/apps/<id>/`, the console stack plus `solution`. Names and
-     * controllers as in {@see self::routes()}.
+     * Per-assistant routes: `assistant/{assistant}/apps/<id>/`, the console stack plus `solution`. The route
+     * parameter is `assistant` (the assistant's key). Names and controllers as in {@see self::routes()}.
      *
      * @param  Closure(Router): void  $routes
      *

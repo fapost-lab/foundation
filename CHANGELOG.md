@@ -8,9 +8,9 @@ before 0.14.0 are described by their tags on GitHub.
 
 ### Changed
 
-- Solution manifest: `console` and `admin` are reserved ids (`ManifestSchema::RESERVED_IDS`). They are the keys of
-  Core's own applications in the console rail, and Core already refuses a Solution application under either key.
-  This narrows what the manifest accepts, so it ships in a minor release: a Solution with either id is refused.
+- Docs: per-assistant Solution routes are `assistant/{assistant}/apps/<id>/`. Core renamed the route parameter from
+  `tenant` to `assistant` (Core's console route names moved from `filament.*` to `console.*` at the same time);
+  the URIs did not change. A Solution that builds those URLs with `['tenant' => …]` must pass `['assistant' => …]`.
 
 ## 0.17.0
 
@@ -29,8 +29,15 @@ before 0.14.0 are described by their tags on GitHub.
   `registerExtensionsWith()` before any `boot()`. A Solution that relied on `boot()` to register extensions needs
   nothing but to run under a Core that implements this.
 
-## 0.15.0
+## 0.16.0
 
+### Changed
+
+- Solution manifest: `console` and `admin` are reserved ids (`ManifestSchema::RESERVED_IDS`). They are the keys of
+  Core's own applications in the console rail, and Core already refuses a Solution application under either key.
+  This narrows what the manifest accepts, so it ships in a minor release: a Solution with either id is refused.
+
+## 0.15.0
 
 ### Added
 
