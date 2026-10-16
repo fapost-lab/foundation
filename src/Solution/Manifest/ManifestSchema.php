@@ -26,6 +26,13 @@ final class ManifestSchema
     /** `type` reserved for Plugin packages; Plugins are not discovered yet. */
     public const string PLUGIN_PACKAGE_TYPE = 'fapost-plugin';
 
+    /**
+     * `type` of a connector package in its composer.json: a deploy-time package that brings a messaging
+     * channel. Its manifest is described by {@see \Fapost\Foundation\Connector\Manifest\ConnectorManifestSchema};
+     * since foundation 0.21, experimental.
+     */
+    public const string CONNECTOR_PACKAGE_TYPE = 'fapost-connector';
+
     /** The schema number this Foundation writes and reads as current. */
     public const int CURRENT = 1;
 

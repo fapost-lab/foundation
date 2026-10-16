@@ -4,6 +4,20 @@ Notable changes to `fapost/foundation`. Versions follow [Semantic Versioning](ht
 major version is `0`, a minor release may break what is marked `@experimental`, and says so here. Releases
 before 0.14.0 are described by their tags on GitHub.
 
+## Unreleased
+
+### Added
+
+- Connector manifest, experimental: a connector is a deploy-time Composer package of type `fapost-connector`
+  (`Solution\Manifest\ManifestSchema::CONNECTOR_PACKAGE_TYPE`) that brings a messaging channel. Its identity is the
+  `extra.fapost` block of its `composer.json` (schema 1: `schema`, `id`, `name`, `description`, `provider`, `channels`),
+  read without running its code by `Connector\Manifest\ConnectorManifestParser` into a
+  `Connector\Manifest\ConnectorManifest`; `ConnectorManifestSchema` describes the format. The id, name and
+  description rules, the `require` rules and the ban on Laravel package discovery are the Solution ones.
+- `Lifecycle\AbstractConnectorServiceProvider`: base provider for a connector (`registerBindings()`, `bootConnector()`).
+  Core boots a connector for the whole installation, with no per-tenant activation; channel registration arrives in a
+  later release.
+
 ## 0.20.1
 
 ### Fixed
