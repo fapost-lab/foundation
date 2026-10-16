@@ -8,6 +8,29 @@ before 0.14.0 are described by their tags on GitHub.
 
 ### Added
 
+- `Solution\DTO\SolutionEntitlement::grants(grants, allowed, ?actionLabel, ?actionUrl)`: an operator can now grant a
+  Solution (Core runs it without the tenant turning it on, and the tenant cannot turn it off: a plan's bundle, a
+  running add-on) as well as allow it (the tenant turns it on itself). `grants`, `isGranted()` and `grantFor()` read
+  the grants; `solutionIds` and `allows()` keep covering granted and allowed together, so a caller that knows only
+  `allows()` treats a grant as allowed. `all()` and `only()` grant nothing and are unchanged.
+- `Solution\DTO\SolutionGrant` (id, `Solution\Enums\SolutionGrantSource` `plan` or `addon`, an end and a note for
+  display).
+- `Solution\Contracts\SolutionStorefrontInterface`, experimental: `offersFor(tenantId)` lists the Solutions an
+  operator offers a tenant to connect (`Solution\DTO\SolutionOffer` with trial days, a display-only
+  `Solution\DTO\SolutionPrice` and whether a request is pending), and `connect(tenantId, solutionId, requestedBy)`
+  starts a trial or sends a request (`Solution\DTO\SolutionConnectResult`, `Solution\Enums\SolutionConnectOutcome`).
+  Asked only from Core's Solutions screen, never from a job.
+
+### Changed
+
+- `Solution\Contracts\SolutionEntitlementInterface`: the caller may now ask even when the tenant turned nothing on
+  (a grant needs no activation), and may keep the grants of the last answer per tenant for a bounded time to run them
+  while the operator cannot answer. The operator grants only what must run without the tenant's action.
+
+## 0.24.0
+
+### Added
+
 - `Settings\Contracts\PlatformSettingsInterface`, experimental: Core's platform-wide settings (values for the whole
   installation, not one tenant). `definitions()` describes every field, `values()` says what is in effect and whether
   it is stored or the default, `update(changes, actor)` stores or resets values and records who did it. Implemented by
