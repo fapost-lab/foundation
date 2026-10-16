@@ -8,6 +8,11 @@ use Spatie\LaravelData\Data;
 
 /**
  * Transport-agnostic outbound payload shared by all channel integrations.
+ *
+ * For a channel that sends media by URL ({@see \Fapost\Foundation\Media\ChannelMediaLinkPolicyInterface}),
+ * `media` holds: `url` (a signed public link that expires; never log or store it), `mime_type`, `size` (bytes),
+ * `file_name` (with its extension) and `kind` (`image`, `video`, `audio` or `document`). `type` is then only a
+ * hint shaped for channels that upload; choose the provider's message type from `mime_type`.
  */
 final class MessagePayload extends Data
 {

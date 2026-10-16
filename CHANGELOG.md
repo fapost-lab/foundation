@@ -17,6 +17,11 @@ before 0.14.0 are described by their tags on GitHub.
 - `Lifecycle\AbstractConnectorServiceProvider`: base provider for a connector (`registerBindings()`, `bootConnector()`).
   Core boots a connector for the whole installation, with no per-tenant activation; channel registration arrives in a
   later release.
+- `Media\ChannelMediaLinkPolicyInterface`: a channel type declares that it sends media by a public URL instead of
+  uploading bytes (`channelType()`, `linkTtlSeconds(): ?int`). Core then hands it, in `MessagePayload::$media`, a
+  signed link to the media file that expires, issued just before delivery, with `mime_type`, `size`, `file_name` and
+  `kind`; the channel never issues links itself. Core caps the requested lifetime. A channel type with an uploader
+  keeps uploading, so nothing changes for existing channels.
 
 ## 0.20.1
 
