@@ -27,9 +27,16 @@ final readonly class IngressSpecExecutor
      *
      * All comparisons are constant-time: a timing oracle here would leak the
      * channel secret to anyone who knows the public hash.
+     *
+     * An empty secret refuses every scheme that reads one: compared directly it
+     * matches an absent header, and as an HMAC key it lets anyone sign.
      */
     public function verify(IngressSpec $spec, SignedRequest $request, string $secret): bool
     {
+        if (SignatureScheme::None !== $spec->scheme && '' === $secret) {
+            return false;
+        }
+
         return match ($spec->scheme) {
             SignatureScheme::None         => true,
             SignatureScheme::HeaderEquals => hash_equals(

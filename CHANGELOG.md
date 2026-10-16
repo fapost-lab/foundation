@@ -4,6 +4,14 @@ Notable changes to `fapost/foundation`. Versions follow [Semantic Versioning](ht
 major version is `0`, a minor release may break what is marked `@experimental`, and says so here. Releases
 before 0.14.0 are described by their tags on GitHub.
 
+## 0.20.1
+
+### Fixed
+
+- `Channel\Ingress\IngressSpecExecutor::verify()` refuses every scheme but `none` when the channel secret is empty.
+  Before, an empty secret matched a request with no `header_equals` header or `query_param` parameter, and as an
+  HMAC key it let anyone sign a body. Every ingress runtime must do the same; Core's golden fixtures hold it.
+
 ## 0.20.0
 
 ### Added
