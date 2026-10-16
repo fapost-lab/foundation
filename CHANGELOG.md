@@ -4,6 +4,22 @@ Notable changes to `fapost/foundation`. Versions follow [Semantic Versioning](ht
 major version is `0`, a minor release may break what is marked `@experimental`, and says so here. Releases
 before 0.14.0 are described by their tags on GitHub.
 
+## 0.20.0
+
+### Added
+
+- `Solution\Contracts\SolutionEntitlementInterface::entitlementFor(string $tenantId): SolutionEntitlement`: an operator
+  package answers which installed Solutions a tenant may run (for example its plan's bundle and its active add-ons).
+  Core runs a Solution only when the tenant turned it on, it is installed and it is entitled; a Solution the answer
+  stops listing stops running with its activation and data kept, and runs again when the answer lists it again.
+  Core refuses to turn on a Solution that is not entitled, asks at most once per tenant per request or job, and
+  treats an exception as "keep what runs, refuse to turn anything on". Core binds a default that entitles every
+  Solution, so nothing changes until an operator package implements it.
+- `Solution\DTO\SolutionEntitlement`: `all()` (nothing restricted) or `only(list $solutionIds, ?string $actionLabel,
+  ?string $actionUrl)` with an optional button for the tenant's admins; `allows()` and `isUnrestricted()`. `only()`
+  drops duplicate ids and throws `InvalidArgumentException` on an empty id, an action with only a label or only a
+  URL, or a URL that is not absolute http(s). Ids this image does not install are allowed.
+
 ## 0.19.0
 
 ### Added
