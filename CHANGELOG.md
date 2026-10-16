@@ -6,6 +6,15 @@ before 0.14.0 are described by their tags on GitHub.
 
 ## Unreleased
 
+### Added
+
+- `Settings\Contracts\PlatformSettingsInterface`, experimental: Core's platform-wide settings (values for the whole
+  installation, not one tenant). `definitions()` describes every field, `values()` says what is in effect and whether
+  it is stored or the default, `update(changes, actor)` stores or resets values and records who did it. Implemented by
+  Core; an operator package renders its panel from the definitions instead of keeping its own list.
+- `Settings\DTO\PlatformSettingDefinition` (with `violation()`, the same check Core applies), `Settings\DTO\PlatformSettingValue`,
+  `Settings\Enums\PlatformSettingType` and `Settings\Exceptions\InvalidPlatformSettingsException`, all experimental.
+
 ### Changed
 
 - `Connector\ConnectorChannel`: the docblock now says Core builds each service inside the request or job that uses
