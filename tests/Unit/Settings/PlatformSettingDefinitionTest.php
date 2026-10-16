@@ -18,18 +18,17 @@ final class PlatformSettingDefinitionTest extends TestCase
     public static function invalid(): array
     {
         return [
-            'undotted key'           => [static fn (): PlatformSettingDefinition => new PlatformSettingDefinition('max_iterations', PlatformSettingType::Integer, 1, 'L', 'D', 'G')],
-            'upper case key'         => [static fn (): PlatformSettingDefinition => new PlatformSettingDefinition('Flow.max', PlatformSettingType::Integer, 1, 'L', 'D', 'G')],
-            'trailing dot'           => [static fn (): PlatformSettingDefinition => new PlatformSettingDefinition('flow.', PlatformSettingType::Integer, 1, 'L', 'D', 'G')],
-            'empty label'            => [static fn (): PlatformSettingDefinition => new PlatformSettingDefinition('flow.max', PlatformSettingType::Integer, 1, ' ', 'D', 'G')],
-            'empty description'      => [static fn (): PlatformSettingDefinition => new PlatformSettingDefinition('flow.max', PlatformSettingType::Integer, 1, 'L', '', 'G')],
-            'empty group'            => [static fn (): PlatformSettingDefinition => new PlatformSettingDefinition('flow.max', PlatformSettingType::Integer, 1, 'L', 'D', '')],
-            'min above max'          => [static fn (): PlatformSettingDefinition => new PlatformSettingDefinition('flow.max', PlatformSettingType::Integer, 5, 'L', 'D', 'G', min: 10, max: 1)],
-            'choice without choices' => [static fn (): PlatformSettingDefinition => new PlatformSettingDefinition('ui.mode', PlatformSettingType::Choice, 'a', 'L', 'D', 'G')],
-            'choices on an integer'  => [static fn (): PlatformSettingDefinition => new PlatformSettingDefinition('flow.max', PlatformSettingType::Integer, 1, 'L', 'D', 'G', choices: ['a'])],
-            'default out of range'   => [static fn (): PlatformSettingDefinition => new PlatformSettingDefinition('flow.max', PlatformSettingType::Integer, 0, 'L', 'D', 'G', min: 1)],
-            'default of wrong type'  => [static fn (): PlatformSettingDefinition => new PlatformSettingDefinition('flow.on', PlatformSettingType::Boolean, 1, 'L', 'D', 'G')],
-            'default not a choice'   => [static fn (): PlatformSettingDefinition => new PlatformSettingDefinition('ui.mode', PlatformSettingType::Choice, 'c', 'L', 'D', 'G', choices: ['a', 'b'])],
+            'undotted key'            => [static fn (): PlatformSettingDefinition => new PlatformSettingDefinition('max_iterations', PlatformSettingType::Integer, 1, 'L', 'D', 'G')],
+            'upper case key'          => [static fn (): PlatformSettingDefinition => new PlatformSettingDefinition('Flow.max', PlatformSettingType::Integer, 1, 'L', 'D', 'G')],
+            'trailing dot'            => [static fn (): PlatformSettingDefinition => new PlatformSettingDefinition('flow.', PlatformSettingType::Integer, 1, 'L', 'D', 'G')],
+            'empty label'             => [static fn (): PlatformSettingDefinition => new PlatformSettingDefinition('flow.max', PlatformSettingType::Integer, 1, ' ', 'D', 'G')],
+            'empty description'       => [static fn (): PlatformSettingDefinition => new PlatformSettingDefinition('flow.max', PlatformSettingType::Integer, 1, 'L', '', 'G')],
+            'empty group'             => [static fn (): PlatformSettingDefinition => new PlatformSettingDefinition('flow.max', PlatformSettingType::Integer, 1, 'L', 'D', '')],
+            'min above max'           => [static fn (): PlatformSettingDefinition => new PlatformSettingDefinition('flow.max', PlatformSettingType::Integer, 5, 'L', 'D', 'G', min: 10, max: 1)],
+            'choice without choices'  => [static fn (): PlatformSettingDefinition => new PlatformSettingDefinition('ui.mode', PlatformSettingType::Choice, 'a', 'L', 'D', 'G')],
+            'choices on an integer'   => [static fn (): PlatformSettingDefinition => new PlatformSettingDefinition('flow.max', PlatformSettingType::Integer, 1, 'L', 'D', 'G', choices: ['a'])],
+            'default of wrong type'   => [static fn (): PlatformSettingDefinition => new PlatformSettingDefinition('flow.on', PlatformSettingType::Boolean, 1, 'L', 'D', 'G')],
+            'choice default a number' => [static fn (): PlatformSettingDefinition => new PlatformSettingDefinition('ui.mode', PlatformSettingType::Choice, 1, 'L', 'D', 'G', choices: ['a', 'b'])],
         ];
     }
     public function test_a_definition_carries_its_values(): void
@@ -57,6 +56,14 @@ final class PlatformSettingDefinitionTest extends TestCase
         $this->expectException(InvalidArgumentException::class);
 
         $make();
+    }
+
+    public function test_a_default_outside_the_bounds_is_kept_but_would_not_be_stored(): void
+    {
+        $definition = $this->integer(min: 10, max: 100, default: 5);
+
+        $this->assertSame(5, $definition->default);
+        $this->assertSame('must be at least 10.', $definition->violation(5));
     }
 
     public function test_an_integer_accepts_whole_numbers_within_its_bounds(): void

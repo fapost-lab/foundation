@@ -12,7 +12,8 @@ use InvalidArgumentException;
  * field. Returned by {@see \Fapost\Foundation\Settings\Contracts\PlatformSettingsInterface::definitions()}.
  *
  * `default` is the value the installation uses while nobody stored one; it is already resolved (an
- * `.env` value included), so it may differ between installations.
+ * `.env` value included), so it may differ between installations. It has the setting's type but may lie
+ * outside the bounds: they apply to values someone stores, and an installation keeps a default it chose.
  *
  * @experimental
  */
@@ -20,7 +21,7 @@ final readonly class PlatformSettingDefinition
 {
     /**
      * @param  string  $key  stable dotted identifier, such as "flow.execution.max_iterations"
-     * @param  int|bool|string  $default  the value in effect while none is stored; matches the type
+     * @param  int|bool|string  $default  the value in effect while none is stored; of the setting's type
      * @param  string  $label  what an operator reads, in English
      * @param  string  $description  what the setting changes, in English
      * @param  string  $group  the section it is shown in, in English, such as "Flow"
@@ -30,7 +31,7 @@ final readonly class PlatformSettingDefinition
      * @param  list<string>  $choices  for Choice: the accepted values; empty otherwise
      * @param  bool  $hostModeOnly  true when the setting only has an effect with host resolution
      *
-     * @throws InvalidArgumentException when the key, labels, bounds, choices or default do not fit
+     * @throws InvalidArgumentException when the key, labels, bounds or choices do not fit, or the default is of another type
      */
     public function __construct(
         public string $key,
@@ -65,8 +66,8 @@ final readonly class PlatformSettingDefinition
             throw new InvalidArgumentException(sprintf('Platform setting "%s" has choices but is not a choice.', $key));
         }
 
-        if (null !== $this->violation($default)) {
-            throw new InvalidArgumentException(sprintf('Platform setting "%s" has a default that it would refuse: %s', $key, $this->violation($default)));
+        if (null !== $this->typeViolation($default)) {
+            throw new InvalidArgumentException(sprintf('Platform setting "%s" has a default of another type: it %s', $key, $this->typeViolation($default)));
         }
     }
 
@@ -75,22 +76,32 @@ final readonly class PlatformSettingDefinition
      */
     public function violation(mixed $value): ?string
     {
+        if (null !== ($wrongType = $this->typeViolation($value))) {
+            return $wrongType;
+        }
+
         return match ($this->type) {
             PlatformSettingType::Integer => $this->integerViolation($value),
-            PlatformSettingType::Boolean => is_bool($value) ? null : 'must be true or false.',
+            PlatformSettingType::Boolean => null,
             PlatformSettingType::Text    => $this->textViolation($value),
-            PlatformSettingType::Choice  => is_string($value) && in_array($value, $this->choices, true)
+            PlatformSettingType::Choice  => in_array($value, $this->choices, true)
                 ? null
                 : sprintf('must be one of: %s.', implode(', ', $this->choices)),
         };
     }
 
-    private function integerViolation(mixed $value): ?string
+    private function typeViolation(mixed $value): ?string
     {
-        if (! is_int($value)) {
-            return 'must be a whole number.';
-        }
+        return match ($this->type) {
+            PlatformSettingType::Integer => is_int($value) ? null : 'must be a whole number.',
+            PlatformSettingType::Boolean => is_bool($value) ? null : 'must be true or false.',
+            PlatformSettingType::Text,
+            PlatformSettingType::Choice => is_string($value) ? null : 'must be text.',
+        };
+    }
 
+    private function integerViolation(int $value): ?string
+    {
         if (null !== $this->min && $value < $this->min) {
             return sprintf('must be at least %d.', $this->min);
         }
@@ -102,12 +113,8 @@ final readonly class PlatformSettingDefinition
         return null;
     }
 
-    private function textViolation(mixed $value): ?string
+    private function textViolation(string $value): ?string
     {
-        if (! is_string($value)) {
-            return 'must be text.';
-        }
-
         if (null !== $this->max && mb_strlen($value) > $this->max) {
             return sprintf('must be at most %d characters.', $this->max);
         }
