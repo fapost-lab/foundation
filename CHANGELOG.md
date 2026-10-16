@@ -8,6 +8,32 @@ before 0.14.0 are described by their tags on GitHub.
 
 ### Added
 
+- `Channel\ChannelInboundAdapterInterface`, experimental: the inbound half of a connector's channel
+  (`normalize(array $payload): IncomingMessage`, plus `ingressSpec()`). Verification and the idempotency key stay
+  declarative; a connector ships no verification code.
+- `Connector\ConnectorChannel`, experimental: the classes that serve one channel type (sender, inbound adapter and
+  optional webhook registrar and media services), as class names.
+- `Connector\ConnectorRegistrarInterface`, experimental: `registerChannel()`, given by Core to one connector.
+- `Lifecycle\AbstractConnectorServiceProvider::registerChannelsWith()`: Core's entry point for channel registration.
+
+### Changed
+
+- Experimental, breaking: `AbstractConnectorServiceProvider` now requires `registerChannels()`.
+
+## 0.22.0
+
+### Added
+
+- `Media\ChannelMediaLinkPolicyInterface`: a channel type declares that it sends media by a public URL instead of
+  uploading bytes (`channelType()`, `linkTtlSeconds(): ?int`). Core then hands it, in `MessagePayload::$media`, a
+  signed link to the media file that expires, issued just before delivery, with `mime_type`, `size`, `file_name` and
+  `kind`; the channel never issues links itself. Core caps the requested lifetime. A channel type with an uploader
+  keeps uploading, so nothing changes for existing channels.
+
+## 0.21.0
+
+### Added
+
 - Connector manifest, experimental: a connector is a deploy-time Composer package of type `fapost-connector`
   (`Solution\Manifest\ManifestSchema::CONNECTOR_PACKAGE_TYPE`) that brings a messaging channel. Its identity is the
   `extra.fapost` block of its `composer.json` (schema 1: `schema`, `id`, `name`, `description`, `provider`, `channels`),
@@ -15,13 +41,7 @@ before 0.14.0 are described by their tags on GitHub.
   `Connector\Manifest\ConnectorManifest`; `ConnectorManifestSchema` describes the format. The id, name and
   description rules, the `require` rules and the ban on Laravel package discovery are the Solution ones.
 - `Lifecycle\AbstractConnectorServiceProvider`: base provider for a connector (`registerBindings()`, `bootConnector()`).
-  Core boots a connector for the whole installation, with no per-tenant activation; channel registration arrives in a
-  later release.
-- `Media\ChannelMediaLinkPolicyInterface`: a channel type declares that it sends media by a public URL instead of
-  uploading bytes (`channelType()`, `linkTtlSeconds(): ?int`). Core then hands it, in `MessagePayload::$media`, a
-  signed link to the media file that expires, issued just before delivery, with `mime_type`, `size`, `file_name` and
-  `kind`; the channel never issues links itself. Core caps the requested lifetime. A channel type with an uploader
-  keeps uploading, so nothing changes for existing channels.
+  Core boots a connector for the whole installation, with no per-tenant activation.
 
 ## 0.20.1
 
