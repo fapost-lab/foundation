@@ -6,6 +6,13 @@ before 0.14.0 are described by their tags on GitHub.
 
 ## Unreleased
 
+### Changed
+
+- `Connector\ConnectorChannel`: the docblock now says Core builds each service inside the request or job that uses
+  it, never shared across them (it said "per call", which Core never promised for media services).
+
+## 0.23.0
+
 ### Added
 
 - `Channel\ChannelInboundAdapterInterface`, experimental: the inbound half of a connector's channel

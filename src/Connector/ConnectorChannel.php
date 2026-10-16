@@ -15,8 +15,9 @@ use InvalidArgumentException;
 /**
  * What a connector contributes for one channel type: the classes that serve it.
  *
- * Every service is a class name, not an instance. Core builds each service per call, in the scope of
- * the running request or job. Constructors must be cheap and touch no tenant data, because Core
+ * Every service is a class name, not an instance. Core builds each service inside the request or job
+ * that uses it and never shares one across requests or jobs, so a service may depend on tenant-scoped
+ * bindings. Constructors must be cheap and touch no tenant data, because Core
  * builds one throwaway instance at registration to check it. The DTO itself is pure: it loads no
  * class and only rejects an empty required string.
  *
