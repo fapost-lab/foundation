@@ -4,6 +4,19 @@ Notable changes to `fapost/foundation`. Versions follow [Semantic Versioning](ht
 major version is `0`, a minor release may break what is marked `@experimental`, and says so here. Releases
 before 0.14.0 are described by their tags on GitHub.
 
+## 0.19.0
+
+### Added
+
+- `Quota\Contracts\PeriodUsageInterface::reportFor(string $tenantId, string $locale): ?PeriodUsageReport`: an operator
+  package reports how much of each per-period limit a tenant has used in its current period (used, limit, start and
+  end of the period), and optionally one action button such as "Upgrade plan". Core shows it on the tenant admin's
+  usage page and calls it at most once per page view, treating an exception as "not reported". Core binds a default
+  that returns `null`, so nothing changes until an operator package implements it.
+- `Quota\DTO\PeriodUsage` and `Quota\DTO\PeriodUsageReport`: the report's entries and envelope. Both validate in the
+  constructor (non-negative numbers, a period that ends after it starts, no duplicate key, an action with a label and
+  an absolute http(s) URL together) and throw `InvalidArgumentException`.
+
 ## 0.18.0
 
 ### Added
