@@ -19,6 +19,7 @@ final class LimitNoticeReasonTest extends TestCase
                 return match ($reason) {
                     LimitNoticeReason::Refused => new LimitNotice('Upgrade to create more.'),
                     LimitNoticeReason::Reached => null,
+                    default                    => new LimitNotice('Move to a larger plan before it runs out.'),
                 };
             }
         };
@@ -26,5 +27,7 @@ final class LimitNoticeReasonTest extends TestCase
         $this->assertSame('Upgrade to create more.', $operator->noticeFor('t', 'assistants', 'en', LimitNoticeReason::Refused)?->message);
         $this->assertNull($operator->noticeFor('t', 'assistants', 'en', LimitNoticeReason::Reached));
         $this->assertSame('reached', LimitNoticeReason::Reached->value);
+        $this->assertSame('approaching', LimitNoticeReason::Approaching->value);
+        $this->assertSame('Move to a larger plan before it runs out.', $operator->noticeFor('t', 'messages', 'en', LimitNoticeReason::Approaching)?->message);
     }
 }

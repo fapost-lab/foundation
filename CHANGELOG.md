@@ -4,7 +4,20 @@ Notable changes to `fapost/foundation`. Versions follow [Semantic Versioning](ht
 major version is `0`, a minor release may break what is marked `@experimental`, and says so here. Releases
 before 0.14.0 are described by their tags on GitHub.
 
-## Unreleased
+## 0.18.0
+
+### Added
+
+- `Quota\DTO\UsageDecision::approaching(int $limit, int $used, ?DateTimeImmutable $periodEndsAt = null)` and the
+  `UsageDecision::$approaching` flag: an operator's usage meter returns it for an allowed unit that brings the
+  period's use to its warning threshold, and Core warns the tenant's admins that the limit is close. Flag once per
+  tenant, key and period; Core also sends at most one warning per limit and period. Nothing changes until a meter
+  flags a decision.
+- `UsageDecision::allowed()` takes an optional third argument `?DateTimeImmutable $periodEndsAt`; Core reads it from a
+  warning and from a refusal, and ignores it on a plain allowed decision.
+- `Quota\Enums\LimitNoticeReason::Approaching`: the reason Core passes to `LimitNoticeInterface::noticeFor()` when it
+  asks for the wording of such a warning. An implementation of `LimitNoticeInterface` whose `match` has no default arm
+  throws `UnhandledMatchError` on `Approaching`; Core catches the error, reports it and falls back to its own text.
 
 ### Changed
 
