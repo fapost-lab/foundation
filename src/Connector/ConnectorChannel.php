@@ -9,6 +9,7 @@ use Fapost\Foundation\Channel\WebhookRegistrarInterface;
 use Fapost\Foundation\Media\ChannelMediaDownloaderInterface;
 use Fapost\Foundation\Media\ChannelMediaLinkPolicyInterface;
 use Fapost\Foundation\Media\ChannelMediaUploaderInterface;
+use Fapost\Foundation\Messaging\ChannelCapabilities;
 use Fapost\Foundation\Messaging\ProviderSenderInterface;
 use InvalidArgumentException;
 
@@ -33,6 +34,8 @@ final readonly class ConnectorChannel
      * @param  class-string<ChannelMediaUploaderInterface>|null  $mediaUploader  uploads media bytes to the provider
      * @param  class-string<ChannelMediaDownloaderInterface>|null  $mediaDownloader  downloads inbound media from the provider
      * @param  class-string<ChannelMediaLinkPolicyInterface>|null  $mediaLinkPolicy  sends media by a signed public link
+     * @param  ChannelCapabilities  $capabilities  what the channel can do beyond text and media (since foundation 0.26,
+     *                                             experimental); nothing declared means text and media only
      *
      * @throws InvalidArgumentException when the type, the sender or the inbound class is empty
      */
@@ -44,6 +47,7 @@ final readonly class ConnectorChannel
         public ?string $mediaUploader = null,
         public ?string $mediaDownloader = null,
         public ?string $mediaLinkPolicy = null,
+        public ChannelCapabilities $capabilities = new ChannelCapabilities(),
     ) {
         foreach (['type' => $type, 'sender' => $sender, 'inbound' => $inbound] as $field => $value) {
             if ('' === $value) {

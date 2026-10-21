@@ -4,7 +4,32 @@ Notable changes to `fapost/foundation`. Versions follow [Semantic Versioning](ht
 major version is `0`, a minor release may break what is marked `@experimental`, and says so here. Releases
 before 0.14.0 are described by their tags on GitHub.
 
-## Unreleased
+## 0.26.0
+
+### Added
+
+- `Messaging\Button`, `ButtonAction` (`callback`, `reply`, `share_contact`, `share_location`) and `ButtonSet`,
+  experimental: the buttons of a message described by what a press does, not by where a channel draws them. A callback
+  button carries an opaque payload of at most `Button::MAX_PAYLOAD_BYTES` (64) bytes; a set never mixes callback
+  buttons with other actions. `MessagePayload` takes them as a new last argument `buttons`; `type` stays `keyboard`.
+  A connector reports a press on a callback button as `IncomingMessageType::CallbackQuery` with `text` set to the
+  payload verbatim.
+- `Messaging\ChannelCapability` and `ChannelCapabilities`, experimental: what a channel can do beyond text and media
+  (callback, reply, contact and location buttons, removing the buttons of a sent message, buttons of older messages
+  staying pressable). `Connector\ConnectorChannel` takes them as a new last argument `capabilities`; a channel that
+  declares nothing is text and media only.
+- The `remove_keyboard` payload type with `metadata.edit_message_id` is documented as the neutral "strip the buttons of
+  a sent message" operation, sent only to a channel that declares `ChannelCapability::RemoveButtons`.
+
+### Changed
+
+- Core's flow messages now carry `MessagePayload::$buttons` and no longer fill `keyboard` (it is null). A connector that
+  reads `keyboard` loses every button of a flow message: read `buttons` and translate the `ButtonSet` into the
+  provider's format. `keyboard` is deprecated.
+- `Messaging\MessagePayload::$keyboard` is deprecated: raw provider markup that only Telegram reads, and only when
+  `buttons` is null. It is removed when Telegram's tests move with its module.
+
+## 0.25.0
 
 ### Added
 

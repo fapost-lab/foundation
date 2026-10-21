@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace Fapost\Foundation\Tests\Unit\Connector;
 
 use Fapost\Foundation\Connector\ConnectorChannel;
+use Fapost\Foundation\Messaging\ChannelCapabilities;
+use Fapost\Foundation\Messaging\ChannelCapability;
 use InvalidArgumentException;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
@@ -51,6 +53,25 @@ final class ConnectorChannelTest extends TestCase
         $this->assertNull($channel->mediaUploader);
         $this->assertNull($channel->mediaDownloader);
         $this->assertNull($channel->mediaLinkPolicy);
+    }
+
+    public function test_it_declares_no_capabilities_by_default(): void
+    {
+        $channel = new ConnectorChannel('acme', 'Acme\\Sender', 'Acme\\Inbound');
+
+        $this->assertSame([], $channel->capabilities->features);
+    }
+
+    public function test_it_keeps_the_capabilities_it_declares(): void
+    {
+        $channel = new ConnectorChannel(
+            type: 'acme',
+            sender: 'Acme\\Sender',
+            inbound: 'Acme\\Inbound',
+            capabilities: new ChannelCapabilities([ChannelCapability::CallbackButtons]),
+        );
+
+        $this->assertTrue($channel->capabilities->supports(ChannelCapability::CallbackButtons));
     }
 
     #[DataProvider('emptyRequired')]
