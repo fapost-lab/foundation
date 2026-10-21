@@ -4,6 +4,13 @@ declare(strict_types=1);
 
 namespace Fapost\Foundation\DTO;
 
+/**
+ * Kind of an incoming message.
+ *
+ * `CallbackQuery` is a press on a {@see \Fapost\Foundation\Messaging\ButtonAction::Callback} button: the connector
+ * reports it with `text` set to the button's payload verbatim. How the provider delivers the press (callback query,
+ * action body, tracking data) is the connector's business.
+ */
 enum IncomingMessageType: string
 {
     case Text          = 'text';
