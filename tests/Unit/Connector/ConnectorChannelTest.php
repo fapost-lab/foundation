@@ -34,6 +34,8 @@ final class ConnectorChannelTest extends TestCase
             mediaUploader: 'Acme\\Uploader',
             mediaDownloader: 'Acme\\Downloader',
             mediaLinkPolicy: 'Acme\\LinkPolicy',
+            profile: 'Acme\\Profile',
+            mediaLimits: 'Acme\\Limits',
         );
 
         $this->assertSame('acme', $channel->type);
@@ -43,6 +45,8 @@ final class ConnectorChannelTest extends TestCase
         $this->assertSame('Acme\\Uploader', $channel->mediaUploader);
         $this->assertSame('Acme\\Downloader', $channel->mediaDownloader);
         $this->assertSame('Acme\\LinkPolicy', $channel->mediaLinkPolicy);
+        $this->assertSame('Acme\\Profile', $channel->profile);
+        $this->assertSame('Acme\\Limits', $channel->mediaLimits);
     }
 
     public function test_optional_services_default_to_null(): void
@@ -53,6 +57,8 @@ final class ConnectorChannelTest extends TestCase
         $this->assertNull($channel->mediaUploader);
         $this->assertNull($channel->mediaDownloader);
         $this->assertNull($channel->mediaLinkPolicy);
+        $this->assertNull($channel->profile);
+        $this->assertNull($channel->mediaLimits);
     }
 
     public function test_it_declares_no_capabilities_by_default(): void

@@ -5,8 +5,10 @@ declare(strict_types=1);
 namespace Fapost\Foundation\Connector;
 
 use Fapost\Foundation\Channel\ChannelInboundAdapterInterface;
+use Fapost\Foundation\Channel\Settings\ChannelProfileInterface;
 use Fapost\Foundation\Channel\WebhookRegistrarInterface;
 use Fapost\Foundation\Media\ChannelMediaDownloaderInterface;
+use Fapost\Foundation\Media\ChannelMediaLimitsInterface;
 use Fapost\Foundation\Media\ChannelMediaLinkPolicyInterface;
 use Fapost\Foundation\Media\ChannelMediaUploaderInterface;
 use Fapost\Foundation\Messaging\ChannelCapabilities;
@@ -36,6 +38,8 @@ final readonly class ConnectorChannel
      * @param  class-string<ChannelMediaLinkPolicyInterface>|null  $mediaLinkPolicy  sends media by a signed public link
      * @param  ChannelCapabilities  $capabilities  what the channel can do beyond text and media (since foundation 0.26,
      *                                             experimental); nothing declared means text and media only
+     * @param  class-string<ChannelProfileInterface>|null  $profile  the channel's settings and public link; without one the channel has no settings and no link
+     * @param  class-string<ChannelMediaLimitsInterface>|null  $mediaLimits  the largest files the provider accepts
      *
      * @throws InvalidArgumentException when the type, the sender or the inbound class is empty
      */
@@ -48,6 +52,8 @@ final readonly class ConnectorChannel
         public ?string $mediaDownloader = null,
         public ?string $mediaLinkPolicy = null,
         public ChannelCapabilities $capabilities = new ChannelCapabilities(),
+        public ?string $profile = null,
+        public ?string $mediaLimits = null,
     ) {
         foreach (['type' => $type, 'sender' => $sender, 'inbound' => $inbound] as $field => $value) {
             if ('' === $value) {

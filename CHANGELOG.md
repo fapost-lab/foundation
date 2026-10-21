@@ -4,6 +4,22 @@ Notable changes to `fapost/foundation`. Versions follow [Semantic Versioning](ht
 major version is `0`, a minor release may break what is marked `@experimental`, and says so here. Releases
 before 0.14.0 are described by their tags on GitHub.
 
+## 0.27.0
+
+### Added
+
+- `Channel\Settings\ChannelProfileInterface`, experimental: what a channel type declares about itself, so Core renders
+  its settings, validates them and shows its public link without naming the provider. `settings()` returns a
+  `ChannelSettingsSchema` (`ChannelSettingField` entries of the types `ChannelSettingType::Text`, `Integer`, `Boolean`,
+  `Choice` and `Choices`, whether the channel uses a webhook secret token and the pattern it must match), and
+  `publicLink(config)` returns a `ChannelPublicLink` (username, handle, URL) from the stored `channels.config`. A field
+  marked `managed` is written by the integration (a bot name read from the provider), never accepted from the form and
+  kept when the form is saved. Fields are never secret: `config` is plain JSON.
+- `Media\ChannelMediaLimitsInterface`, experimental: the largest file in bytes a provider accepts for each `MediaKind`.
+  Tag the class `media.channel.limits`.
+- `Connector\ConnectorChannel` takes `profile` and `mediaLimits`, both optional and after `capabilities`, so existing declarations keep
+  working. A channel without a profile has no settings, any secret token and no public link.
+
 ## 0.26.0
 
 ### Added
