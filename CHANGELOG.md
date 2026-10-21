@@ -4,6 +4,18 @@ Notable changes to `fapost/foundation`. Versions follow [Semantic Versioning](ht
 major version is `0`, a minor release may break what is marked `@experimental`, and says so here. Releases
 before 0.14.0 are described by their tags on GitHub.
 
+## 0.28.0
+
+### Added
+
+- `Channel\Settings\ManagedChannelSettingsInterface`, experimental: where an integration hands Core the values it read
+  from the provider for the `managed` fields of its channel's schema. `report(channelId, values)` takes a map of managed
+  field key to value (a null removes the key); Core checks each value against the field's type and stores it, so a
+  connector never writes the channel itself. Inject it into the connector's webhook registrar and call it after the
+  provider answered; the registration payload carries the channel's id.
+- `Channel\Settings\InvalidManagedSettingException`, experimental: thrown by `report()` for a key that is not a managed
+  field of the channel's schema, or a value that does not fit the field's type.
+
 ## 0.27.0
 
 ### Added
