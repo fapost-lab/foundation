@@ -4,6 +4,12 @@ Notable changes to `fapost/foundation`. Versions follow [Semantic Versioning](ht
 major version is `0`, a minor release may break what is marked `@experimental`, and says so here. Releases
 before 0.14.0 are described by their tags on GitHub.
 
+## 0.28.1
+
+### Changed
+
+- Allows `illuminate/support` 13, so Core can move to Laravel 13. Nothing in the package changed.
+
 ## 0.28.0
 
 ### Added
