@@ -4,6 +4,17 @@ Notable changes to `fapost/foundation`. Versions follow [Semantic Versioning](ht
 major version is `0`, a minor release may break what is marked `@experimental`, and says so here. Releases
 before 0.14.0 are described by their tags on GitHub.
 
+## 0.29.0
+
+### Added
+
+- `Operator\Contracts\OperatorAccessInterface` and `Operator\Enums\OperatorSurface`: where Core, the monitoring
+  package and an operator layer agree who may look at the operator screens (Horizon, Pulse, Telescope, the log
+  viewer, the health screen). `canView(Request, OperatorSurface)` answers yes or no; a surface an implementation does
+  not know is a no. Core binds a default (a `single` installation's permitted staff; closed in `host` mode) and an
+  operator layer rebinds it. Packages with operator screens ask the contract and bring no sign-in of their own. The
+  package now requires `illuminate/http` for the request type.
+
 ## 0.28.1
 
 ### Changed
