@@ -4,6 +4,15 @@ Notable changes to `fapost/foundation`. Versions follow [Semantic Versioning](ht
 major version is `0`, a minor release may break what is marked `@experimental`, and says so here. Releases
 before 0.14.0 are described by their tags on GitHub.
 
+## 0.30.0
+
+### Added
+
+- `Tenancy\Contracts\TenantOnboardingInterface` (`@experimental`) and `Tenancy\Exceptions\TenantOnboardingException`:
+  an operator package restarts a tenant's first-run setup wizard (`restart`) and asks whether it is pending
+  (`isPending`). Implemented by Core; restarting holds a working tenant's console in the wizard until its required
+  steps are done, so the caller asks the operator to confirm first.
+
 ## 0.29.0
 
 ### Added
