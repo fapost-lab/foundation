@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Fapost\Foundation\Messaging;
 
+use Fapost\Foundation\Channel\ChannelInterface;
+
 /**
  * Optional capability for outbound providers that can show a "typing"-style
  * processing indicator to the user during long-running flow execution.
@@ -22,23 +24,27 @@ namespace Fapost\Foundation\Messaging;
  *
  * Implementations must be no-throw — failure to update an indicator is
  * never fatal; callers log and continue.
+ *
+ * Each call receives the channel the indicator belongs to; read its credentials from
+ * {@see ChannelInterface::getConfig()} during the call and never keep them in the handle
+ * (since foundation 0.31; before, the token was passed as a string).
  */
 interface TypingCapableProviderInterface
 {
     /**
      * Show the indicator. Returns an opaque handle for follow-up calls.
      */
-    public function indicateProcessing(string $chatId, string $transportToken): ProcessingIndicatorHandle;
+    public function indicateProcessing(string $chatId, ChannelInterface $channel): ProcessingIndicatorHandle;
 
     /**
      * Refresh / extend the indicator (best-effort). For Telegram this is just
      * another sendChatAction call — re-initiates the 5-second timer.
      */
-    public function refreshProcessing(ProcessingIndicatorHandle $handle, string $transportToken): void;
+    public function refreshProcessing(ProcessingIndicatorHandle $handle, ChannelInterface $channel): void;
 
     /**
      * Stop the indicator (best-effort). For providers where the indicator
      * auto-clears (Telegram), this is typically a no-op.
      */
-    public function stopProcessing(ProcessingIndicatorHandle $handle, string $transportToken): void;
+    public function stopProcessing(ProcessingIndicatorHandle $handle, ChannelInterface $channel): void;
 }
