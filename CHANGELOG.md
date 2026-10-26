@@ -4,6 +4,17 @@ Notable changes to `fapost/foundation`. Versions follow [Semantic Versioning](ht
 major version is `0`, a minor release may break what is marked `@experimental`, and says so here. Releases
 before 0.14.0 are described by their tags on GitHub.
 
+## 0.32.0
+
+### Added
+
+- `Messaging\ButtonLimits` (`@experimental`): how many buttons a channel shows in one message (`maxButtons`), in one
+  row (`maxButtonsPerRow`), and how many characters a label may have (`maxLabelLength`). `null` means no declared
+  limit. Core warns a flow author whose flow exceeds them and never refuses the flow. A callback payload needs no
+  limit here: `Button::MAX_PAYLOAD_BYTES` already holds for every channel.
+- `Messaging\ChannelCapabilities` takes the limits as a second, optional constructor argument and exposes them as
+  `buttonLimits`; a channel that declares none has no known limit.
+
 ## 0.31.0
 
 ### Changed
