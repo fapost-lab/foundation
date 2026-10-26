@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Fapost\Foundation\Tests\Unit\Messaging;
 
+use Fapost\Foundation\Messaging\ButtonLimits;
 use Fapost\Foundation\Messaging\ChannelCapabilities;
 use Fapost\Foundation\Messaging\ChannelCapability;
 use InvalidArgumentException;
@@ -41,5 +42,18 @@ final class ChannelCapabilitiesTest extends TestCase
         $this->expectException(InvalidArgumentException::class);
 
         new ChannelCapabilities(['callback_buttons']);
+    }
+
+    public function test_nothing_declared_has_no_button_limits(): void
+    {
+        $this->assertTrue((new ChannelCapabilities())->buttonLimits->isUnlimited());
+    }
+
+    public function test_it_keeps_the_button_limits_it_declares(): void
+    {
+        $limits       = new ButtonLimits(maxButtons: 100, maxButtonsPerRow: 8);
+        $capabilities = new ChannelCapabilities([ChannelCapability::CallbackButtons], $limits);
+
+        $this->assertSame($limits, $capabilities->buttonLimits);
     }
 }
