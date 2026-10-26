@@ -4,6 +4,24 @@ Notable changes to `fapost/foundation`. Versions follow [Semantic Versioning](ht
 major version is `0`, a minor release may break what is marked `@experimental`, and says so here. Releases
 before 0.14.0 are described by their tags on GitHub.
 
+## 0.31.0
+
+### Changed
+
+- **BREAKING:** `Messaging\OutboundMessage` no longer has `transportToken`. The envelope carries no secret, so it may
+  be queued as it is; before, anyone who queued it wrote the channel's token into `jobs` and `failed_jobs`. Drop the
+  `transportToken` argument where you build one.
+- **BREAKING:** `Messaging\ProviderSenderInterface::deliver(OutboundMessage $message, ChannelInterface $channel)`: the
+  sender gets the message's channel, loaded by Core in the request or job that sends it, and reads the credentials from
+  `$channel->getConfig()` during the call, as the media uploader and downloader already do. A sender never keeps, logs
+  or puts them into a result or an exception message.
+- **BREAKING:** `Messaging\TypingCapableProviderInterface`: `indicateProcessing`, `refreshProcessing` and
+  `stopProcessing` take the `ChannelInterface` instead of the token as a string. A `ProcessingIndicatorHandle` never
+  holds credentials.
+- `Channel\ChannelInterface::getConfig()` documents its shape: `token`, `secret_token`, `webhook_public_hash` and
+  `options` (the channel's settings). `MessageSenderInterface::send()` documents that its implementation loads the
+  channel by `channelId` when it sends.
+
 ## 0.30.0
 
 ### Added
