@@ -22,6 +22,9 @@ final readonly class IngressSpecExecutor
     /** Placeholder prefix for header lookups. */
     private const string HEADER_PREFIX = 'header.';
 
+    /** Placeholder resolving to the raw request body; allowed only in the signed template. */
+    private const string RAW_PLACEHOLDER = 'raw';
+
     /**
      * Verify the request signature according to the spec.
      *
@@ -30,10 +33,16 @@ final readonly class IngressSpecExecutor
      *
      * An empty secret refuses every scheme that reads one: compared directly it
      * matches an absent header, and as an HMAC key it lets anyone sign.
+     *
+     * @param  int|null  $now  unix seconds the timestamp check compares against; null means the current time
      */
-    public function verify(IngressSpec $spec, SignedRequest $request, string $secret): bool
+    public function verify(IngressSpec $spec, SignedRequest $request, string $secret, ?int $now = null): bool
     {
         if (SignatureScheme::None !== $spec->scheme && '' === $secret) {
+            return false;
+        }
+
+        if (null !== $spec->timestamp && !$this->timestampIsFresh($spec->timestamp, $request, $now ?? time())) {
             return false;
         }
 
@@ -59,10 +68,117 @@ final readonly class IngressSpecExecutor
      */
     public function idempotencyKey(IngressSpec $spec, SignedRequest $request, string $channelId): string
     {
+        return $this->resolve($spec->idempotencyTemplate, $request, $channelId, $this->document($spec, $request), false);
+    }
+
+    /**
+     * The request document: the JSON body, or the JSON held in the spec's form field, or an empty array.
+     * Content-Type is never consulted.
+     *
+     * @return array<int|string, mixed>
+     *
+     * @experimental Since foundation 0.33.
+     */
+    public function document(IngressSpec $spec, SignedRequest $request): array
+    {
+        $json = json_decode($request->rawBody, true);
+
+        if (is_array($json)) {
+            return $json;
+        }
+
+        if (null === $spec->formField) {
+            return [];
+        }
+
+        $value = $this->formValue($request->rawBody, $spec->formField);
+
+        if (null === $value) {
+            return [];
+        }
+
+        $decoded = json_decode($value, true);
+
+        return is_array($decoded) ? $decoded : [];
+    }
+
+    /**
+     * The plain-text answer to a provider's challenge, or null when the request is not one.
+     * Call it only after {@see verify()} returned true.
+     *
+     * @experimental Since foundation 0.33.
+     */
+    public function handshakeResponse(IngressSpec $spec, SignedRequest $request): ?string
+    {
+        if (null === $spec->handshake) {
+            return null;
+        }
+
+        $document = $this->document($spec, $request);
+
+        if ($this->resolve($spec->handshake->when, $request, '', $document, false) !== $spec->handshake->equals) {
+            return null;
+        }
+
+        return $this->resolve($spec->handshake->respond, $request, '', $document, false);
+    }
+
+    private function timestampIsFresh(IngressTimestamp $timestamp, SignedRequest $request, int $now): bool
+    {
+        $value = $request->header($timestamp->header);
+
+        if (1 !== preg_match('/^[0-9]{1,19}$/D', $value)) {
+            return false;
+        }
+
+        $digits = mb_ltrim($value, '0');
+        $digits = '' === $digits ? '0' : $digits;
+
+        if (mb_strlen($digits) > 19 || (19 === mb_strlen($digits) && strcmp($digits, (string)PHP_INT_MAX) > 0)) {
+            return false;
+        }
+
+        return abs($now - (int)$digits) <= $timestamp->toleranceSeconds;
+    }
+
+    /**
+     * Value of the first form field named $field, decoded strictly; null when absent or malformed.
+     *
+     * Hand-written on purpose: parse_str() and urldecode() are lenient about invalid escapes and treat `.` and
+     * `[` in names specially, and the gateway must reach the same answer byte for byte.
+     */
+    private function formValue(string $rawBody, string $field): ?string
+    {
+        foreach (explode('&', $rawBody) as $segment) {
+            if ('' === $segment) {
+                continue;
+            }
+
+            // Byte-wise on purpose: the body is not guaranteed to be valid UTF-8.
+            [$name, $value] = explode('=', $segment, 2) + [1 => ''];
+
+            if ($this->decodeFormComponent($name) !== $field) {
+                continue;
+            }
+
+            return $this->decodeFormComponent($value);
+        }
+
+        return null;
+    }
+
+    private function decodeFormComponent(string $component): ?string
+    {
+        $component = str_replace('+', ' ', $component);
+
+        if (1 === preg_match('/%(?![0-9A-Fa-f]{2})/', $component)) {
+            return null;
+        }
+
         return preg_replace_callback(
-            '/\{([^}]+)\}/',
-            fn (array $matches): string => $this->resolvePlaceholder($matches[1], $request, $channelId),
-            $spec->idempotencyTemplate,
+            '/%([0-9A-Fa-f]{2})/',
+            static fn (array $matches): string => chr((int)hexdec($matches[1])),
+            $component,
         );
     }
 
@@ -76,15 +192,48 @@ final readonly class IngressSpecExecutor
 
         // Signed over the raw bytes the provider sent — decoding and re-encoding
         // the body would reorder keys and change escaping, breaking the digest.
-        $expected = $spec->prefix . hash_hmac($algorithm, $request->rawBody, $secret);
+        $message = null === $spec->signedPayload
+            ? $request->rawBody
+            : $this->resolve($spec->signedPayload, $request, '', [], true);
+
+        $expected = $spec->prefix . hash_hmac($algorithm, $message, $secret);
 
         return hash_equals($expected, $request->header((string)$spec->parameter));
     }
 
-    private function resolvePlaceholder(string $placeholder, SignedRequest $request, string $channelId): string
+    /**
+     * @param  array<int|string, mixed>  $document
+     */
+    private function resolve(string $template, SignedRequest $request, string $channelId, array $document, bool $allowRaw): string
+    {
+        return (string)preg_replace_callback(
+            '/\{([^}]+)\}/',
+            function (array $matches) use ($request, $channelId, $document, $allowRaw): string {
+                foreach (explode('|', $matches[1]) as $alternative) {
+                    $value = $this->resolvePlaceholder($alternative, $request, $channelId, $document, $allowRaw);
+
+                    if ('' !== $value) {
+                        return $value;
+                    }
+                }
+
+                return '';
+            },
+            $template,
+        );
+    }
+
+    /**
+     * @param  array<int|string, mixed>  $document
+     */
+    private function resolvePlaceholder(string $placeholder, SignedRequest $request, string $channelId, array $document, bool $allowRaw): string
     {
         if (self::CHANNEL_PLACEHOLDER === $placeholder) {
             return $channelId;
+        }
+
+        if (self::RAW_PLACEHOLDER === $placeholder) {
+            return $allowRaw ? $request->rawBody : '';
         }
 
         if (str_starts_with($placeholder, self::HEADER_PREFIX)) {
@@ -93,7 +242,7 @@ final readonly class IngressSpecExecutor
 
         if (str_starts_with($placeholder, self::BODY_PREFIX)) {
             return $this->scalarAtPath(
-                $request->body(),
+                $document,
                 mb_substr($placeholder, mb_strlen(self::BODY_PREFIX)),
             );
         }
@@ -102,9 +251,9 @@ final readonly class IngressSpecExecutor
     }
 
     /**
-     * Read a dot-separated path out of the decoded body, stringifying scalars only.
+     * Read a dot-separated path out of the document, stringifying scalars only.
      *
-     * @param  array<string, mixed>  $body
+     * @param  array<int|string, mixed>  $body
      */
     private function scalarAtPath(array $body, string $path): string
     {

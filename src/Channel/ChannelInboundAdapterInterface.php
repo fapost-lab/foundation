@@ -23,6 +23,10 @@ interface ChannelInboundAdapterInterface extends ProvidesIngressSpecInterface
      * Turn the decoded webhook body into the platform's incoming message.
      *
      * @param  array<string, mixed>  $payload  the decoded webhook body
+     *
+     * @throws InboundEventIgnoredException when the delivery is not a user's message for the flow (the bot's own
+     *                                      message, an edit, a system event); Core drops it without a retry, a
+     *                                      contact or a transcript
      */
     public function normalize(array $payload): IncomingMessage;
 }

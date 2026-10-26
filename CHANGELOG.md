@@ -4,6 +4,29 @@ Notable changes to `fapost/foundation`. Versions follow [Semantic Versioning](ht
 major version is `0`, a minor release may break what is marked `@experimental`, and says so here. Releases
 before 0.14.0 are described by their tags on GitHub.
 
+## 0.33.0
+
+### Added
+
+- `Channel\Ingress\IngressSpec` wire version 2 (`@experimental`): optional `signedPayload` (a template of the string
+  the HMAC covers, with `{raw}` exactly once), `timestamp` (`IngressTimestamp`: a header and a tolerance of 1..3600
+  seconds against replays), `formField` (the form field whose value is the JSON document when the body is not JSON) and
+  `handshake` (`IngressHandshake`: answers a provider's challenge without enqueueing), plus `|` alternatives inside
+  placeholders of the idempotency template. `wireVersion()` is 2 when any of them is used; every other spec still
+  serialises as version 1, unchanged. A gateway that predates version 2 rejects such a spec and proxies the request to
+  the application, so a connector keeps working before the gateway is upgraded.
+- `IngressSpecExecutor::verify()` takes an optional `$now`; new `document()` and `handshakeResponse()`. The semantics
+  are normative for every ingress runtime.
+- `Channel\InboundEventIgnoredException` (`@experimental`): thrown by `normalize()` for a delivery that is not a user's
+  message for the flow; Core drops it without a retry, a contact or a transcript.
+- `Channel\Settings\ChannelSetupGuideInterface`, `ChannelSetupStep` and `ChannelSetupCopyKind` (`@experimental`): a
+  `ChannelProfileInterface` may also implement the guide to tell a person what to do on the provider's side.
+
+### Changed
+
+- The documentation of `ProvidesIngressSpecInterface` no longer promises a PHP verification fallback for connector
+  adapters.
+
 ## 0.32.0
 
 ### Added
