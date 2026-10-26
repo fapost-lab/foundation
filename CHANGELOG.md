@@ -4,6 +4,18 @@ Notable changes to `fapost/foundation`. Versions follow [Semantic Versioning](ht
 major version is `0`, a minor release may break what is marked `@experimental`, and says so here. Releases
 before 0.14.0 are described by their tags on GitHub.
 
+## 0.34.0
+
+### Added
+
+- `Health\Contracts\InstallationHealthInterface` (`@experimental`): the health of the whole installation for a
+  package that renders it. `report()` returns `Health\DTO\InstallationHealthReport` (`services`, `generatedAt`,
+  `service()`), one `ServiceHealth` per probed service (`service`, `state`, `reason`, `checkedAt`, `endpoint`,
+  `metrics`, `metric()`), each figure a `HealthMetric` (`name`, `value`, `unit`, `subject`) from the catalogue in its
+  docblock. Enums `HealthState` (`up`, `down`, `unknown`, `disabled`), `MonitoredService` (`reverb`, `gateway`,
+  `webhook_registry`, `queues`) and `HealthUnit`. Implemented by Core; it does not authorise, so ask
+  `OperatorAccessInterface` for `OperatorSurface::Health` first. Nothing in it is a secret or names a tenant.
+
 ## 0.33.0
 
 ### Added
