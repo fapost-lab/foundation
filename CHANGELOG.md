@@ -4,6 +4,25 @@ Notable changes to `fapost/foundation`. Versions follow [Semantic Versioning](ht
 major version is `0`, a minor release may break what is marked `@experimental`, and says so here. Releases
 before 0.14.0 are described by their tags on GitHub.
 
+## 0.35.0 — unreleased
+
+### Added
+
+- `Tenancy\Contracts\TenantDecommissionerInterface` (`@experimental`): removes a tenant completely and
+  irreversibly. `decommission($tenantId, DecommissionReason)` returns `Tenancy\DTO\DecommissionedTenant`
+  (`tenantId`, `slug`, `alreadyGone`, `mediaKeptInClientStorage`). It removes the provider-side channel webhooks, the
+  webhook routing, the support access tokens, the media the installation holds (never objects in a client's own
+  storage), the tenant's schema and its landlord row, so the slug is free at once; no backup is made. Implemented by
+  Core; slow, so run it from a queued job. Idempotent: an unknown tenant is reported as `alreadyGone` and dispatches
+  no event. A Pending tenant is refused with `Exceptions\TenantDecommissionFailedException` (`reason`, `tenantId`).
+- Enums `DecommissionReason` (`owner_request`, `retention`) and `DecommissionFailure` (`pending`, `failed`) (both
+  `@experimental`); new cases may be added in a minor release.
+- `Tenancy\Events\TenantDecommissioned` (`@experimental`): dispatched by Core after a tenant was removed
+  (`tenantId`, `slug`, `reason`); operator packages listen to erase their own data about it.
+- `Tenancy\Contracts\TenantSelfDeletionPolicyInterface` (`@experimental`): `allows($tenantId)` tells whether a
+  tenant's own owner may delete the workspace from its settings. Implemented by an operator package; Core's default
+  answers false, so a self-hosted installation never offers it. Fast: may be called from an HTTP request.
+
 ## 0.34.0
 
 ### Added
