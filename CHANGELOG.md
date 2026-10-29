@@ -4,7 +4,7 @@ Notable changes to `fapost/foundation`. Versions follow [Semantic Versioning](ht
 major version is `0`, a minor release may break what is marked `@experimental`, and says so here. Releases
 before 0.14.0 are described by their tags on GitHub.
 
-## 0.35.0 — unreleased
+## 0.35.0
 
 ### Added
 
