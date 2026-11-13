@@ -17,6 +17,8 @@ use Fapost\Foundation\Support\PackagePath;
  */
 final class ManifestParser
 {
+    private const string NODE_TAIL = '[a-z][a-z0-9_]*';
+
     private const string ACTION_TAIL = '[a-z][a-z0-9_]*(\.[a-z][a-z0-9_]*)*';
 
     private readonly ManifestRules $rules;
@@ -70,6 +72,8 @@ final class ManifestParser
         $description = $this->rules->checkDescription($block, $violations);
         $provider    = $this->rules->checkProvider($block, $violations);
         $actions     = $this->checkActions($block, $id, $violations);
+        $nodes       = $this->checkNodes($block, $id, $violations);
+        $state       = $this->checkState($block, $violations);
         $ui          = $this->checkUi($block, $violations);
 
         foreach (array_keys($block) as $key) {
@@ -93,7 +97,7 @@ final class ManifestParser
 
         return new ManifestParseResult(
             $package,
-            new SolutionManifest($package, $schema, $id, $name, $description, $provider, $actions, $constraint, $ui),
+            new SolutionManifest($package, $schema, $id, $name, $description, $provider, $actions, $constraint, $ui, $nodes, $state),
             [],
         );
     }
@@ -157,6 +161,86 @@ final class ManifestParser
         }
 
         return $valid;
+    }
+
+    /**
+     * @param  array<string, mixed>  $block
+     * @param  list<ManifestViolation>  $violations
+     * @return list<string>
+     */
+    private function checkNodes(array $block, ?string $id, array &$violations): array
+    {
+        if (!array_key_exists('nodes', $block)) {
+            return [];
+        }
+
+        $nodes = $block['nodes'];
+
+        if (!is_array($nodes) || !array_is_list($nodes)) {
+            $violations[] = new ManifestViolation('extra.fapost.nodes', 'must be a list of node types');
+
+            return [];
+        }
+
+        $valid = [];
+        $seen  = [];
+
+        foreach ($nodes as $index => $node) {
+            $field = sprintf('extra.fapost.nodes[%d]', $index);
+
+            if (!is_string($node)) {
+                $violations[] = new ManifestViolation($field, 'must be a string');
+
+                continue;
+            }
+
+            if (null !== $id && !str_starts_with($node, $id . '.')) {
+                $violations[] = new ManifestViolation($field, sprintf('"%s" must start with "%s."', $node, $id));
+
+                continue;
+            }
+
+            $pattern = '/^' . (null === $id ? '[a-z][a-z0-9_]{1,31}' : preg_quote($id, '/')) . '\.' . self::NODE_TAIL . '$/D';
+
+            if (1 !== preg_match($pattern, $node)) {
+                $violations[] = new ManifestViolation(
+                    $field,
+                    sprintf('"%s" must be a lowercase snake_case name (letters, digits, underscore) after "%s."', $node, $id ?? '<id>'),
+                );
+
+                continue;
+            }
+
+            if (isset($seen[$node])) {
+                $violations[] = new ManifestViolation($field, sprintf('"%s" is listed twice', $node));
+
+                continue;
+            }
+
+            $seen[$node] = true;
+            $valid[]     = $node;
+        }
+
+        return $valid;
+    }
+
+    /**
+     * @param  array<string, mixed>  $block
+     * @param  list<ManifestViolation>  $violations
+     */
+    private function checkState(array $block, array &$violations): bool
+    {
+        if (!array_key_exists('state', $block)) {
+            return false;
+        }
+
+        if (!is_bool($block['state'])) {
+            $violations[] = new ManifestViolation('extra.fapost.state', 'must be a boolean');
+
+            return false;
+        }
+
+        return $block['state'];
     }
 
     /**

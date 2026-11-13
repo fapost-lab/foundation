@@ -57,9 +57,9 @@ protected function registerExtensions(CoreRegistrarInterface $registrar): void
 
 Core calls `registerExtensionsWith($registrar)` on a Solution's provider once per process, after every
 provider's `register()` and before any `boot()`, handing it a registrar of its own: Core checks what a
-Solution registers against the Solution's manifest (`extra.fapost.actions`). A Solution registers
-**action handlers** (`registerActionHandler`, by class), not node types; `registerNodeHandler` is for
-Plugins. The provider's `boot()` only runs `bootSolution()`.
+Solution registers against the Solution's manifest (`extra.fapost.actions`, `extra.fapost.nodes`). A
+Solution registers **action handlers** (`registerActionHandler`, by class) and, since foundation 0.36,
+**node handlers** (`registerNodeHandler`) for the node types its manifest declares. The provider's `boot()` only runs `bootSolution()`.
 
 - **Solution** — an external composer package with niche domain logic (HR, Recruitment).
   Extend `Lifecycle\AbstractSolutionServiceProvider`.
@@ -93,12 +93,14 @@ the package: `"type": "fapost-solution"` plus an `extra.fapost` block.
 |-------|----------|------|
 | `type` | yes | `fapost-solution` (`fapost-plugin` is reserved) |
 | `extra.fapost.schema` | yes | integer; `1` is the only supported number |
-| `extra.fapost.id` | yes | `^[a-z][a-z0-9_]{1,31}$`; not `core`, `platform`, `fapost`, `app`, `system`, `flow`, `module`, `rag`, `solution`, `solutions`, `console`, `admin`. **Never changes**: a new id is a different Solution |
+| `extra.fapost.id` | yes | `^[a-z][a-z0-9_]{1,31}$`; not `core`, `platform`, `fapost`, `app`, `system`, `flow`, `module`, `rag`, `solution`, `solutions`, `console`, `admin`, `contact`, `call`. **Never changes**: a new id is a different Solution |
 | `extra.fapost.name` | yes | one line, 1 to 60 characters, English |
 | `extra.fapost.description` | no | up to 280 characters |
 | `extra.fapost.provider` | yes | class name of a provider extending `Lifecycle\AbstractSolutionServiceProvider`; Core boots it |
 | `extra.laravel.providers` | forbidden | any entry is a violation (an empty list is fine): Laravel's package discovery would boot a Solution's provider whether or not its manifest holds up |
 | `extra.fapost.actions` | no | unique action ids, each starting with `<id>.` |
+| `extra.fapost.nodes` | no | unique flow node types, each `<id>.` followed by a snake_case name; since foundation 0.36 |
+| `extra.fapost.state` | no | boolean, default `false`; `true` = the Solution owns the flow state namespace named by its id, writable only by its own node types; since foundation 0.36 |
 | `extra.fapost.ui` | no | path of the Solution's `fapost-ui.json` relative to the package root: `/`-separated segments of letters, digits, `.`, `_`, `-`, none starting with `.`, ending with `.json`; since foundation 0.15, experimental (see [Console UI](#console-ui-experimental)) |
 | `extra.fapost.x-*` | no | ignored; for the author's own tooling |
 | `require.fapost/foundation` | yes | the Foundation range the Solution needs; Composer enforces it at install time |

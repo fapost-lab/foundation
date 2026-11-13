@@ -21,7 +21,8 @@ interface NodeHandlerInterface
 {
     /**
      * Node type. For example: "send_message", "sync_employee".
-     * Must be unique among all registered handlers.
+     * Must be unique among all registered handlers. Types of extension packages carry the
+     * "<solution id>." prefix, such as "feedback.collect".
      */
     public function type(): string;
 
@@ -44,7 +45,8 @@ interface NodeHandlerInterface
     public function label(): string;
 
     /**
-     * Builder group/category for this node.
+     * Builder group/category for this node: a {@see \Fapost\Foundation\Flow\Enums\NodeCategory} value
+     * or, for a Solution's node, the Solution's id.
      */
     public function category(): string;
 

@@ -4,6 +4,37 @@ Notable changes to `fapost/foundation`. Versions follow [Semantic Versioning](ht
 major version is `0`, a minor release may break what is marked `@experimental`, and says so here. Releases
 before 0.14.0 are described by their tags on GitHub.
 
+## 0.36.0 — unreleased
+
+### Added
+
+- Manifest schema 1, `extra.fapost.nodes` (optional, default `[]`): the flow node types the Solution registers,
+  a list of unique strings, each `<id>.<snake_case>`; checked like `actions`. Read as `SolutionManifest::$nodes`.
+- Manifest schema 1, `extra.fapost.state` (optional, boolean, default `false`): `true` means the Solution owns
+  the flow state namespace named exactly its id, writable only by its own node types. Read as
+  `SolutionManifest::$state`.
+- `Flow\Enums\NodeCategory` (`@experimental`): the builder palette groups of Core (`Conversation`, `Logic`, `Data`,
+  `Contact`, `Integration`, `AI`), in palette order. A node handler's `category()` returns one of them or, for a
+  Solution's node, the Solution's id. New cases may be added in a minor release.
+- `Flow\Contracts\StateNamespacesInterface` (`@experimental`): read-only list of the state namespaces known at
+  runtime (`all()`, `has()`, `ownerOf()`), built-in and Solution ones. Implemented by Core.
+- `Flow\Contracts\NodeConfigValidatorInterface` (`@experimental`): optional companion of a `NodeHandlerInterface`;
+  `validate(array $node)` returns `list<Flow\DTO\NodeConfigIssue>`. Core calls it when it validates a flow for
+  publishing, after its generic checks; it must be pure. `NodeConfigIssue` (`code`, `message`, `field`,
+  `severity`) has named constructors `error()` and `warning()`; severity is `Flow\Enums\NodeConfigIssueSeverity`.
+
+### Changed
+
+- `contact` and `call` are reserved Solution ids: they are state namespaces of the platform. This tightens
+  schema 1; no published Solution uses either id.
+- `NodeHandlerInterface::type()` and `category()` and `CoreRegistrarInterface::registerNodeHandler()` document the
+  rules for a Solution's nodes (declared in `extra.fapost.nodes`, `<id>.` prefix, category from `NodeCategory`
+  or the Solution id). No method was added.
+
+### Deprecated
+
+- `Flow\Enums\StateNamespace::Rag`: removed in the next major release; the RAG capability moves to a Solution.
+
 ## 0.35.0
 
 ### Added
