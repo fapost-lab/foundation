@@ -15,15 +15,18 @@ namespace Fapost\Foundation\Flow\Enums;
  * authors can address with the same dotted-path notation in templates,
  * branch conditions, and state pickers.
  *
- * This enum is part of the Foundation extension contract: Solutions and
- * Plugins consume it to declare allowed namespaces in schema fields and to
- * resolve paths through DataAccessor/VariableResolver. New top-level
- * namespaces are added here, not invented per node.
+ * The enum lists the built-in namespaces. A Solution with `state: true` in its manifest owns one
+ * more namespace, named exactly by its id, writable only by that Solution's own node types. The full
+ * list at runtime is {@see \Fapost\Foundation\Flow\Contracts\StateNamespacesInterface}; this enum is
+ * not it. New built-in namespaces are added here, not invented per node.
  */
 enum StateNamespace: string
 {
-    case System  = 'system';
-    case Flow    = 'flow';
+    case System = 'system';
+    case Flow   = 'flow';
+    /**
+     * @deprecated removed in the next major release; the RAG capability moves to a Solution
+     */
     case Rag     = 'rag';
     case Module  = 'module';
     case Contact = 'contact';

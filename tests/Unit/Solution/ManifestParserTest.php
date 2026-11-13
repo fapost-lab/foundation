@@ -49,7 +49,18 @@ final class ManifestParserTest extends TestCase
             'action duplicated'                     => [self::composer(['actions' => ['feedback.a', 'feedback.a']]), 'extra.fapost.actions[1]: "feedback.a" is listed twice'],
             'action not a string'                   => [self::composer(['actions' => [1]]), 'extra.fapost.actions[0]: must be a string'],
             'actions not a list'                    => [self::composer(['actions' => ['a' => 'feedback.a']]), 'extra.fapost.actions: must be a list'],
-            'unknown field'                         => [self::composer(['migrations' => 'database']), 'acme/fapost-feedback: extra.fapost.migrations: unknown field (schema 1 allows: schema, id, name, description, provider, actions, ui); a newer fapost/foundation may be required'],
+            'node without prefix'                   => [self::composer(['nodes' => ['collect']]), 'extra.fapost.nodes[0]: "collect" must start with "feedback."'],
+            'node of another solution'              => [self::composer(['nodes' => ['feedback.ok', 'hr.create']]), 'extra.fapost.nodes[1]: "hr.create" must start with "feedback."'],
+            'node uppercase'                        => [self::composer(['nodes' => ['feedback.Collect']]), 'extra.fapost.nodes[0]: "feedback.Collect" must be a lowercase snake_case name'],
+            'node with dotted tail'                 => [self::composer(['nodes' => ['feedback.a.b']]), 'extra.fapost.nodes[0]: "feedback.a.b" must be a lowercase snake_case name'],
+            'node empty tail'                       => [self::composer(['nodes' => ['feedback.']]), 'extra.fapost.nodes[0]'],
+            'node with trailing newline'            => [self::composer(['nodes' => ["feedback.collect\n"]]), 'extra.fapost.nodes[0]'],
+            'node duplicated'                       => [self::composer(['nodes' => ['feedback.a', 'feedback.a']]), 'extra.fapost.nodes[1]: "feedback.a" is listed twice'],
+            'node not a string'                     => [self::composer(['nodes' => [1]]), 'extra.fapost.nodes[0]: must be a string'],
+            'nodes not a list'                      => [self::composer(['nodes' => ['a' => 'feedback.a']]), 'extra.fapost.nodes: must be a list'],
+            'state not a boolean'                   => [self::composer(['state' => 'yes']), 'extra.fapost.state: must be a boolean'],
+            'state as integer'                      => [self::composer(['state' => 1]), 'extra.fapost.state: must be a boolean'],
+            'unknown field'                         => [self::composer(['migrations' => 'database']), 'acme/fapost-feedback: extra.fapost.migrations: unknown field (schema 1 allows: schema, id, name, description, provider, actions, nodes, state, ui); a newer fapost/foundation may be required'],
             'schema missing'                        => [self::without('schema'), 'extra.fapost.schema: required'],
             'schema not an integer'                 => [self::composer(['schema' => '1']), 'extra.fapost.schema: must be an integer'],
             'schema unsupported'                    => [self::composer(['schema' => 2]), 'extra.fapost.schema: 2 is not supported by this fapost/foundation (supports: 1)'],
@@ -228,6 +239,31 @@ final class ManifestParserTest extends TestCase
         }
 
         $this->assertStringContainsString('solutions', ManifestSchema::describe()['extra.fapost.id']['rule']);
+    }
+
+    public function test_contact_and_call_are_reserved_ids(): void
+    {
+        foreach (['contact', 'call'] as $id) {
+            $this->assertContains($id, ManifestSchema::RESERVED_IDS);
+            $this->assertSame(
+                ['acme/fapost-feedback: extra.fapost.id: "' . $id . '" is reserved (reserved: ' . implode(', ', ManifestSchema::RESERVED_IDS) . ')'],
+                self::lines(self::composer(['id' => $id, 'actions' => []])),
+            );
+        }
+    }
+
+    public function test_nodes_and_state_are_read_and_default_to_empty_and_false(): void
+    {
+        $manifest = SolutionManifest::fromComposer(self::composer(['nodes' => ['feedback.collect', 'feedback.score_user'], 'state' => true]));
+
+        $this->assertSame(['feedback.collect', 'feedback.score_user'], $manifest->nodes);
+        $this->assertTrue($manifest->state);
+
+        $plain = SolutionManifest::fromComposer(self::composer());
+
+        $this->assertSame([], $plain->nodes);
+        $this->assertFalse($plain->state);
+        $this->assertFalse(SolutionManifest::fromComposer(self::composer(['state' => false]))->state);
     }
 
     public function test_console_and_admin_are_reserved_ids(): void

@@ -35,6 +35,10 @@ interface CoreRegistrarInterface
     /**
      * Register a NodeHandler for the flow engine.
      *
+     * For a Solution, the handler's type() must be declared in `extra.fapost.nodes`, and its
+     * category() must be a {@see \Fapost\Foundation\Flow\Enums\NodeCategory} value or the Solution's id;
+     * a violation fails the boot.
+     *
      * @param  class-string<NodeHandlerInterface>  $handlerClass
      */
     public function registerNodeHandler(string $handlerClass): void;

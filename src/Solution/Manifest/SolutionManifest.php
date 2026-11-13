@@ -21,6 +21,8 @@ final readonly class SolutionManifest
      * @param  string  $foundationConstraint  the package's `require` for fapost/foundation, as written
      * @param  string|null  $ui  path of the console UI description (`fapost-ui.json`) relative to the package root,
      *                           or null when the Solution adds no console UI; since foundation 0.15, experimental
+     * @param  list<string>  $nodes  flow node types the Solution registers, each "<id>." followed by a snake_case name; since foundation 0.36
+     * @param  bool  $state  whether the Solution owns the flow state namespace named by its id; since foundation 0.36
      */
     public function __construct(
         public string $package,
@@ -32,6 +34,8 @@ final readonly class SolutionManifest
         public array $actions,
         public string $foundationConstraint,
         public ?string $ui = null,
+        public array $nodes = [],
+        public bool $state = false,
     ) {
     }
 
