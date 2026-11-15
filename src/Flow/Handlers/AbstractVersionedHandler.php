@@ -41,6 +41,11 @@ abstract class AbstractVersionedHandler implements NodeHandlerInterface
         return ucfirst(str_replace('_', ' ', $this->type()));
     }
 
+    /**
+     * @deprecated since foundation 0.37: override it and return a {@see \Fapost\Foundation\Flow\Enums\NodeCategory}
+     *             value, or your Solution id. `Core` is not a palette group, so Core 0.36+ refuses a handler that
+     *             keeps it at boot. Abstract in 1.0.
+     */
     public function category(): string
     {
         return 'Core';

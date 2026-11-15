@@ -4,6 +4,14 @@ Notable changes to `fapost/foundation`. Versions follow [Semantic Versioning](ht
 major version is `0`, a minor release may break what is marked `@experimental`, and says so here. Releases
 before 0.14.0 are described by their tags on GitHub.
 
+## Unreleased
+
+### Deprecated
+
+- `Flow\Handlers\AbstractVersionedHandler::category()` is deprecated: its default, `Core`, is not a palette group
+  and Core 0.36+ refuses a handler that keeps it. Override it and return a `Flow\Enums\NodeCategory` value, or your
+  Solution id. It becomes abstract in 1.0.
+
 ## 0.36.0
 
 ### Added
