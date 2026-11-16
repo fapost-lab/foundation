@@ -4,6 +4,20 @@ Notable changes to `fapost/foundation`. Versions follow [Semantic Versioning](ht
 major version is `0`, a minor release may break what is marked `@experimental`, and says so here. Releases
 before 0.14.0 are described by their tags on GitHub.
 
+## 0.38.0
+
+### Added
+
+- Manifest schema 1, `extra.fapost.migrations` (optional, default `null`): the directory, relative to the package
+  root, with the Solution's tenant migrations; applied per tenant, expand-only. Checked for shape only (no `..`, not
+  the package root, trailing slash dropped). Read as `SolutionManifest::$migrations`.
+
+### Deprecated
+
+- `Lifecycle\AbstractSolutionServiceProvider::declareSolutionMigrations()` is deprecated, and stays a no-op: declare
+  migrations in the manifest instead. Core never calls it, and refuses `CoreRegistrarInterface::registerMigrations()`
+  for a Solution.
+
 ## 0.37.0
 
 ### Deprecated

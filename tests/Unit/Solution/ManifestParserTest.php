@@ -60,7 +60,16 @@ final class ManifestParserTest extends TestCase
             'nodes not a list'                      => [self::composer(['nodes' => ['a' => 'feedback.a']]), 'extra.fapost.nodes: must be a list'],
             'state not a boolean'                   => [self::composer(['state' => 'yes']), 'extra.fapost.state: must be a boolean'],
             'state as integer'                      => [self::composer(['state' => 1]), 'extra.fapost.state: must be a boolean'],
-            'unknown field'                         => [self::composer(['migrations' => 'database']), 'acme/fapost-feedback: extra.fapost.migrations: unknown field (schema 1 allows: schema, id, name, description, provider, actions, nodes, state, ui); a newer fapost/foundation may be required'],
+            'migrations not a string'               => [self::composer(['migrations' => ['database']]), 'extra.fapost.migrations: must be a non-empty string'],
+            'migrations empty'                      => [self::composer(['migrations' => '']), 'extra.fapost.migrations: must be a non-empty string'],
+            'migrations absolute'                   => [self::composer(['migrations' => '/database/migrations']), 'extra.fapost.migrations: must be a path relative to the package root'],
+            'migrations windows drive'              => [self::composer(['migrations' => 'C:\\db']), 'extra.fapost.migrations: must be a path relative to the package root'],
+            'migrations escaping'                   => [self::composer(['migrations' => 'database/../../x']), 'extra.fapost.migrations: must not contain ".."'],
+            'migrations parent'                     => [self::composer(['migrations' => '..']), 'extra.fapost.migrations: must not contain ".."'],
+            'migrations package root'               => [self::composer(['migrations' => '.']), 'extra.fapost.migrations: must be a directory inside the package, not the package root'],
+            'migrations package root with slash'    => [self::composer(['migrations' => './']), 'extra.fapost.migrations: must be a directory inside the package, not the package root'],
+            'migrations hidden segment'             => [self::composer(['migrations' => '.hidden/migrations']), 'extra.fapost.migrations: must be a path of segments'],
+            'unknown field'                         => [self::composer(['routes' => 'routes']), 'acme/fapost-feedback: extra.fapost.routes: unknown field (schema 1 allows: schema, id, name, description, provider, actions, nodes, state, ui, migrations); a newer fapost/foundation may be required'],
             'schema missing'                        => [self::without('schema'), 'extra.fapost.schema: required'],
             'schema not an integer'                 => [self::composer(['schema' => '1']), 'extra.fapost.schema: must be an integer'],
             'schema unsupported'                    => [self::composer(['schema' => 2]), 'extra.fapost.schema: 2 is not supported by this fapost/foundation (supports: 1)'],
@@ -135,6 +144,13 @@ final class ManifestParserTest extends TestCase
         $this->assertSame('fapost-ui.json', SolutionManifest::fromComposer(self::composer(['ui' => 'fapost-ui.json']))->ui);
     }
 
+    public function test_the_tenant_migrations_directory_is_read_from_the_manifest(): void
+    {
+        $this->assertNull(SolutionManifest::fromComposer(self::composer())->migrations);
+        $this->assertSame('database/migrations', SolutionManifest::fromComposer(self::composer(['migrations' => 'database/migrations']))->migrations);
+        $this->assertSame('database/migrations', SolutionManifest::fromComposer(self::composer(['migrations' => 'database/migrations/']))->migrations);
+    }
+
     public function test_a_manifest_built_without_ui_keeps_the_previous_constructor(): void
     {
         $manifest = new SolutionManifest('acme/x', 1, 'feedback', 'Feedback', null, 'Acme\\P', [], '^0.13');
@@ -184,7 +200,7 @@ final class ManifestParserTest extends TestCase
     public function test_every_violation_is_collected_in_one_pass(): void
     {
         $lines = self::lines(self::composer(
-            ['id' => 'Bad', 'name' => '', 'provider' => 'x y', 'actions' => ['nope'], 'migrations' => 'm'],
+            ['id' => 'Bad', 'name' => '', 'provider' => 'x y', 'actions' => ['nope'], 'routes' => 'm'],
             ['require' => ['fapost/core' => '*']],
         ));
 

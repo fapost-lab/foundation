@@ -75,6 +75,7 @@ final class ManifestParser
         $nodes       = $this->checkNodes($block, $id, $violations);
         $state       = $this->checkState($block, $violations);
         $ui          = $this->checkUi($block, $violations);
+        $migrations  = $this->checkMigrations($block, $violations);
 
         foreach (array_keys($block) as $key) {
             if (!in_array($key, ManifestSchema::FIELDS, true) && !str_starts_with((string) $key, ManifestSchema::EXTENSION_PREFIX)) {
@@ -97,7 +98,7 @@ final class ManifestParser
 
         return new ManifestParseResult(
             $package,
-            new SolutionManifest($package, $schema, $id, $name, $description, $provider, $actions, $constraint, $ui, $nodes, $state),
+            new SolutionManifest($package, $schema, $id, $name, $description, $provider, $actions, $constraint, $ui, $nodes, $state, $migrations),
             [],
         );
     }
@@ -268,5 +269,60 @@ final class ManifestParser
 
         /** @var string $ui */
         return $ui;
+    }
+
+    /**
+     * The directory of the Solution's tenant migrations is inside the package. Only the shape of the path is
+     * checked here: the parser never touches the filesystem. A trailing "/" is dropped.
+     *
+     * @param  array<string, mixed>  $block
+     * @param  list<ManifestViolation>  $violations
+     */
+    private function checkMigrations(array $block, array &$violations): ?string
+    {
+        if (!array_key_exists('migrations', $block)) {
+            return null;
+        }
+
+        $path = $block['migrations'];
+
+        if (!is_string($path) || '' === $path) {
+            $violations[] = new ManifestViolation('extra.fapost.migrations', 'must be a non-empty string');
+
+            return null;
+        }
+
+        if (str_starts_with($path, '/') || str_contains($path, '\\') || 1 === preg_match('/^[A-Za-z]:/', $path)) {
+            $violations[] = new ManifestViolation('extra.fapost.migrations', 'must be a path relative to the package root');
+
+            return null;
+        }
+
+        $normalised = mb_rtrim($path, '/');
+
+        if (in_array('..', explode('/', $normalised), true)) {
+            $violations[] = new ManifestViolation('extra.fapost.migrations', 'must not contain ".."');
+
+            return null;
+        }
+
+        if ('' === $normalised || '.' === $normalised) {
+            $violations[] = new ManifestViolation('extra.fapost.migrations', 'must be a directory inside the package, not the package root');
+
+            return null;
+        }
+
+        foreach (explode('/', $normalised) as $segment) {
+            if (1 !== preg_match(PackagePath::SEGMENT_PATTERN, $segment)) {
+                $violations[] = new ManifestViolation(
+                    'extra.fapost.migrations',
+                    'must be a path of segments made of letters, digits, ".", "_" and "-", no segment starting with "."',
+                );
+
+                return null;
+            }
+        }
+
+        return $normalised;
     }
 }
