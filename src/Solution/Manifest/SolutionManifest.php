@@ -23,6 +23,8 @@ final readonly class SolutionManifest
      *                           or null when the Solution adds no console UI; since foundation 0.15, experimental
      * @param  list<string>  $nodes  flow node types the Solution registers, each "<id>." followed by a snake_case name; since foundation 0.36
      * @param  bool  $state  whether the Solution owns the flow state namespace named by its id; since foundation 0.36
+     * @param  string|null  $migrations  directory with the Solution's tenant migrations, relative to the package root, without a
+     *                                   trailing slash, or null when it has none; applied per tenant, expand-only; since foundation 0.38
      */
     public function __construct(
         public string $package,
@@ -36,6 +38,7 @@ final readonly class SolutionManifest
         public ?string $ui = null,
         public array $nodes = [],
         public bool $state = false,
+        public ?string $migrations = null,
     ) {
     }
 

@@ -117,6 +117,8 @@ abstract class AbstractSolutionServiceProvider extends ServiceProvider implement
      * Declare package migrations path.
      *
      * @param  string  $path  Absolute path to the migrations directory
+     *
+     * @deprecated Declare migrations in the manifest (extra.fapost.migrations); Core never calls this.
      */
     protected function declareSolutionMigrations(string $path): void
     {

@@ -71,7 +71,7 @@ final class ManifestSchema
      *
      * @var list<string>
      */
-    public const array FIELDS = ['schema', 'id', 'name', 'description', 'provider', 'actions', 'nodes', 'state', 'ui'];
+    public const array FIELDS = ['schema', 'id', 'name', 'description', 'provider', 'actions', 'nodes', 'state', 'ui', 'migrations'];
 
     /** Extension of the console UI description `extra.fapost.ui` points to. */
     public const string UI_EXTENSION = '.json';
@@ -94,6 +94,7 @@ final class ManifestSchema
             'extra.fapost.nodes'                           => ['required' => false, 'rule' => 'list of unique flow node types, each "<id>." followed by a snake_case name; default []; since foundation 0.36'],
             'extra.fapost.state'                           => ['required' => false, 'rule' => 'boolean; true = the Solution owns the flow state namespace named exactly its id, writable only by its own node types; default false; since foundation 0.36'],
             'extra.fapost.ui'                              => ['required' => false, 'rule' => 'path of the console UI description (fapost-ui.json) relative to the package root: "/"-separated non-empty segments of letters, digits, ".", "_" and "-", none starting with ".", ending with "' . self::UI_EXTENSION . '"; since foundation 0.15; experimental'],
+            'extra.fapost.migrations'                      => ['required' => false, 'rule' => 'relative path inside the package of a directory with the Solution\'s tenant migrations: "/"-separated non-empty segments of letters, digits, ".", "_" and "-", none starting with "." (so no ".."), not the package root; a trailing "/" is dropped; applied per tenant, expand-only; since foundation 0.38'],
             'extra.fapost.' . self::EXTENSION_PREFIX . '*' => ['required' => false, 'rule' => 'ignored; for the author\'s own tooling'],
             'extra.laravel.providers'                      => ['required' => false, 'rule' => 'must be absent or empty: Core boots the provider'],
             'require.' . self::FOUNDATION_PACKAGE          => ['required' => true, 'rule' => 'a constraint; checked by Composer'],

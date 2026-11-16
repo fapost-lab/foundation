@@ -71,6 +71,8 @@ interface CoreRegistrarInterface
 
     /**
      * Declare extension migrations path for platform orchestration.
+     *
+     * Solutions do not use this: they declare their migrations in the manifest (`extra.fapost.migrations`).
      */
     public function registerMigrations(string $path): void;
 }
