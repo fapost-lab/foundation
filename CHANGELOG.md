@@ -4,6 +4,16 @@ Notable changes to `fapost/foundation`. Versions follow [Semantic Versioning](ht
 major version is `0`, a minor release may break what is marked `@experimental`, and says so here. Releases
 before 0.14.0 are described by their tags on GitHub.
 
+## 0.39.0
+
+### Added
+
+- `Solution\Queue` (`@experimental`): the Solution job contract. `SolutionJob` is the base class of a Solution's
+  queued work (implement `solution()` and `perform()`; scalar, null and backed-enum properties only), dispatched only
+  through `SolutionQueueInterface::dispatch()`, whose timeout ceiling is `MAX_TIMEOUT_SECONDS`. Core implements the
+  queue and `SolutionJobMiddlewareInterface`, the runtime gate (tenant, access mode, Solution state) that wraps every
+  job. A refused dispatch throws `SolutionJobRejectedException`.
+
 ## 0.38.0
 
 ### Added
