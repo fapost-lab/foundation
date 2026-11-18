@@ -4,6 +4,27 @@ Notable changes to `fapost/foundation`. Versions follow [Semantic Versioning](ht
 major version is `0`, a minor release may break what is marked `@experimental`, and says so here. Releases
 before 0.14.0 are described by their tags on GitHub.
 
+## 0.42.0
+
+### Added
+
+- `Flow\Contracts\DeclaresContextRequirementInterface` and `Flow\Enums\NodeContextRequirement` (`contact`, `none`,
+  `any`): a node handler states whether it needs the run's contact. Optional — a handler that does not implement it
+  needs a contact, as before. Core refuses to publish a flow that starts without a contact (a schedule, a webhook or an
+  API call) while it holds a node that needs one; a Solution's node that declares `none` or `any` can now be used
+  there. Moved from Core, where the same declaration was internal.
+
+### Changed
+
+- `DTO\NodeExecutionContext::$contactId` and `$platform`, `Flow\Call\CallContext::$contactId` and
+  `Flow\DTO\ExpressionContext::$contactId` are `?string`: `null` on a run without a contact, where they were `''`.
+  Constructor calls are unaffected; readers are not. Code that passes one of them to a `string` parameter under
+  `strict_types` gets a `TypeError` on a contactless run, and static analysis now reports it. A contactless run
+  reaches only node handlers that declare `none` or `any`, and every action handler (`ActionHandlerInterface`) through
+  the `call` node, which Core declares `any`: those must handle `null`.
+- `ScopedStateReaderInterface`, `ContactWriterInterface` and `DataAccessorInterface` document the contactless run: the
+  reader throws for `contact.*` and `module.*`, the writer throws, and an accessor is never asked.
+
 ## 0.41.0
 
 ### Added

@@ -18,6 +18,11 @@ namespace Fapost\Foundation\Flow\Contracts;
  * Implementations return {@code null} for unknown paths or when intermediate
  * segments are not objects. They never throw on missing paths.
  *
+ * On a run without a contact (started by a schedule, a webhook or an API call)
+ * {@code contact.*} and {@code module.*} cannot exist — a data accessor is asked
+ * for a contact — and reading them throws a {@see \RuntimeException} instead of
+ * returning {@code null}. The other namespaces read as usual.
+ *
  * Handlers receive an instance via {@see \Fapost\Foundation\DTO\NodeExecutionContext}.
  */
 interface ScopedStateReaderInterface

@@ -23,6 +23,7 @@ namespace Fapost\Foundation\Flow\Contracts;
  *  - Reserved keys (id, tenant_id, channel_id, channel, meta.*) throw {@see \LogicException}
  *  - Unknown intermediate object segments are created on the way (JSONB)
  *  - Type mismatch with a canonical column ends the session (handler is unsafe)
+ *  - On a run without a contact every write throws a {@see \RuntimeException}
  *
  * Auto-instrumentation: every successful write emits a state_change event into
  * flow_session_history when the running flow_definition has logging_enabled.

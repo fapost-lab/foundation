@@ -13,13 +13,14 @@ use Fapost\Foundation\Flow\Contracts\ScopedStateReaderInterface;
  * placeholders or evaluate expressions against current session/contact/module
  * state. Domain objects (Contact, Session, Tenant) are intentionally absent —
  * engine implementations resolve everything through the reader to keep
- * Foundation free of Core domain abstractions.
+ * Foundation free of Core domain abstractions. {@see $contactId} is `null` when
+ * the flow runs without a contact; the reader then refuses `contact.*` and `module.*`.
  */
 final readonly class ExpressionContext
 {
     public function __construct(
         public string $tenantId,
-        public string $contactId,
+        public ?string $contactId,
         public string $sessionId,
         public ScopedStateReaderInterface $stateReader,
     ) {
