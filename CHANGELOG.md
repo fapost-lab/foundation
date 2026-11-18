@@ -16,12 +16,13 @@ before 0.14.0 are described by their tags on GitHub.
 
 ### Changed
 
-- `DTO\NodeExecutionContext::$contactId` and `$platform`, `Flow\Call\CallContext::$contactId` and
+- **BREAKING:** `DTO\NodeExecutionContext::$contactId` and `$platform`, `Flow\Call\CallContext::$contactId` and
   `Flow\DTO\ExpressionContext::$contactId` are `?string`: `null` on a run without a contact, where they were `''`.
   Constructor calls are unaffected; readers are not. Code that passes one of them to a `string` parameter under
   `strict_types` gets a `TypeError` on a contactless run, and static analysis now reports it. A contactless run
   reaches only node handlers that declare `none` or `any`, and every action handler (`ActionHandlerInterface`) through
-  the `call` node, which Core declares `any`: those must handle `null`.
+  the `call` node, which Core declares `any` — so an existing action handler gets `null` without opting in: check
+  that it handles it.
 - `ScopedStateReaderInterface`, `ContactWriterInterface` and `DataAccessorInterface` document the contactless run: the
   reader throws for `contact.*` and `module.*`, the writer throws, and an accessor is never asked.
 
