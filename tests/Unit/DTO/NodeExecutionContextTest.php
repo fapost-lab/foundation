@@ -37,4 +37,19 @@ final class NodeExecutionContextTest extends TestCase
 
         $this->assertTrue($context->resumedAfterDelay);
     }
+
+    public function test_a_run_without_a_contact_has_no_contact_id_and_no_platform(): void
+    {
+        $context = new NodeExecutionContext(
+            tenantId: 'tenant',
+            contactId: null,
+            sessionId: 'session',
+            nodeId: 'node',
+            idempotencyKey: 'key',
+            platform: null,
+        );
+
+        $this->assertNull($context->contactId);
+        $this->assertNull($context->platform);
+    }
 }

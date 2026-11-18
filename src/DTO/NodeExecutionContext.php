@@ -7,6 +7,7 @@ namespace Fapost\Foundation\DTO;
 use Fapost\Foundation\Flow\Contracts\ContactWriterInterface;
 use Fapost\Foundation\Flow\Contracts\ExpressionEngineInterface;
 use Fapost\Foundation\Flow\Contracts\ScopedStateReaderInterface;
+use Fapost\Foundation\Flow\Enums\NodeContextRequirement;
 
 /**
  * Node execution context passed by the engine to each handler.
@@ -28,8 +29,11 @@ final readonly class NodeExecutionContext
         /** Tenant ID (ULID as RFC4122 UUID string) */
         public string $tenantId,
 
-        /** Contact ID */
-        public string $contactId,
+        /**
+         * Contact ID; `null` on a run without a contact (started by a schedule, a webhook or an API call). Only a
+         * handler that declares {@see NodeContextRequirement::None} or {@see NodeContextRequirement::Any} runs there.
+         */
+        public ?string $contactId,
 
         /** Flow session ID */
         public string $sessionId,
@@ -40,8 +44,8 @@ final readonly class NodeExecutionContext
         /** Idempotency key for external calls from handler */
         public string $idempotencyKey,
 
-        /** Platform/channel: telegram, whatsapp, ... */
-        public string $platform,
+        /** Platform/channel: telegram, whatsapp, ...; `null` on a run without a contact, like {@see $contactId}. */
+        public ?string $platform,
 
         /** Runtime resolved content language */
         public string $resolvedLanguage = 'en',

@@ -26,7 +26,7 @@ interface DataAccessorInterface
     public function namespace(): string;
 
     /**
-     * Get a value by key for a specific contact.
+     * Get a value by key for a specific contact. A run without a contact never asks: `module.*` is refused there.
      *
      * @return mixed scalar or null; accessor must not return objects
      */
