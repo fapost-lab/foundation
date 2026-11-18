@@ -4,6 +4,14 @@ Notable changes to `fapost/foundation`. Versions follow [Semantic Versioning](ht
 major version is `0`, a minor release may break what is marked `@experimental`, and says so here. Releases
 before 0.14.0 are described by their tags on GitHub.
 
+## 0.40.0
+
+### Added
+
+- `Media\DTO\UploadResult::$providerKind` (optional, default `null`): what the provider says it stored, in its own
+  vocabulary, for an uploader whose provider may answer with another kind than the one asked for (Telegram: `photo`,
+  `video`, `audio`, `voice`, `document`). Existing constructor calls are unaffected.
+
 ## 0.39.0
 
 ### Added
