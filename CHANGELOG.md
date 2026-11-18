@@ -4,6 +4,14 @@ Notable changes to `fapost/foundation`. Versions follow [Semantic Versioning](ht
 major version is `0`, a minor release may break what is marked `@experimental`, and says so here. Releases
 before 0.14.0 are described by their tags on GitHub.
 
+## 0.41.0
+
+### Added
+
+- `Media\ReportsProviderKind`: a marker for a `ChannelMediaUploaderInterface` that fills `UploadResult::$providerKind`.
+  Core drops a cached file id that has no kind for such an uploader and uploads again, so the kind gets stored; refs of
+  an uploader without the marker are kept as they are.
+
 ## 0.40.0
 
 ### Added
