@@ -4,6 +4,25 @@ Notable changes to `fapost/foundation`. Versions follow [Semantic Versioning](ht
 major version is `0`, a minor release may break what is marked `@experimental`, and says so here. Releases
 before 0.14.0 are described by their tags on GitHub.
 
+## 0.43.0
+
+### Added
+
+- `Credentials\*` (experimental): a tenant's saved credentials, read by the code that applies them.
+  `Contracts\CredentialStoreInterface` (implemented by Core) lists them without values (`references()`,
+  `DTO\CredentialReference`) and resolves one with its decrypted values for one call (`secret()`,
+  `DTO\CredentialSecret`, `Exceptions\CredentialNotFoundException`), always in the current tenant.
+  `Contracts\CredentialTypeInterface` declares a type's fields (`DTO\CredentialField`, `Enums\CredentialFieldKind`:
+  `text`, `url`, `select`), and `Contracts\HttpCredentialTypeInterface` turns a credential into the headers and query
+  parameters of an HTTP request, with the strings to mask in its response (`DTO\HttpAuthorization`,
+  `Exceptions\CredentialUnavailableException`).
+- `CredentialSecret` and `HttpAuthorization` keep their values private: `json_encode()` leaves them out, `var_dump()`
+  and `print_r()` show `***`, stack traces drop them (`#[SensitiveParameter]`), and `serialize()` throws a
+  `LogicException`. `var_export()`, an `(array)` cast and Symfony's VarDumper (`dump()`, `dd()`) still read them.
+- `Flow\Call\CallRequest::$credential` (experimental): an optional `?CredentialSecret`, last in the constructor and
+  `null` by default, so existing calls are unaffected. A request that holds a credential throws on `serialize()`; one
+  without serializes as before.
+
 ## 0.42.0
 
 ### Added
