@@ -19,6 +19,12 @@ enum HistoryEventType: string
     /** Engine entered a node (lifecycle marker). */
     case NodeEntered = 'node_entered';
 
+    /**
+     * Engine finished running a node: status, handle, next node, duration and, in its
+     * envelope, the node's masked and truncated input and output (experimental).
+     */
+    case NodeCompleted = 'node_completed';
+
     /** Handler raised or session was failed at this node. */
     case NodeFailed = 'node_failed';
 

@@ -4,6 +4,19 @@ Notable changes to `fapost/foundation`. Versions follow [Semantic Versioning](ht
 major version is `0`, a minor release may break what is marked `@experimental`, and says so here. Releases
 before 0.14.0 are described by their tags on GitHub.
 
+## 0.44.0
+
+### Added
+
+- `Flow\History\HistoryEventType::NodeCompleted` (`node_completed`, experimental): the engine finished running a node.
+  Core writes it to `flow_session_history` with the node's status, handle, next node, duration and its masked and
+  truncated input and output. Existing values are unchanged; code that matches every case of the enum needs a branch
+  for the new one.
+- `DTO\NodeExecutionResult::$trace` (experimental): an optional `array{input?, output?}`, last in the constructor and
+  `[]` by default, so existing calls and the named constructors are unaffected. A handler puts there what the node
+  received and produced, for the run's node trace only: Core masks and truncates it before writing and writes it
+  nowhere else. Masking goes by key names and by the literals Core knows, so a handler never puts raw secrets there.
+
 ## 0.43.0
 
 ### Added
