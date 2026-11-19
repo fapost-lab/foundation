@@ -54,4 +54,32 @@ final class NodeExecutionResultTest extends TestCase
     {
         $this->assertSame('boom', NodeExecutionResult::failed('boom')->errorMessage);
     }
+
+    public function test_named_constructors_carry_no_trace(): void
+    {
+        foreach ([
+            NodeExecutionResult::executed(),
+            NodeExecutionResult::waiting(),
+            NodeExecutionResult::delayed(),
+            NodeExecutionResult::finished(),
+            NodeExecutionResult::failed('boom'),
+        ] as $result) {
+            $this->assertSame([], $result->trace);
+        }
+    }
+
+    public function test_constructor_carries_the_trace(): void
+    {
+        $trace = ['input' => ['target' => 'https://example.test'], 'output' => ['status' => 200]];
+
+        $result = new NodeExecutionResult(
+            status: NodeExecutionStatus::Executed,
+            sourceHandle: 'success',
+            logResolved: ['status' => 200],
+            trace: $trace,
+        );
+
+        $this->assertSame($trace, $result->trace);
+        $this->assertSame(['status' => 200], $result->logResolved);
+    }
 }

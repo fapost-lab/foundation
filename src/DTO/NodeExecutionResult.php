@@ -25,6 +25,12 @@ final readonly class NodeExecutionResult
      * @param  array<string, mixed>  $logResolved   Snapshot values persisted to flow_logs.resolved
      * @param  array<string, mixed>  $metadata
      * @param  DateTimeInterface|null  $resumeAt  For {@see NodeExecutionStatus::Delayed}: when the engine runs the node again
+     * @param  array{input?: array<string, mixed>, output?: array<string, mixed>}  $trace  Trace-only data (experimental)
+     *
+     * {@code $trace} is what the node received and produced, for the run's node trace only. Core masks and
+     * truncates it before writing it to the trace, and writes it nowhere else: not to flow_logs, not to the
+     * session state. Never put raw secrets in it — masking goes by key names and by the literals Core knows,
+     * not by content.
      */
     public function __construct(
         public NodeExecutionStatus $status,
@@ -34,6 +40,7 @@ final readonly class NodeExecutionResult
         public array $metadata = [],
         public ?string $errorMessage = null,
         public ?DateTimeInterface $resumeAt = null,
+        public array $trace = [],
     ) {
     }
 
