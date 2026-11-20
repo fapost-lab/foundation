@@ -4,6 +4,19 @@ Notable changes to `fapost/foundation`. Versions follow [Semantic Versioning](ht
 major version is `0`, a minor release may break what is marked `@experimental`, and says so here. Releases
 before 0.14.0 are described by their tags on GitHub.
 
+## 0.45.0
+
+### Added
+
+- `Auth\*` (experimental): one-time codes a flow's `auth_request` node sends to a contact to prove they own a phone
+  number or an email address. `Contracts\OneTimeCodeSenderInterface` delivers one code over its channel
+  (`Enums\OneTimeCodeChannel`: `sms`, `email`) and reports `DTO\OneTimeCodeDelivery`; Core implements it for email,
+  and an SMS connector or an operator package implements it for its own channel. `Contracts\OneTimeCodeSenderRegistryInterface`
+  (implemented by Core) takes a package's sender from its `boot()`; a registered sender replaces Core's default for
+  the channel. Core generates the code and keeps only its keyed hash, counts the attempts and limits the sends.
+- `DTO\OneTimeCodeMessage` keeps its code private: `json_encode()` leaves it out, `var_dump()` and `print_r()` show
+  `***`, stack traces drop it (`#[SensitiveParameter]`), and `serialize()` throws a `LogicException`.
+
 ## 0.44.0
 
 ### Added
