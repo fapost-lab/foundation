@@ -22,7 +22,9 @@ use Fapost\Foundation\Auth\Enums\OneTimeCodeChannel;
  *   {@see OneTimeCodeMessage::$idempotencyKey} where its provider supports it (Core already guards a retried job);
  *   report a refusal or a provider error as {@see OneTimeCodeDelivery::failed()} rather than throw.
  * - MUST NOT: log, store, queue or put into an exception message the code, or the message object that holds it;
- *   send anything else to the destination; keep the message between calls.
+ *   send anything else to the destination; keep the message between calls; hold tenant data or a request- or
+ *   job-scoped service in its properties — a registered sender lives as long as the worker and serves every tenant,
+ *   so it reads per-tenant settings (credentials, a sender name) inside {@see send()}.
  *
  * @experimental
  */
