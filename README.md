@@ -254,13 +254,14 @@ Handlers must be graph-unaware (return a `sourceHandle`, not the next node id) a
 A Solution adds a kind of flow trigger next to Core's built-in ones with `Flow\Contracts\TriggerTypeInterface`:
 its `type()` (declared in `extra.fapost.triggers`), a `label()`, a `configSchema()` the builder renders as the
 trigger's form, `validateConfig()` (checked at publish; an error blocks it), `matches($config, $payload)` (whether
-one fire starts the trigger configured so) and `payloadFields()` (offered as `flow.trigger.<key>` in pickers). Every
+one fire starts the trigger configured so) and `payloadFields()` (shown with the trigger as `flow.trigger.<key>`). Every
 method is pure. The provider registers it with `$registrar->registerTriggerType(SubmittedTrigger::class)`.
 
 The Solution's own code starts runs with `Flow\Contracts\TriggerFirerInterface::fire($tenantId, $type, $fireKey,
 $payload)`, taken as a constructor dependency. Core queues the fan-out after the caller's transaction commits and
-starts one contactless run per active trigger of the type whose config matches, once per fire key, while the
-Solution is active for the tenant. The payload (JSON, at most `TriggerFirerInterface::MAX_PAYLOAD_BYTES`) is the
+starts one contactless run per active trigger of the type whose config matches, once per fire key (while Core keeps
+the run), while the Solution is active for the tenant. Only a fire from inside a run counts towards Core's chain limit
+of five; a loop through the extension's own queued job is the extension's to break. The payload (JSON, at most `TriggerFirerInterface::MAX_PAYLOAD_BYTES`) is the
 run's `flow.trigger.*`.
 
 ## Testing

@@ -66,7 +66,7 @@ interface TriggerTypeInterface
     public function matches(array $config, array $payload): bool;
 
     /**
-     * Top-level keys of the payload, offered to the flow author as `flow.trigger.<key>` in expression pickers.
+     * Top-level keys of the payload, shown to the flow author with the trigger as `flow.trigger.<key>`.
      *
      * @return list<string>
      */

@@ -13,8 +13,8 @@ before 0.14.0 are described by their tags on GitHub.
   builder), `validateConfig()` (a list of `Flow\DTO\NodeConfigIssue`, checked at publish), `matches($config,
   $payload)` and `payloadFields()`. Every method is pure. A run such a trigger starts has no contact.
 - `Flow\Contracts\TriggerFirerInterface` (experimental, implemented by Core): `fire($tenantId, $type, $fireKey,
-  $payload)` starts one run per active trigger of the type whose config matches, once per fire key, after the
-  caller's transaction commits. The payload is at most `MAX_PAYLOAD_BYTES` (64 KB) of JSON.
+  $payload)` starts one run per active trigger of the type whose config matches, once per fire key while Core keeps
+  that run, after the caller's transaction commits. The payload is at most `MAX_PAYLOAD_BYTES` (64 KB) of JSON.
 - `Contracts\CoreRegistrarInterface::registerTriggerType()` (experimental): registers a trigger type by class. A new
   method of the interface: Core is its only implementation, and a test double of the interface needs it too.
 - Manifest field `extra.fapost.triggers` (`SolutionManifest::$triggers`, last in the constructor and `[]` by default):
