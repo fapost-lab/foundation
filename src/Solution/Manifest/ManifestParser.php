@@ -73,6 +73,7 @@ final class ManifestParser
         $provider    = $this->rules->checkProvider($block, $violations);
         $actions     = $this->checkActions($block, $id, $violations);
         $nodes       = $this->checkNodes($block, $id, $violations);
+        $triggers    = $this->checkTriggers($block, $id, $violations);
         $state       = $this->checkState($block, $violations);
         $ui          = $this->checkUi($block, $violations);
         $migrations  = $this->checkMigrations($block, $violations);
@@ -98,7 +99,7 @@ final class ManifestParser
 
         return new ManifestParseResult(
             $package,
-            new SolutionManifest($package, $schema, $id, $name, $description, $provider, $actions, $constraint, $ui, $nodes, $state, $migrations),
+            new SolutionManifest($package, $schema, $id, $name, $description, $provider, $actions, $constraint, $ui, $nodes, $state, $migrations, $triggers),
             [],
         );
     }
@@ -220,6 +221,78 @@ final class ManifestParser
 
             $seen[$node] = true;
             $valid[]     = $node;
+        }
+
+        return $valid;
+    }
+
+    /**
+     * The trigger types the Solution registers: the same form as a node type, and short enough for Core to store.
+     *
+     * @param  array<string, mixed>  $block
+     * @param  list<ManifestViolation>  $violations
+     * @return list<string>
+     */
+    private function checkTriggers(array $block, ?string $id, array &$violations): array
+    {
+        if (!array_key_exists('triggers', $block)) {
+            return [];
+        }
+
+        $triggers = $block['triggers'];
+
+        if (!is_array($triggers) || !array_is_list($triggers)) {
+            $violations[] = new ManifestViolation('extra.fapost.triggers', 'must be a list of trigger types');
+
+            return [];
+        }
+
+        $valid = [];
+        $seen  = [];
+
+        foreach ($triggers as $index => $trigger) {
+            $field = sprintf('extra.fapost.triggers[%d]', $index);
+
+            if (!is_string($trigger)) {
+                $violations[] = new ManifestViolation($field, 'must be a string');
+
+                continue;
+            }
+
+            if (null !== $id && !str_starts_with($trigger, $id . '.')) {
+                $violations[] = new ManifestViolation($field, sprintf('"%s" must start with "%s."', $trigger, $id));
+
+                continue;
+            }
+
+            $pattern = '/^' . (null === $id ? '[a-z][a-z0-9_]{1,31}' : preg_quote($id, '/')) . '\.' . self::NODE_TAIL . '$/D';
+
+            if (1 !== preg_match($pattern, $trigger)) {
+                $violations[] = new ManifestViolation(
+                    $field,
+                    sprintf('"%s" must be a lowercase snake_case name (letters, digits, underscore) after "%s."', $trigger, $id ?? '<id>'),
+                );
+
+                continue;
+            }
+
+            if (mb_strlen($trigger) > ManifestSchema::TRIGGER_TYPE_MAX_LENGTH) {
+                $violations[] = new ManifestViolation(
+                    $field,
+                    sprintf('"%s" is longer than %d characters', $trigger, ManifestSchema::TRIGGER_TYPE_MAX_LENGTH),
+                );
+
+                continue;
+            }
+
+            if (isset($seen[$trigger])) {
+                $violations[] = new ManifestViolation($field, sprintf('"%s" is listed twice', $trigger));
+
+                continue;
+            }
+
+            $seen[$trigger] = true;
+            $valid[]        = $trigger;
         }
 
         return $valid;
