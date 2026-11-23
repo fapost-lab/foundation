@@ -4,6 +4,18 @@ Notable changes to `fapost/foundation`. Versions follow [Semantic Versioning](ht
 major version is `0`, a minor release may break what is marked `@experimental`, and says so here. Releases
 before 0.14.0 are described by their tags on GitHub.
 
+## 0.47.0
+
+### Added
+
+- `Analytics\Contracts\BuilderModeUsageInterface` (experimental, implemented by Core): `usageFor($tenantId)` reports
+  how many staff users of a tenant have the flow builder set to the tree and to the graph now
+  (`Analytics\DTO\BuilderModeUsage`: `tree`, `graph` and their `total`). It counts the users the `staff` limit counts;
+  one who never chose a mode is on the tree. Null for an unknown or Pending tenant. An operator package calls it outside
+  any tenant context and caches the answer.
+- `Analytics\Events\BuilderModeChanged` (experimental): dispatched by Core after a staff user switched the builder to
+  the other mode, with the tenant id, the new and the previous mode (`'tree'|'graph'`) and the time; it names no user.
+
 ## 0.46.0
 
 ### Added
