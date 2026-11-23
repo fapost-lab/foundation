@@ -58,6 +58,14 @@ final class ManifestParserTest extends TestCase
             'node duplicated'                       => [self::composer(['nodes' => ['feedback.a', 'feedback.a']]), 'extra.fapost.nodes[1]: "feedback.a" is listed twice'],
             'node not a string'                     => [self::composer(['nodes' => [1]]), 'extra.fapost.nodes[0]: must be a string'],
             'nodes not a list'                      => [self::composer(['nodes' => ['a' => 'feedback.a']]), 'extra.fapost.nodes: must be a list'],
+            'trigger without prefix'                => [self::composer(['triggers' => ['submitted']]), 'extra.fapost.triggers[0]: "submitted" must start with "feedback."'],
+            'trigger of another solution'           => [self::composer(['triggers' => ['feedback.ok', 'hr.hired']]), 'extra.fapost.triggers[1]: "hr.hired" must start with "feedback."'],
+            'trigger with dotted tail'              => [self::composer(['triggers' => ['feedback.a.b']]), 'extra.fapost.triggers[0]: "feedback.a.b" must be a lowercase snake_case name'],
+            'trigger with trailing newline'         => [self::composer(['triggers' => ["feedback.submitted\n"]]), 'extra.fapost.triggers[0]'],
+            'trigger too long'                      => [self::composer(['triggers' => ['feedback.' . str_repeat('a', 56)]]), 'is longer than 64 characters'],
+            'trigger duplicated'                    => [self::composer(['triggers' => ['feedback.a', 'feedback.a']]), 'extra.fapost.triggers[1]: "feedback.a" is listed twice'],
+            'trigger not a string'                  => [self::composer(['triggers' => [1]]), 'extra.fapost.triggers[0]: must be a string'],
+            'triggers not a list'                   => [self::composer(['triggers' => ['a' => 'feedback.a']]), 'extra.fapost.triggers: must be a list'],
             'state not a boolean'                   => [self::composer(['state' => 'yes']), 'extra.fapost.state: must be a boolean'],
             'state as integer'                      => [self::composer(['state' => 1]), 'extra.fapost.state: must be a boolean'],
             'migrations not a string'               => [self::composer(['migrations' => ['database']]), 'extra.fapost.migrations: must be a non-empty string'],
@@ -69,7 +77,7 @@ final class ManifestParserTest extends TestCase
             'migrations package root'               => [self::composer(['migrations' => '.']), 'extra.fapost.migrations: must be a directory inside the package, not the package root'],
             'migrations package root with slash'    => [self::composer(['migrations' => './']), 'extra.fapost.migrations: must be a directory inside the package, not the package root'],
             'migrations hidden segment'             => [self::composer(['migrations' => '.hidden/migrations']), 'extra.fapost.migrations: must be a path of segments'],
-            'unknown field'                         => [self::composer(['routes' => 'routes']), 'acme/fapost-feedback: extra.fapost.routes: unknown field (schema 1 allows: schema, id, name, description, provider, actions, nodes, state, ui, migrations); a newer fapost/foundation may be required'],
+            'unknown field'                         => [self::composer(['routes' => 'routes']), 'acme/fapost-feedback: extra.fapost.routes: unknown field (schema 1 allows: schema, id, name, description, provider, actions, nodes, triggers, state, ui, migrations); a newer fapost/foundation may be required'],
             'schema missing'                        => [self::without('schema'), 'extra.fapost.schema: required'],
             'schema not an integer'                 => [self::composer(['schema' => '1']), 'extra.fapost.schema: must be an integer'],
             'schema unsupported'                    => [self::composer(['schema' => 2]), 'extra.fapost.schema: 2 is not supported by this fapost/foundation (supports: 1)'],
@@ -280,6 +288,16 @@ final class ManifestParserTest extends TestCase
         $this->assertSame([], $plain->nodes);
         $this->assertFalse($plain->state);
         $this->assertFalse(SolutionManifest::fromComposer(self::composer(['state' => false]))->state);
+    }
+
+    public function test_triggers_are_read_up_to_the_length_core_stores_and_default_to_empty(): void
+    {
+        $longest  = 'feedback.' . str_repeat('a', 55);
+        $manifest = SolutionManifest::fromComposer(self::composer(['triggers' => ['feedback.submitted', $longest]]));
+
+        $this->assertSame(64, mb_strlen($longest));
+        $this->assertSame(['feedback.submitted', $longest], $manifest->triggers);
+        $this->assertSame([], SolutionManifest::fromComposer(self::composer())->triggers);
     }
 
     public function test_console_and_admin_are_reserved_ids(): void

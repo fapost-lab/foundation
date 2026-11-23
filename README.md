@@ -59,9 +59,10 @@ protected function registerExtensions(CoreRegistrarInterface $registrar): void
 
 Core calls `registerExtensionsWith($registrar)` on a Solution's provider once per process, after every
 provider's `register()` and before any `boot()`, handing it a registrar of its own: Core checks what a
-Solution registers against the Solution's manifest (`extra.fapost.actions`, `extra.fapost.nodes`). A
-Solution registers **action handlers** (`registerActionHandler`, by class) and, since foundation 0.36,
-**node handlers** (`registerNodeHandler`) for the node types its manifest declares. The provider's `boot()` only runs `bootSolution()`.
+Solution registers against the Solution's manifest (`extra.fapost.actions`, `extra.fapost.nodes`, `extra.fapost.triggers`). A
+Solution registers **action handlers** (`registerActionHandler`, by class), since foundation 0.36,
+**node handlers** (`registerNodeHandler`) for the node types its manifest declares, and, since foundation 0.46,
+**trigger types** (`registerTriggerType`, experimental) for the trigger types its manifest declares. The provider's `boot()` only runs `bootSolution()`.
 
 - **Solution** — an external composer package with niche domain logic (HR, Recruitment).
   Extend `Lifecycle\AbstractSolutionServiceProvider`.
@@ -102,6 +103,7 @@ the package: `"type": "fapost-solution"` plus an `extra.fapost` block.
 | `extra.laravel.providers` | forbidden | any entry is a violation (an empty list is fine): Laravel's package discovery would boot a Solution's provider whether or not its manifest holds up |
 | `extra.fapost.actions` | no | unique action ids, each starting with `<id>.` |
 | `extra.fapost.nodes` | no | unique flow node types, each `<id>.` followed by a snake_case name; since foundation 0.36 |
+| `extra.fapost.triggers` | no | unique flow trigger types, each `<id>.` followed by a snake_case name, at most 64 characters in all; since foundation 0.46, experimental (see [Flow trigger types](#flow-trigger-types-experimental)) |
 | `extra.fapost.state` | no | boolean, default `false`; `true` = the Solution owns the flow state namespace named by its id, writable only by its own node types; since foundation 0.36 |
 | `extra.fapost.ui` | no | path of the Solution's `fapost-ui.json` relative to the package root: `/`-separated segments of letters, digits, `.`, `_`, `-`, none starting with `.`, ending with `.json`; since foundation 0.15, experimental (see [Console UI](#console-ui-experimental)) |
 | `extra.fapost.x-*` | no | ignored; for the author's own tooling |
@@ -246,6 +248,21 @@ $result->bundle;      // ?UiBundle
 
 Handlers must be graph-unaware (return a `sourceHandle`, not the next node id) and safe to retry.
 `Flow\Handlers\AbstractVersionedHandler` provides a base for versioned handlers.
+
+### Flow trigger types (experimental)
+
+A Solution adds a kind of flow trigger next to Core's built-in ones with `Flow\Contracts\TriggerTypeInterface`:
+its `type()` (declared in `extra.fapost.triggers`), a `label()`, a `configSchema()` the builder renders as the
+trigger's form, `validateConfig()` (checked at publish; an error blocks it), `matches($config, $payload)` (whether
+one fire starts the trigger configured so) and `payloadFields()` (shown with the trigger as `flow.trigger.<key>`). Every
+method is pure. The provider registers it with `$registrar->registerTriggerType(SubmittedTrigger::class)`.
+
+The Solution's own code starts runs with `Flow\Contracts\TriggerFirerInterface::fire($tenantId, $type, $fireKey,
+$payload)`, taken as a constructor dependency. Core queues the fan-out after the caller's transaction commits and
+starts one contactless run per active trigger of the type whose config matches, once per fire key (while Core keeps
+the run), while the Solution is active for the tenant. Only a fire from inside a run counts towards Core's chain limit
+of five; a loop through the extension's own queued job is the extension's to break. The payload (JSON, at most `TriggerFirerInterface::MAX_PAYLOAD_BYTES`) is the
+run's `flow.trigger.*`.
 
 ## Testing
 

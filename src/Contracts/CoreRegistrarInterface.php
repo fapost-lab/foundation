@@ -6,6 +6,7 @@ namespace Fapost\Foundation\Contracts;
 
 use Closure;
 use Fapost\Foundation\Action\ActionHandlerInterface;
+use Fapost\Foundation\Flow\Contracts\TriggerTypeInterface;
 
 /**
  * Single registration entry point for platform extensions.
@@ -42,6 +43,20 @@ interface CoreRegistrarInterface
      * @param  class-string<NodeHandlerInterface>  $handlerClass
      */
     public function registerNodeHandler(string $handlerClass): void;
+
+    /**
+     * Register a flow trigger type.
+     *
+     * By class, like a node handler: Core builds a fresh instance whenever it asks the type something, and one
+     * throwaway instance at registration to read {@see TriggerTypeInterface::type()}, so the constructor must be
+     * cheap and must not touch tenant data. For a Solution, the type must be declared in `extra.fapost.triggers`; a
+     * violation or a duplicate fails the boot.
+     *
+     * @param  class-string<TriggerTypeInterface>  $triggerTypeClass
+     *
+     * @experimental since foundation 0.46
+     */
+    public function registerTriggerType(string $triggerTypeClass): void;
 
     /**
      * Register a DataAccessor for reads from condition nodes.

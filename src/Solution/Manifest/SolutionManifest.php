@@ -25,6 +25,8 @@ final readonly class SolutionManifest
      * @param  bool  $state  whether the Solution owns the flow state namespace named by its id; since foundation 0.36
      * @param  string|null  $migrations  directory with the Solution's tenant migrations, relative to the package root, without a
      *                                   trailing slash, or null when it has none; applied per tenant, expand-only; since foundation 0.38
+     * @param  list<string>  $triggers  flow trigger types the Solution registers, each "<id>." followed by a snake_case name, at most
+     *                                  {@see ManifestSchema::TRIGGER_TYPE_MAX_LENGTH} characters; since foundation 0.46, experimental
      */
     public function __construct(
         public string $package,
@@ -39,6 +41,7 @@ final readonly class SolutionManifest
         public array $nodes = [],
         public bool $state = false,
         public ?string $migrations = null,
+        public array $triggers = [],
     ) {
     }
 
