@@ -19,6 +19,17 @@ final class NodeConfigIssueTest extends TestCase
         $this->assertSame('Pick a template.', $issue->message);
         $this->assertSame('config.template', $issue->field);
         $this->assertSame(NodeConfigIssueSeverity::Error, $issue->severity);
+        $this->assertSame([], $issue->params);
+    }
+
+    public function test_params_carry_the_values_the_message_is_built_from(): void
+    {
+        $error   = NodeConfigIssue::error('buttons_too_many', 'A question takes at most 3 buttons.', 'buttons', ['max' => 3]);
+        $warning = NodeConfigIssue::warning('slow_source', 'The source answers slowly.', null, ['seconds' => 2.5]);
+
+        $this->assertSame(['max' => 3], $error->params);
+        $this->assertSame(['seconds' => 2.5], $warning->params);
+        $this->assertSame(NodeConfigIssueSeverity::Warning, $warning->severity);
     }
 
     public function test_warning_sets_the_warning_severity_and_field_is_optional(): void

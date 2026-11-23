@@ -14,25 +14,34 @@ use Fapost\Foundation\Flow\Enums\NodeConfigIssueSeverity;
 final readonly class NodeConfigIssue
 {
     /**
-     * @param  string  $code  stable machine-readable code, such as "missing_template"
-     * @param  string  $message  what the flow author reads
-     * @param  string|null  $field  the config field the issue is about, or null when it concerns the node as a whole
+     * @param  string                            $code     stable machine-readable code, such as "missing_template"
+     * @param  string                            $message  what the flow author reads
+     * @param  string|null                       $field    the config field the issue is about, or null when it concerns the node as a whole
+     * @param  array<string, string|int|float>   $params   the values the message is built from, such as ['max' => 3], so that a
+     *                                                     translation of the code can be filled in; the message stays complete without them
      */
     public function __construct(
         public string $code,
         public string $message,
         public ?string $field = null,
         public NodeConfigIssueSeverity $severity = NodeConfigIssueSeverity::Error,
+        public array $params = [],
     ) {
     }
 
-    public static function error(string $code, string $message, ?string $field = null): self
+    /**
+     * @param  array<string, string|int|float>  $params
+     */
+    public static function error(string $code, string $message, ?string $field = null, array $params = []): self
     {
-        return new self($code, $message, $field, NodeConfigIssueSeverity::Error);
+        return new self($code, $message, $field, NodeConfigIssueSeverity::Error, $params);
     }
 
-    public static function warning(string $code, string $message, ?string $field = null): self
+    /**
+     * @param  array<string, string|int|float>  $params
+     */
+    public static function warning(string $code, string $message, ?string $field = null, array $params = []): self
     {
-        return new self($code, $message, $field, NodeConfigIssueSeverity::Warning);
+        return new self($code, $message, $field, NodeConfigIssueSeverity::Warning, $params);
     }
 }
