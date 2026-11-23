@@ -4,6 +4,15 @@ Notable changes to `fapost/foundation`. Versions follow [Semantic Versioning](ht
 major version is `0`, a minor release may break what is marked `@experimental`, and says so here. Releases
 before 0.14.0 are described by their tags on GitHub.
 
+## Unreleased
+
+### Added
+
+- `Flow\DTO\NodeConfigIssue::$params` (experimental): the values the message is built from, such as `['max' => 3]`,
+  as an optional last argument of the constructor, `error()` and `warning()`. A host that translates an issue by its
+  code fills the translation in from them; the message stays complete and is shown as it is when no translation
+  exists. Existing calls are unchanged.
+
 ## 0.47.0
 
 ### Added
