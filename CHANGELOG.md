@@ -4,7 +4,18 @@ Notable changes to `fapost/foundation`. Versions follow [Semantic Versioning](ht
 major version is `0`, a minor release may break what is marked `@experimental`, and says so here. Releases
 before 0.14.0 are described by their tags on GitHub.
 
-## Unreleased
+## 0.49.0
+
+### Added
+
+- `DTO\IncomingMedia::$providerKind` (optional, default `null`): how the provider stores the incoming file, in its own
+  vocabulary, as the connector would send it back by its id (Telegram: `photo`, `video`, `audio`, `voice` or
+  `document`) — the vocabulary of `Media\DTO\UploadResult::$providerKind`. It is set per file, since one message may
+  carry several files of different kinds. A connector whose uploader sends by file id fills it on the way in; Core
+  stores it on the file's channel reference and no longer derives it from `IncomingMessageType`. Null when the provider
+  has no such notion. A new last constructor argument: existing calls are unchanged.
+
+## 0.48.0
 
 ### Added
 
