@@ -79,8 +79,10 @@ interface CoreRegistrarInterface
      *
      * By class: Core builds a fresh instance whenever it reads the command. For a Solution, the command must be
      * declared in `extra.fapost.commands`, and its action type must be one of the same Solution's command types or
-     * Core's built-in `send_message` or `terminate_session`; a violation, a duplicate or a command of Core's own fails
-     * the boot.
+     * Core's built-in `send_message` or `terminate_session`; a violation, or the same command registered twice by
+     * one Solution, fails the boot. Two installed Solutions that declare one command are both refused by Core when it
+     * reads their manifests, as two that claim one id are. A command Core itself takes as built-in in a later release
+     * is ignored and reported, never fatal.
      *
      * @param  class-string<SolutionCommandInterface>  $commandClass
      *

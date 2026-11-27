@@ -79,6 +79,8 @@ final class ManifestParserTest extends TestCase
             'command with trailing newline'         => [self::composer(['commands' => ["/feedback\n"]]), 'extra.fapost.commands[0]'],
             'command reserved'                      => [self::composer(['commands' => ['/ok', '/reset']]), 'extra.fapost.commands[1]: "/reset" is reserved'],
             'command start reserved'                => [self::composer(['commands' => ['/start']]), 'extra.fapost.commands[0]: "/start" is reserved'],
+            'command slash only'                    => [self::composer(['commands' => ['/']]), 'extra.fapost.commands[0]: "/" must be "/"'],
+            'command type not a string'             => [self::composer(['command_types' => [1]]), 'extra.fapost.command_types[0]: must be a string'],
             'command duplicated'                    => [self::composer(['commands' => ['/a', '/a']]), 'extra.fapost.commands[1]: "/a" is listed twice'],
             'command not a string'                  => [self::composer(['commands' => [1]]), 'extra.fapost.commands[0]: must be a string'],
             'commands not a list'                   => [self::composer(['commands' => ['a' => '/a']]), 'extra.fapost.commands: must be a list of chat commands'],

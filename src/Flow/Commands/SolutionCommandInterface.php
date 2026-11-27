@@ -10,8 +10,9 @@ namespace Fapost\Foundation\Flow\Commands;
  *
  * A Solution registers it through {@see \Fapost\Foundation\Contracts\CoreRegistrarInterface::registerCommand()} and
  * declares its {@see command()} in `extra.fapost.commands`. Commands are matched in this order: the tenant's own
- * commands of the assistant, then a Solution's, then Core's built-in ones (`/reset`, `/cancel`), which no Solution may
- * take. So a tenant may shadow a Solution's command with one of its own.
+ * commands of the assistant, then a Solution's, then Core's built-in ones. A Solution never takes a built-in command
+ * (see {@see \Fapost\Foundation\Solution\Manifest\ManifestSchema::RESERVED_COMMANDS}), so the order only lets a
+ * tenant shadow a Solution's command with one of its own.
  *
  * Every method must be pure and cheap: Core builds a fresh instance whenever it reads one.
  *
@@ -27,7 +28,8 @@ interface SolutionCommandInterface
 
     /**
      * The action it takes: a type of the same Solution's {@see CommandActionTypeInterface}, or Core's built-in
-     * `send_message` or `terminate_session`. Not `start_flow`: a Solution cannot know a tenant's flows.
+     * `send_message` or `terminate_session`. Not the built-in `start_flow`, whose config names a flow of one tenant;
+     * a Solution's own type may still start a flow, from its config, by returning {@see CommandOutcome::startFlow()}.
      */
     public function actionType(): string;
 

@@ -49,7 +49,7 @@ final readonly class CommandOutcome
      */
     public static function startFlow(string $flowId, ?string $reply = null): self
     {
-        if ('' === $flowId) {
+        if ('' === mb_trim($flowId)) {
             throw new InvalidArgumentException('A command outcome that starts a flow needs the flow id.');
         }
 

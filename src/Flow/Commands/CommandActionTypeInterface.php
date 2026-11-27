@@ -56,8 +56,10 @@ interface CommandActionTypeInterface
 
     /**
      * Carry the command out for one contact, inside the tenant's context. It may read and write the Solution's own
-     * data; what happens to the conversation is the outcome it returns. An exception is reported by Core and the
-     * contact gets no answer.
+     * data; what happens to the conversation is the outcome it returns. A command runs before the session's lock, so
+     * it may run twice for one contact at once, or again when Core retries the incoming update: what it writes must be
+     * safe to repeat ({@see CommandContext::$updateId} names the update). An exception is reported by Core; the
+     * message counts as handled, never reaches a flow, and the contact gets no answer.
      *
      * @param  array<string, mixed>  $config  the command's config, as validated
      */

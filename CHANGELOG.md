@@ -23,7 +23,7 @@ before 0.14.0 are described by their tags on GitHub.
 - Manifest fields `extra.fapost.command_types` and `extra.fapost.commands` (`SolutionManifest::$commandTypes` and
   `$commands`, last in the constructor and `[]` by default). A command is `/` and 1 to 32 lowercase letters, digits or
   underscores (`ManifestSchema::COMMAND_PATTERN`), none of `ManifestSchema::RESERVED_COMMANDS` (`/reset`, `/cancel`,
-  `/start`, `/stop`); `ManifestSchema::COMMAND_TYPE_MAX_LENGTH` is 64.
+  `/start`); `ManifestSchema::COMMAND_TYPE_MAX_LENGTH` is 64.
 
 ## 0.49.0
 

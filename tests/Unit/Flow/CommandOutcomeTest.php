@@ -35,14 +35,20 @@ final class CommandOutcomeTest extends TestCase
     public function test_an_empty_reply_sends_nothing(): void
     {
         $this->assertNull(CommandOutcome::reply('')->reply);
+        $this->assertNull(CommandOutcome::reply(null)->reply);
         $this->assertNull(CommandOutcome::endSession('')->reply);
         $this->assertNull(CommandOutcome::startFlow('01JFLOW', '')->reply);
     }
 
     public function test_starting_a_flow_needs_its_id(): void
     {
-        $this->expectException(InvalidArgumentException::class);
-
-        CommandOutcome::startFlow('');
+        foreach (['', ' '] as $flowId) {
+            try {
+                CommandOutcome::startFlow($flowId);
+                $this->fail('A blank flow id was accepted.');
+            } catch (InvalidArgumentException) {
+                $this->addToAssertionCount(1);
+            }
+        }
     }
 }

@@ -58,22 +58,32 @@ final class ManifestSchema
     /** The longest trigger type, prefix included: what Core's trigger table holds. Since foundation 0.46. */
     public const int TRIGGER_TYPE_MAX_LENGTH = 64;
 
-    /** The longest command action type, prefix included: what Core's assistant commands hold. Since foundation 0.50. */
+    /**
+     * The longest command action type, prefix included: what Core's assistant commands hold. Since foundation 0.50.
+     *
+     * @experimental
+     */
     public const int COMMAND_TYPE_MAX_LENGTH = 64;
 
     /**
      * A chat command a Solution may bring: "/" and 1 to 32 lowercase letters, digits or underscores, the rule of
      * Telegram's bot commands. Since foundation 0.50.
+     *
+     * @experimental
      */
     public const string COMMAND_PATTERN = '/^\\/[a-z0-9_]{1,32}$/D';
 
     /**
-     * Chat commands no Solution may take: Core's built-in ones, and the ones a channel gives a meaning of its own
-     * (Telegram sends `/start` when a contact opens the bot). Since foundation 0.50.
+     * Chat commands no Solution may take: Core's built-in ones (`/reset`, `/cancel`), and `/start`, which Telegram
+     * sends when a contact opens the bot, so a Solution that took it would answer every new contact. Since foundation
+     * 0.50; the list may grow with Core's built-in commands, and a Solution command Core later takes is ignored, not
+     * fatal (see {@see \Fapost\Foundation\Contracts\CoreRegistrarInterface::registerCommand()}).
+     *
+     * @experimental
      *
      * @var list<string>
      */
-    public const array RESERVED_COMMANDS = ['/reset', '/cancel', '/start', '/stop'];
+    public const array RESERVED_COMMANDS = ['/reset', '/cancel', '/start'];
 
     public const int DESCRIPTION_MAX_LENGTH = 280;
 
