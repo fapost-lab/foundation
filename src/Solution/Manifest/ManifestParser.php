@@ -67,16 +67,18 @@ final class ManifestParser
         /** @var array<string, mixed> $block */
         $schema = $block['schema'];
 
-        $id          = $this->rules->checkId($block, $violations);
-        $name        = $this->rules->checkName($block, $violations);
-        $description = $this->rules->checkDescription($block, $violations);
-        $provider    = $this->rules->checkProvider($block, $violations);
-        $actions     = $this->checkActions($block, $id, $violations);
-        $nodes       = $this->checkNodes($block, $id, $violations);
-        $triggers    = $this->checkTriggers($block, $id, $violations);
-        $state       = $this->checkState($block, $violations);
-        $ui          = $this->checkUi($block, $violations);
-        $migrations  = $this->checkMigrations($block, $violations);
+        $id           = $this->rules->checkId($block, $violations);
+        $name         = $this->rules->checkName($block, $violations);
+        $description  = $this->rules->checkDescription($block, $violations);
+        $provider     = $this->rules->checkProvider($block, $violations);
+        $actions      = $this->checkActions($block, $id, $violations);
+        $nodes        = $this->checkNodes($block, $id, $violations);
+        $triggers     = $this->checkTriggers($block, $id, $violations);
+        $commandTypes = $this->checkCommandTypes($block, $id, $violations);
+        $commands     = $this->checkCommands($block, $violations);
+        $state        = $this->checkState($block, $violations);
+        $ui           = $this->checkUi($block, $violations);
+        $migrations   = $this->checkMigrations($block, $violations);
 
         foreach (array_keys($block) as $key) {
             if (!in_array($key, ManifestSchema::FIELDS, true) && !str_starts_with((string) $key, ManifestSchema::EXTENSION_PREFIX)) {
@@ -99,7 +101,7 @@ final class ManifestParser
 
         return new ManifestParseResult(
             $package,
-            new SolutionManifest($package, $schema, $id, $name, $description, $provider, $actions, $constraint, $ui, $nodes, $state, $migrations, $triggers),
+            new SolutionManifest($package, $schema, $id, $name, $description, $provider, $actions, $constraint, $ui, $nodes, $state, $migrations, $triggers, $commandTypes, $commands),
             [],
         );
     }
@@ -235,14 +237,38 @@ final class ManifestParser
      */
     private function checkTriggers(array $block, ?string $id, array &$violations): array
     {
-        if (!array_key_exists('triggers', $block)) {
+        return $this->checkLimitedTypes($block, 'triggers', 'trigger types', ManifestSchema::TRIGGER_TYPE_MAX_LENGTH, $id, $violations);
+    }
+
+    /**
+     * The command action types the Solution registers: the same form as a trigger type.
+     *
+     * @param  array<string, mixed>  $block
+     * @param  list<ManifestViolation>  $violations
+     * @return list<string>
+     */
+    private function checkCommandTypes(array $block, ?string $id, array &$violations): array
+    {
+        return $this->checkLimitedTypes($block, 'command_types', 'command action types', ManifestSchema::COMMAND_TYPE_MAX_LENGTH, $id, $violations);
+    }
+
+    /**
+     * A list of "<id>.<snake_case>" names no longer than what Core stores.
+     *
+     * @param  array<string, mixed>  $block
+     * @param  list<ManifestViolation>  $violations
+     * @return list<string>
+     */
+    private function checkLimitedTypes(array $block, string $key, string $what, int $maxLength, ?string $id, array &$violations): array
+    {
+        if (!array_key_exists($key, $block)) {
             return [];
         }
 
-        $triggers = $block['triggers'];
+        $types = $block[$key];
 
-        if (!is_array($triggers) || !array_is_list($triggers)) {
-            $violations[] = new ManifestViolation('extra.fapost.triggers', 'must be a list of trigger types');
+        if (!is_array($types) || !array_is_list($types)) {
+            $violations[] = new ManifestViolation('extra.fapost.' . $key, 'must be a list of ' . $what);
 
             return [];
         }
@@ -250,49 +276,111 @@ final class ManifestParser
         $valid = [];
         $seen  = [];
 
-        foreach ($triggers as $index => $trigger) {
-            $field = sprintf('extra.fapost.triggers[%d]', $index);
+        foreach ($types as $index => $type) {
+            $field = sprintf('extra.fapost.%s[%d]', $key, $index);
 
-            if (!is_string($trigger)) {
+            if (!is_string($type)) {
                 $violations[] = new ManifestViolation($field, 'must be a string');
 
                 continue;
             }
 
-            if (null !== $id && !str_starts_with($trigger, $id . '.')) {
-                $violations[] = new ManifestViolation($field, sprintf('"%s" must start with "%s."', $trigger, $id));
+            if (null !== $id && !str_starts_with($type, $id . '.')) {
+                $violations[] = new ManifestViolation($field, sprintf('"%s" must start with "%s."', $type, $id));
 
                 continue;
             }
 
             $pattern = '/^' . (null === $id ? '[a-z][a-z0-9_]{1,31}' : preg_quote($id, '/')) . '\.' . self::NODE_TAIL . '$/D';
 
-            if (1 !== preg_match($pattern, $trigger)) {
+            if (1 !== preg_match($pattern, $type)) {
                 $violations[] = new ManifestViolation(
                     $field,
-                    sprintf('"%s" must be a lowercase snake_case name (letters, digits, underscore) after "%s."', $trigger, $id ?? '<id>'),
+                    sprintf('"%s" must be a lowercase snake_case name (letters, digits, underscore) after "%s."', $type, $id ?? '<id>'),
                 );
 
                 continue;
             }
 
-            if (mb_strlen($trigger) > ManifestSchema::TRIGGER_TYPE_MAX_LENGTH) {
+            if (mb_strlen($type) > $maxLength) {
                 $violations[] = new ManifestViolation(
                     $field,
-                    sprintf('"%s" is longer than %d characters', $trigger, ManifestSchema::TRIGGER_TYPE_MAX_LENGTH),
+                    sprintf('"%s" is longer than %d characters', $type, $maxLength),
                 );
 
                 continue;
             }
 
-            if (isset($seen[$trigger])) {
-                $violations[] = new ManifestViolation($field, sprintf('"%s" is listed twice', $trigger));
+            if (isset($seen[$type])) {
+                $violations[] = new ManifestViolation($field, sprintf('"%s" is listed twice', $type));
 
                 continue;
             }
 
-            $seen[$trigger] = true;
-            $valid[]        = $trigger;
+            $seen[$type] = true;
+            $valid[]     = $type;
+        }
+
+        return $valid;
+    }
+
+    /**
+     * The chat commands the Solution brings. They carry no id prefix, since a contact types them; two packages that
+     * claim one command are Core's to refuse, as two packages that claim one id are.
+     *
+     * @param  array<string, mixed>  $block
+     * @param  list<ManifestViolation>  $violations
+     * @return list<string>
+     */
+    private function checkCommands(array $block, array &$violations): array
+    {
+        if (!array_key_exists('commands', $block)) {
+            return [];
+        }
+
+        $commands = $block['commands'];
+
+        if (!is_array($commands) || !array_is_list($commands)) {
+            $violations[] = new ManifestViolation('extra.fapost.commands', 'must be a list of chat commands');
+
+            return [];
+        }
+
+        $valid = [];
+        $seen  = [];
+
+        foreach ($commands as $index => $command) {
+            $field = sprintf('extra.fapost.commands[%d]', $index);
+
+            if (!is_string($command)) {
+                $violations[] = new ManifestViolation($field, 'must be a string');
+
+                continue;
+            }
+
+            if (1 !== preg_match(ManifestSchema::COMMAND_PATTERN, $command)) {
+                $violations[] = new ManifestViolation(
+                    $field,
+                    sprintf('"%s" must be "/" followed by 1 to 32 lowercase letters, digits or underscores', $command),
+                );
+
+                continue;
+            }
+
+            if (in_array($command, ManifestSchema::RESERVED_COMMANDS, true)) {
+                $violations[] = new ManifestViolation($field, sprintf('"%s" is reserved', $command));
+
+                continue;
+            }
+
+            if (isset($seen[$command])) {
+                $violations[] = new ManifestViolation($field, sprintf('"%s" is listed twice', $command));
+
+                continue;
+            }
+
+            $seen[$command] = true;
+            $valid[]        = $command;
         }
 
         return $valid;

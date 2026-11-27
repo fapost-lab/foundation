@@ -59,10 +59,11 @@ protected function registerExtensions(CoreRegistrarInterface $registrar): void
 
 Core calls `registerExtensionsWith($registrar)` on a Solution's provider once per process, after every
 provider's `register()` and before any `boot()`, handing it a registrar of its own: Core checks what a
-Solution registers against the Solution's manifest (`extra.fapost.actions`, `extra.fapost.nodes`, `extra.fapost.triggers`). A
+Solution registers against the Solution's manifest (`extra.fapost.actions`, `extra.fapost.nodes`, `extra.fapost.triggers`, `extra.fapost.command_types`, `extra.fapost.commands`). A
 Solution registers **action handlers** (`registerActionHandler`, by class), since foundation 0.36,
 **node handlers** (`registerNodeHandler`) for the node types its manifest declares, and, since foundation 0.46,
-**trigger types** (`registerTriggerType`, experimental) for the trigger types its manifest declares. The provider's `boot()` only runs `bootSolution()`.
+**trigger types** (`registerTriggerType`, experimental) for the trigger types its manifest declares, and, since foundation 0.50,
+**command action types** and **chat commands** (`registerCommandActionType`, `registerCommand`, experimental). The provider's `boot()` only runs `bootSolution()`.
 
 - **Solution** — an external composer package with niche domain logic (HR, Recruitment).
   Extend `Lifecycle\AbstractSolutionServiceProvider`.
@@ -104,6 +105,8 @@ the package: `"type": "fapost-solution"` plus an `extra.fapost` block.
 | `extra.fapost.actions` | no | unique action ids, each starting with `<id>.` |
 | `extra.fapost.nodes` | no | unique flow node types, each `<id>.` followed by a snake_case name; since foundation 0.36 |
 | `extra.fapost.triggers` | no | unique flow trigger types, each `<id>.` followed by a snake_case name, at most 64 characters in all; since foundation 0.46, experimental (see [Flow trigger types](#flow-trigger-types-experimental)) |
+| `extra.fapost.command_types` | no | unique command action types, each `<id>.` followed by a snake_case name, at most 64 characters in all; since foundation 0.50, experimental (see [Chat commands](#chat-commands-experimental)) |
+| `extra.fapost.commands` | no | unique chat commands, each `/` followed by 1 to 32 lowercase letters, digits or underscores, none of `/reset`, `/cancel`, `/start`; since foundation 0.50, experimental |
 | `extra.fapost.state` | no | boolean, default `false`; `true` = the Solution owns the flow state namespace named by its id, writable only by its own node types; since foundation 0.36 |
 | `extra.fapost.ui` | no | path of the Solution's `fapost-ui.json` relative to the package root: `/`-separated segments of letters, digits, `.`, `_`, `-`, none starting with `.`, ending with `.json`; since foundation 0.15, experimental (see [Console UI](#console-ui-experimental)) |
 | `extra.fapost.x-*` | no | ignored; for the author's own tooling |
@@ -248,6 +251,27 @@ $result->bundle;      // ?UiBundle
 
 Handlers must be graph-unaware (return a `sourceHandle`, not the next node id) and safe to retry.
 `Flow\Handlers\AbstractVersionedHandler` provides a base for versioned handlers.
+
+### Chat commands (experimental)
+
+A global chat command (such as `/reset`) is matched before a message reaches a flow. A Solution adds two things, since
+foundation 0.50:
+
+- a **command action type**, `Flow\Commands\CommandActionTypeInterface`, next to Core's `terminate_session`,
+  `start_flow` and `send_message`: its `type()` (declared in `extra.fapost.command_types`), a `label()`, a
+  `configSchema()` and `validateConfig()` for the config a tenant gives one command of the type, and
+  `handle(CommandContext $context, array $config): CommandOutcome`. Registered with
+  `$registrar->registerCommandActionType(ThankCommandType::class)`;
+- a ready-made **chat command**, `Flow\Commands\SolutionCommandInterface`: its `command()` (declared in
+  `extra.fapost.commands`), the `actionType()` it takes (a type of the same Solution, or Core's `send_message` or
+  `terminate_session`), its `config()` and a `label()`. Registered with `$registrar->registerCommand(FeedbackCommand::class)`.
+
+Both work only for a tenant that activated the Solution. A command runs before Core takes the session's lock, so
+`handle()` never touches the session: it returns `CommandOutcome::reply()`, `none()`, `endSession()` or `startFlow()`,
+and Core carries it out. Commands are matched in this order: the tenant's own commands of the assistant, a Solution's,
+Core's built-in ones. Two installed Solutions that claim one command are both refused by Core, as two that claim one
+id are. A command runs before the session's lock, so `handle()` may run twice for one contact at once, or again on a
+retry: what it writes must be safe to repeat (`CommandContext::$updateId` names the incoming update).
 
 ### Flow trigger types (experimental)
 

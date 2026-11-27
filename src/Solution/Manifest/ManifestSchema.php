@@ -58,6 +58,33 @@ final class ManifestSchema
     /** The longest trigger type, prefix included: what Core's trigger table holds. Since foundation 0.46. */
     public const int TRIGGER_TYPE_MAX_LENGTH = 64;
 
+    /**
+     * The longest command action type, prefix included: what Core's assistant commands hold. Since foundation 0.50.
+     *
+     * @experimental
+     */
+    public const int COMMAND_TYPE_MAX_LENGTH = 64;
+
+    /**
+     * A chat command a Solution may bring: "/" and 1 to 32 lowercase letters, digits or underscores, the rule of
+     * Telegram's bot commands. Since foundation 0.50.
+     *
+     * @experimental
+     */
+    public const string COMMAND_PATTERN = '/^\\/[a-z0-9_]{1,32}$/D';
+
+    /**
+     * Chat commands no Solution may take: Core's built-in ones (`/reset`, `/cancel`), and `/start`, which Telegram
+     * sends when a contact opens the bot, so a Solution that took it would answer every new contact. Since foundation
+     * 0.50; the list may grow with Core's built-in commands, and a Solution command Core later takes is ignored, not
+     * fatal (see {@see \Fapost\Foundation\Contracts\CoreRegistrarInterface::registerCommand()}).
+     *
+     * @experimental
+     *
+     * @var list<string>
+     */
+    public const array RESERVED_COMMANDS = ['/reset', '/cancel', '/start'];
+
     public const int DESCRIPTION_MAX_LENGTH = 280;
 
     /** Keys starting with this prefix are left to the author's own tooling and ignored. */
@@ -74,7 +101,7 @@ final class ManifestSchema
      *
      * @var list<string>
      */
-    public const array FIELDS = ['schema', 'id', 'name', 'description', 'provider', 'actions', 'nodes', 'triggers', 'state', 'ui', 'migrations'];
+    public const array FIELDS = ['schema', 'id', 'name', 'description', 'provider', 'actions', 'nodes', 'triggers', 'command_types', 'commands', 'state', 'ui', 'migrations'];
 
     /** Extension of the console UI description `extra.fapost.ui` points to. */
     public const string UI_EXTENSION = '.json';
@@ -96,6 +123,8 @@ final class ManifestSchema
             'extra.fapost.actions'                         => ['required' => false, 'rule' => 'list of unique action ids, each prefixed "<id>."; default []'],
             'extra.fapost.nodes'                           => ['required' => false, 'rule' => 'list of unique flow node types, each "<id>." followed by a snake_case name; default []; since foundation 0.36'],
             'extra.fapost.triggers'                        => ['required' => false, 'rule' => 'list of unique flow trigger types, each "<id>." followed by a snake_case name, at most ' . self::TRIGGER_TYPE_MAX_LENGTH . ' characters in all; default []; since foundation 0.46; experimental'],
+            'extra.fapost.command_types'                   => ['required' => false, 'rule' => 'list of unique command action types, each "<id>." followed by a snake_case name, at most ' . self::COMMAND_TYPE_MAX_LENGTH . ' characters in all; default []; since foundation 0.50; experimental'],
+            'extra.fapost.commands'                        => ['required' => false, 'rule' => 'list of unique chat commands, each "/" followed by 1 to 32 lowercase letters, digits or underscores, none of ' . implode(', ', self::RESERVED_COMMANDS) . '; default []; since foundation 0.50; experimental'],
             'extra.fapost.state'                           => ['required' => false, 'rule' => 'boolean; true = the Solution owns the flow state namespace named exactly its id, writable only by its own node types; default false; since foundation 0.36'],
             'extra.fapost.ui'                              => ['required' => false, 'rule' => 'path of the console UI description (fapost-ui.json) relative to the package root: "/"-separated non-empty segments of letters, digits, ".", "_" and "-", none starting with ".", ending with "' . self::UI_EXTENSION . '"; since foundation 0.15; experimental'],
             'extra.fapost.migrations'                      => ['required' => false, 'rule' => 'relative path inside the package of a directory with the Solution\'s tenant migrations: "/"-separated non-empty segments of letters, digits, ".", "_" and "-", none starting with "." (so no ".."), not the package root; a trailing "/" is dropped; applied per tenant, expand-only; since foundation 0.38'],

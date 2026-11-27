@@ -66,6 +66,24 @@ final class ManifestParserTest extends TestCase
             'trigger duplicated'                    => [self::composer(['triggers' => ['feedback.a', 'feedback.a']]), 'extra.fapost.triggers[1]: "feedback.a" is listed twice'],
             'trigger not a string'                  => [self::composer(['triggers' => [1]]), 'extra.fapost.triggers[0]: must be a string'],
             'triggers not a list'                   => [self::composer(['triggers' => ['a' => 'feedback.a']]), 'extra.fapost.triggers: must be a list'],
+            'command type without prefix'           => [self::composer(['command_types' => ['thank']]), 'extra.fapost.command_types[0]: "thank" must start with "feedback."'],
+            'command type of another solution'      => [self::composer(['command_types' => ['hr.thank']]), 'extra.fapost.command_types[0]: "hr.thank" must start with "feedback."'],
+            'command type with dotted tail'         => [self::composer(['command_types' => ['feedback.a.b']]), 'extra.fapost.command_types[0]: "feedback.a.b" must be a lowercase snake_case name'],
+            'command type too long'                 => [self::composer(['command_types' => ['feedback.' . str_repeat('a', 56)]]), 'is longer than 64 characters'],
+            'command type duplicated'               => [self::composer(['command_types' => ['feedback.a', 'feedback.a']]), 'extra.fapost.command_types[1]: "feedback.a" is listed twice'],
+            'command types not a list'              => [self::composer(['command_types' => 'feedback.a']), 'extra.fapost.command_types: must be a list of command action types'],
+            'command without slash'                 => [self::composer(['commands' => ['feedback']]), 'extra.fapost.commands[0]: "feedback" must be "/" followed by 1 to 32 lowercase letters'],
+            'command with uppercase'                => [self::composer(['commands' => ['/Feedback']]), 'extra.fapost.commands[0]: "/Feedback" must be "/"'],
+            'command with space'                    => [self::composer(['commands' => ['/feed back']]), 'extra.fapost.commands[0]: "/feed back" must be "/"'],
+            'command too long'                      => [self::composer(['commands' => ['/' . str_repeat('a', 33)]]), 'extra.fapost.commands[0]'],
+            'command with trailing newline'         => [self::composer(['commands' => ["/feedback\n"]]), 'extra.fapost.commands[0]'],
+            'command reserved'                      => [self::composer(['commands' => ['/ok', '/reset']]), 'extra.fapost.commands[1]: "/reset" is reserved'],
+            'command start reserved'                => [self::composer(['commands' => ['/start']]), 'extra.fapost.commands[0]: "/start" is reserved'],
+            'command slash only'                    => [self::composer(['commands' => ['/']]), 'extra.fapost.commands[0]: "/" must be "/"'],
+            'command type not a string'             => [self::composer(['command_types' => [1]]), 'extra.fapost.command_types[0]: must be a string'],
+            'command duplicated'                    => [self::composer(['commands' => ['/a', '/a']]), 'extra.fapost.commands[1]: "/a" is listed twice'],
+            'command not a string'                  => [self::composer(['commands' => [1]]), 'extra.fapost.commands[0]: must be a string'],
+            'commands not a list'                   => [self::composer(['commands' => ['a' => '/a']]), 'extra.fapost.commands: must be a list of chat commands'],
             'state not a boolean'                   => [self::composer(['state' => 'yes']), 'extra.fapost.state: must be a boolean'],
             'state as integer'                      => [self::composer(['state' => 1]), 'extra.fapost.state: must be a boolean'],
             'migrations not a string'               => [self::composer(['migrations' => ['database']]), 'extra.fapost.migrations: must be a non-empty string'],
@@ -77,7 +95,7 @@ final class ManifestParserTest extends TestCase
             'migrations package root'               => [self::composer(['migrations' => '.']), 'extra.fapost.migrations: must be a directory inside the package, not the package root'],
             'migrations package root with slash'    => [self::composer(['migrations' => './']), 'extra.fapost.migrations: must be a directory inside the package, not the package root'],
             'migrations hidden segment'             => [self::composer(['migrations' => '.hidden/migrations']), 'extra.fapost.migrations: must be a path of segments'],
-            'unknown field'                         => [self::composer(['routes' => 'routes']), 'acme/fapost-feedback: extra.fapost.routes: unknown field (schema 1 allows: schema, id, name, description, provider, actions, nodes, triggers, state, ui, migrations); a newer fapost/foundation may be required'],
+            'unknown field'                         => [self::composer(['routes' => 'routes']), 'acme/fapost-feedback: extra.fapost.routes: unknown field (schema 1 allows: schema, id, name, description, provider, actions, nodes, triggers, command_types, commands, state, ui, migrations); a newer fapost/foundation may be required'],
             'schema missing'                        => [self::without('schema'), 'extra.fapost.schema: required'],
             'schema not an integer'                 => [self::composer(['schema' => '1']), 'extra.fapost.schema: must be an integer'],
             'schema unsupported'                    => [self::composer(['schema' => 2]), 'extra.fapost.schema: 2 is not supported by this fapost/foundation (supports: 1)'],
@@ -298,6 +316,23 @@ final class ManifestParserTest extends TestCase
         $this->assertSame(64, mb_strlen($longest));
         $this->assertSame(['feedback.submitted', $longest], $manifest->triggers);
         $this->assertSame([], SolutionManifest::fromComposer(self::composer())->triggers);
+    }
+
+    public function test_command_types_and_commands_are_read_and_default_to_empty(): void
+    {
+        $longest  = 'feedback.' . str_repeat('a', 55);
+        $manifest = SolutionManifest::fromComposer(self::composer([
+            'command_types' => ['feedback.thank', $longest],
+            'commands'      => ['/feedback', '/' . str_repeat('a', 32), '/top_10'],
+        ]));
+
+        $this->assertSame(['feedback.thank', $longest], $manifest->commandTypes);
+        $this->assertSame(['/feedback', '/' . str_repeat('a', 32), '/top_10'], $manifest->commands);
+
+        $empty = SolutionManifest::fromComposer(self::composer());
+
+        $this->assertSame([], $empty->commandTypes);
+        $this->assertSame([], $empty->commands);
     }
 
     public function test_console_and_admin_are_reserved_ids(): void
