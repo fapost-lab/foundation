@@ -6,6 +6,8 @@ namespace Fapost\Foundation\Contracts;
 
 use Closure;
 use Fapost\Foundation\Action\ActionHandlerInterface;
+use Fapost\Foundation\Flow\Commands\CommandActionTypeInterface;
+use Fapost\Foundation\Flow\Commands\SolutionCommandInterface;
 use Fapost\Foundation\Flow\Contracts\TriggerTypeInterface;
 
 /**
@@ -57,6 +59,34 @@ interface CoreRegistrarInterface
      * @experimental since foundation 0.46
      */
     public function registerTriggerType(string $triggerTypeClass): void;
+
+    /**
+     * Register a kind of action a global chat command can take.
+     *
+     * By class, like a trigger type: Core builds a fresh instance whenever it asks the type something, and one
+     * throwaway instance at registration to read {@see CommandActionTypeInterface::type()}, so the constructor must
+     * be cheap and must not touch tenant data. For a Solution, the type must be declared in
+     * `extra.fapost.command_types`; a violation or a duplicate fails the boot.
+     *
+     * @param  class-string<CommandActionTypeInterface>  $commandActionTypeClass
+     *
+     * @experimental since foundation 0.50
+     */
+    public function registerCommandActionType(string $commandActionTypeClass): void;
+
+    /**
+     * Register a ready-made global chat command, such as "/feedback".
+     *
+     * By class: Core builds a fresh instance whenever it reads the command. For a Solution, the command must be
+     * declared in `extra.fapost.commands`, and its action type must be one of the same Solution's command types or
+     * Core's built-in `send_message` or `terminate_session`; a violation, a duplicate or a command of Core's own fails
+     * the boot.
+     *
+     * @param  class-string<SolutionCommandInterface>  $commandClass
+     *
+     * @experimental since foundation 0.50
+     */
+    public function registerCommand(string $commandClass): void;
 
     /**
      * Register a DataAccessor for reads from condition nodes.

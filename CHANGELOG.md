@@ -4,6 +4,27 @@ Notable changes to `fapost/foundation`. Versions follow [Semantic Versioning](ht
 major version is `0`, a minor release may break what is marked `@experimental`, and says so here. Releases
 before 0.14.0 are described by their tags on GitHub.
 
+## 0.50.0
+
+### Added
+
+- `Flow\Commands\CommandActionTypeInterface` (experimental): a kind of action a global chat command takes, next to
+  Core's built-in `terminate_session`, `start_flow` and `send_message` — its `type()` (`<id>.<snake_case>`, at most 64
+  characters), `label()`, `configSchema()`, `validateConfig()` (a list of `Flow\DTO\NodeConfigIssue`) and
+  `handle(CommandContext, array $config): CommandOutcome`. Every method but `handle()` is pure.
+- `Flow\Commands\SolutionCommandInterface` (experimental): a chat command a Solution brings ready-made — `command()`,
+  the `actionType()` it takes (a type of the same Solution, or Core's `send_message` or `terminate_session`),
+  `config()` and `label()`. Matched after the tenant's own commands and before Core's built-in ones.
+- `Flow\Commands\CommandContext` and `Flow\Commands\CommandOutcome` (with `CommandOutcomeKind`; experimental): what a
+  command type is given, and what it asks Core to do — reply, end the session, start a flow. A command runs before the
+  session's lock, so a Solution never touches the session itself.
+- `Contracts\CoreRegistrarInterface::registerCommandActionType()` and `registerCommand()` (experimental): new methods of
+  the interface. Core is its only implementation, and a test double of the interface needs them too.
+- Manifest fields `extra.fapost.command_types` and `extra.fapost.commands` (`SolutionManifest::$commandTypes` and
+  `$commands`, last in the constructor and `[]` by default). A command is `/` and 1 to 32 lowercase letters, digits or
+  underscores (`ManifestSchema::COMMAND_PATTERN`), none of `ManifestSchema::RESERVED_COMMANDS` (`/reset`, `/cancel`,
+  `/start`, `/stop`); `ManifestSchema::COMMAND_TYPE_MAX_LENGTH` is 64.
+
 ## 0.49.0
 
 ### Added

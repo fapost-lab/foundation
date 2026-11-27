@@ -27,6 +27,10 @@ final readonly class SolutionManifest
      *                                   trailing slash, or null when it has none; applied per tenant, expand-only; since foundation 0.38
      * @param  list<string>  $triggers  flow trigger types the Solution registers, each "<id>." followed by a snake_case name, at most
      *                                  {@see ManifestSchema::TRIGGER_TYPE_MAX_LENGTH} characters; since foundation 0.46, experimental
+     * @param  list<string>  $commandTypes  command action types the Solution registers, each "<id>." followed by a snake_case name, at
+     *                                      most {@see ManifestSchema::COMMAND_TYPE_MAX_LENGTH} characters; since foundation 0.50, experimental
+     * @param  list<string>  $commands  chat commands the Solution brings, each matching {@see ManifestSchema::COMMAND_PATTERN} and
+     *                                  none of {@see ManifestSchema::RESERVED_COMMANDS}; since foundation 0.50, experimental
      */
     public function __construct(
         public string $package,
@@ -42,6 +46,8 @@ final readonly class SolutionManifest
         public bool $state = false,
         public ?string $migrations = null,
         public array $triggers = [],
+        public array $commandTypes = [],
+        public array $commands = [],
     ) {
     }
 
